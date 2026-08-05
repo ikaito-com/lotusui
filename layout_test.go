@@ -129,6 +129,11 @@ func TestComponentsSurviveHostileConstraints(t *testing.T) {
 			var sa ScrollArea
 			return sa.Layout(th, gtx, Spacer(Space.SM))
 		},
+		"Scrollbar": func(gtx layout.Context) layout.Dimensions {
+			var bar Scrollbar
+			d, _ := bar.Layout(th, gtx, ScrollbarProps{Variant: ScrollbarAlways}, 0.1, 0.4)
+			return d
+		},
 		"CodeBlock": CodeBlock(th, CodeBlockProps{Lang: "go", Plain: "x := 1"}),
 		"Example": func(gtx layout.Context) layout.Dimensions {
 			var ex Example

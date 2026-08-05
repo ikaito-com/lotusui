@@ -17,7 +17,21 @@ recorded here in full.
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- `Scrollbar` / `ScrollbarProps` / `ScrollbarVariant` (`ScrollbarHover`,
+  `ScrollbarAlways`) — macOS-style overlay thumb for the Scroll Area
+  family (shadcn `ScrollBar` composition). Props: `Size` (shared enum,
+  MD ≈ 6dp), `Color` / `Scheme`, `ShowTrack`, `Horizontal`.
+  `Scrollbar.Layout` for a custom track box; returns content-fraction
+  drag/click delta.
+- `ScrollAreaProps.Scrollbar` / `NoScrollbar` — ScrollArea paints the
+  overlay by default (hover fade); tune or hide per call.
+
+### Changed
+
+- `ScrollArea` shows a draggable overlay scrollbar (hover/scroll wake,
+  fade-out) instead of a bare wheel-only viewport.
 
 ## [0.2.0] - 2026-08-05
 

@@ -562,17 +562,20 @@
     {
       "name": "scroll-area",
       "type": "component",
-      "description": "ScrollArea is shadcn Scroll Area — whole-content scrolling inside a bounded viewport WITHOUT layout.List's op.Record macros.",
+      "description": "ScrollArea is shadcn Scroll Area — whole-content scrolling inside a bounded viewport WITHOUT layout.List's op.Record macros, with a",
       "files": [
         "scrollarea.go"
       ],
       "carried": [
-        "shadowRoom"
+        "fadeNRGBA",
+        "shadowRoom",
+        "slideAnim"
       ],
       "dependsOn": [
+        "button",
         "listview"
       ],
-      "hash": "f1f720c0ce435e2c"
+      "hash": "56840b14000e0268"
     },
     {
       "name": "split",

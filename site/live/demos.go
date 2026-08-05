@@ -1224,9 +1224,11 @@ func exampleDemo(th *lotusui.Theme, gtx C) D {
 // ---- scroll-area ----
 
 var saDemo struct {
-	vert, horiz, float lotusui.ScrollArea
-	env                lotusui.Select
-	inited             bool
+	vert, horiz, float     lotusui.ScrollArea
+	always, sizeSM, sizeLG lotusui.ScrollArea
+	color, track           lotusui.ScrollArea
+	env                    lotusui.Select
+	inited                 bool
 }
 
 func scrollAreaDemo(th *lotusui.Theme, gtx C) D {
@@ -1245,15 +1247,19 @@ func scrollAreaDemo(th *lotusui.Theme, gtx C) D {
 		i := i
 		tall[i] = lotusui.LabelBody(th, "Row "+strconv.Itoa(i+1)+" — scroll the viewport").Layout
 	}
-	return card(th, gtx,
-		section(th, "Usage", func(gtx C) D {
+	pane := func(sa *lotusui.ScrollArea, props lotusui.ScrollAreaProps, body layout.Widget) layout.Widget {
+		return func(gtx C) D {
 			gtx.Constraints.Max.Y = gtx.Dp(unit.Dp(200))
 			gtx.Constraints.Min.Y = gtx.Constraints.Max.Y
+			props.NoShadowRoom = true
 			return lotusui.Card(th, lotusui.CardProps{}, func(gtx C) D {
-				return saDemo.vert.LayoutWith(th, gtx, lotusui.ScrollAreaProps{NoShadowRoom: true},
-					lotusui.VStack(lotusui.Space.SM, tall...))
+				return sa.LayoutWith(th, gtx, props, body)
 			})(gtx)
-		}),
+		}
+	}
+	return card(th, gtx,
+		section(th, "Usage", pane(&saDemo.vert, lotusui.ScrollAreaProps{},
+			lotusui.VStack(lotusui.Space.SM, tall...))),
 		section(th, "Horizontal", func(gtx C) D {
 			gtx.Constraints.Max.Y = gtx.Dp(unit.Dp(72))
 			gtx.Constraints.Min.Y = gtx.Constraints.Max.Y
@@ -1279,6 +1285,31 @@ func scrollAreaDemo(th *lotusui.Theme, gtx C) D {
 					))
 			})(gtx)
 		}),
+		section(th, "Always visible", pane(&saDemo.always, lotusui.ScrollAreaProps{
+			Scrollbar: lotusui.ScrollbarProps{Variant: lotusui.ScrollbarAlways},
+		}, lotusui.VStack(lotusui.Space.SM, tall...))),
+		section(th, "Sizes", func(gtx C) D {
+			return lotusui.HStack(lotusui.Space.MD,
+				pane(&saDemo.sizeSM, lotusui.ScrollAreaProps{
+					Scrollbar: lotusui.ScrollbarProps{Variant: lotusui.ScrollbarAlways, Size: lotusui.SizeSM},
+				}, lotusui.VStack(lotusui.Space.SM, tall...)),
+				pane(&saDemo.sizeLG, lotusui.ScrollAreaProps{
+					Scrollbar: lotusui.ScrollbarProps{Variant: lotusui.ScrollbarAlways, Size: lotusui.SizeLG},
+				}, lotusui.VStack(lotusui.Space.SM, tall...)),
+			)(gtx)
+		}),
+		section(th, "Thumb color", pane(&saDemo.color, lotusui.ScrollAreaProps{
+			Scrollbar: lotusui.ScrollbarProps{
+				Variant: lotusui.ScrollbarAlways,
+				Color:   lotusui.Teal,
+			},
+		}, lotusui.VStack(lotusui.Space.SM, tall...))),
+		section(th, "Show track", pane(&saDemo.track, lotusui.ScrollAreaProps{
+			Scrollbar: lotusui.ScrollbarProps{
+				Variant:   lotusui.ScrollbarAlways,
+				ShowTrack: true,
+			},
+		}, lotusui.VStack(lotusui.Space.SM, tall...))),
 	)
 }
 

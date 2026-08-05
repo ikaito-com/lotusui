@@ -67,6 +67,8 @@ const ItemOutline
 const PopoverCenter PopoverAlign
 const PopoverEnd
 const PopoverStart
+const ScrollbarAlways
+const ScrollbarHover ScrollbarVariant
 const Size2XL
 const Size2XS
 const SizeLG
@@ -160,6 +162,7 @@ func (s *ScrollArea) Layout(th *Theme, gtx layout.Context, content layout.Widget
 func (s *ScrollArea) LayoutWith(th *Theme, gtx layout.Context, o ScrollAreaProps, content layout.Widget) layout.Dimensions
 func (s *ScrollArea) Reset()
 func (s *ScrollArea) ScrollTo(offset int)
+func (s *Scrollbar) Layout(th *Theme, gtx layout.Context, o ScrollbarProps, viewportStart, viewportEnd float32) (layout.Dimensions, float32)
 func (s *Slider) Layout(th *Theme, gtx layout.Context) layout.Dimensions
 func (s *Split) Layout(gtx layout.Context, gap unit.Dp, depth int, boxes ...layout.Widget) layout.Dimensions
 func (s *Split) LayoutSolo(gtx layout.Context, gap unit.Dp, solo bool, box0, box1 layout.Widget) layout.Dimensions
@@ -386,7 +389,10 @@ type ResponsiveInt struct { }
 type ResponsiveSize struct { }
 type Scheme struct { Solid color.NRGBA SolidHover color.NRGBA SolidActive color.NRGBA OnSolid color.NRGBA Subtle color.NRGBA SubtleHover color.NRGBA SubtleActive color.NRGBA OnSubtle color.NRGBA Outline color.NRGBA }
 type ScrollArea struct { Offset int Horizontal bool }
-type ScrollAreaProps struct { NoShadowRoom bool }
+type ScrollAreaProps struct { NoShadowRoom bool Scrollbar ScrollbarProps NoScrollbar bool }
+type Scrollbar struct { widget.Scrollbar }
+type ScrollbarProps struct { Variant ScrollbarVariant Size Size Horizontal bool Color ColorScale Scheme *Scheme ShowTrack bool }
+type ScrollbarVariant int
 type Select struct { Options []SelectOption Groups []SelectGroup Size Size Placeholder string Disabled bool Invalid bool Attached AttachedEdges AlignItemWithTrigger bool }
 type SelectGroup struct { Label string Options []SelectOption }
 type SelectOption struct { Label string Value string Meta string Icon string Content layout.Widget }

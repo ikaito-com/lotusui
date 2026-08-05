@@ -210,8 +210,12 @@ func (ui *docsUI) Layout(th *lotusui.Theme, gtx C) D {
 		ui.palOpen, ui.verOpen = false, false
 	}
 	if ui.verBtn.Clicked(gtx) {
-		ui.verOpen = !ui.verOpen
-		ui.palOpen, ui.lookOpen = false, false
+		if ui.versionSelectable() {
+			ui.verOpen = !ui.verOpen
+			ui.palOpen, ui.lookOpen = false, false
+		} else {
+			ui.verOpen = false
+		}
 	}
 	if ui.ghBtn.Clicked(gtx) {
 		_ = lotusui.OpenURL(githubRepo)
@@ -323,9 +327,11 @@ func (ui *docsUI) topbar(th *lotusui.Theme, gtx C) D {
 								return l.Layout(gtx)
 							}),
 							// .topbar-actions gap: 10
-							layout.Rigid(func(gtx C) D { return ui.chipBtn(th, gtx, &ui.verBtn, verLabel, true) }),
+							layout.Rigid(func(gtx C) D {
+								return ui.chipBtn(th, gtx, &ui.verBtn, verLabel, true, ui.versionSelectable())
+							}),
 							layout.Rigid(layout.Spacer{Width: unit.Dp(10)}.Layout),
-							layout.Rigid(func(gtx C) D { return ui.chipBtn(th, gtx, &ui.lookBtn, "Aa", false) }),
+							layout.Rigid(func(gtx C) D { return ui.chipBtn(th, gtx, &ui.lookBtn, "Aa", false, true) }),
 							layout.Rigid(layout.Spacer{Width: unit.Dp(10)}.Layout),
 							layout.Rigid(func(gtx C) D { return ui.paletteBtn(th, gtx) }),
 							layout.Rigid(layout.Spacer{Width: unit.Dp(10)}.Layout),
@@ -344,7 +350,7 @@ func (ui *docsUI) topbar(th *lotusui.Theme, gtx C) D {
 		}),
 	)
 
-	if ui.palOpen || ui.lookOpen || ui.verOpen {
+	if ui.palOpen || ui.lookOpen || (ui.verOpen && ui.versionSelectable()) {
 		menuW := gtx.Dp(unit.Dp(180))
 		lotusui.Floating(gtx, func(gtx C) D {
 			offX := gtx.Constraints.Max.X - menuW - gtx.Dp(20)
@@ -361,9 +367,13 @@ func (ui *docsUI) topbar(th *lotusui.Theme, gtx C) D {
 }
 
 // chipBtn paints .palbtn.verbtn / .lookbtn — 22px tall, card fill, r=6.
-func (ui *docsUI) chipBtn(th *lotusui.Theme, gtx C, btn *widget.Clickable, label string, mono bool) D {
+// interactive=false keeps the chip look but drops the pointer cursor
+// and hover ink (version chip with a single major option).
+func (ui *docsUI) chipBtn(th *lotusui.Theme, gtx C, btn *widget.Clickable, label string, mono, interactive bool) D {
 	return btn.Layout(gtx, func(gtx C) D {
-		pointer.CursorPointer.Add(gtx.Ops)
+		if interactive {
+			pointer.CursorPointer.Add(gtx.Ops)
+		}
 		padX := unit.Dp(7)
 		size := unit.Sp(11)
 		weight := font.Weight(600)
@@ -390,7 +400,7 @@ func (ui *docsUI) chipBtn(th *lotusui.Theme, gtx C, btn *widget.Clickable, label
 						l := material.Label(th.Material, size, label)
 						l.Font.Weight = weight
 						l.Color = th.Palette.FgSubtle
-						if btn.Hovered() {
+						if interactive && btn.Hovered() {
 							l.Color = th.Palette.BrandFg
 						}
 						return l.Layout(gtx)
@@ -399,6 +409,10 @@ func (ui *docsUI) chipBtn(th *lotusui.Theme, gtx C, btn *widget.Clickable, label
 			},
 		)
 	})
+}
+
+func (ui *docsUI) versionSelectable() bool {
+	return len(ui.versions) > 1
 }
 
 func (ui *docsUI) githubBtn(th *lotusui.Theme, gtx C) D {

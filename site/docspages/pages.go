@@ -2463,27 +2463,40 @@ func scrollAreaPage() *Page {
 		Title:  "Scroll Area",
 		Kicker: "Bounded viewport scroll that lets Floating portals escape.",
 		Intro: `<p>shadcn Scroll Area — whole-content scrolling inside a clipped viewport
-<strong>without</strong> <code>layout.List</code>'s <code>op.Record</code> macros. Floating
-(Select, Menu, Popover, Tooltip, HoverCard) records into <code>op.Defer</code>; List-backed
-scroll traps those ops so open panels look like they push the page.
-<code>ScrollArea</code> clips and offsets on the root ops stack so portals paint correctly.</p>
+<strong>without</strong> <code>layout.List</code>'s <code>op.Record</code> macros, with a
+macOS-style overlay <code>Scrollbar</code> (shadcn composition:
+<code>ScrollArea</code> → <code>ScrollBar</code>). Floating (Select, Menu, Popover,
+Tooltip, HoverCard) records into <code>op.Defer</code>; List-backed scroll traps those
+ops so open panels look like they push the page. <code>ScrollArea</code> clips and
+offsets on the root ops stack so portals paint correctly.</p>
 <p>Prefer <code>ScrollArea</code> for screens that host Floating. Prefer
 <a href="../listview/">ListView</a> for long virtualized collections.
-<code>Scrollable</code> remains the List-backed scrollbar path when there are no portals.</p>`,
+<code>Scrollable</code> remains the material.List scrollbar path when there are no portals.</p>`,
 		Sections: []Section{
 			InstallSection("scroll-area"),
 			{
 				Heading: "Usage",
 				Prose: `<p>State (<code>Offset</code>) must outlive the frame. Give the viewport a
-bounded height (parent constraints or an explicit max).</p>`,
+bounded height (parent constraints or an explicit max). The overlay thumb
+fades in on hover / scroll (macOS default) and is draggable.</p>`,
 				Snippet: `var page lotusui.ScrollArea
 page.Layout(th, gtx, screenContent)`,
 				Demo:  "scroll-area/0",
 				DemoH: 280,
 			},
 			{
+				Heading: "Composition",
+				Prose: `<p>shadcn builds <code>ScrollArea</code> around <code>ScrollBar</code>. In lotusui the
+thumb is <code>Scrollbar</code> / <code>ScrollbarProps</code> — durable drag state lives on
+<code>ScrollArea</code>; tune via <code>ScrollAreaProps.Scrollbar</code>, or lay
+<code>Scrollbar.Layout</code> out yourself for a custom track box.</p>`,
+				Snippet: `page.LayoutWith(th, gtx, lotusui.ScrollAreaProps{
+	Scrollbar: lotusui.ScrollbarProps{Variant: lotusui.ScrollbarAlways},
+}, content)`,
+			},
+			{
 				Heading: "Horizontal",
-				Prose:   `<p>Set <code>Horizontal: true</code> for sideways scroll (works strip, tag row). The zero value scrolls vertically — <code>layout.Axis</code> is not used (its zero is Horizontal).</p>`,
+				Prose:   `<p>Set <code>Horizontal: true</code> for sideways scroll (works strip, tag row). The zero value scrolls vertically — <code>layout.Axis</code> is not used (its zero is Horizontal). The overlay thumb follows the axis.</p>`,
 				Snippet: `var strip lotusui.ScrollArea
 strip.Horizontal = true
 strip.Layout(th, gtx, wideRow)`,
@@ -2504,11 +2517,56 @@ page.Layout(th, gtx, lotusui.VStack(th.Space.MD,
 				DemoH: 320,
 			},
 			{
-				Heading: "NoShadowRoom",
+				Heading: "Always visible",
+				Prose: `<p>chakra <code>variant="always"</code> — keep the thumb painted while content
+overflows (settings panes, dense tables). Default is <code>ScrollbarHover</code>
+(macOS overlay fade).</p>`,
+				Snippet: `page.LayoutWith(th, gtx, lotusui.ScrollAreaProps{
+	Scrollbar: lotusui.ScrollbarProps{Variant: lotusui.ScrollbarAlways},
+}, content)`,
+				Demo:  "scroll-area/3",
+				DemoH: 280,
+			},
+			{
+				Heading: "Sizes",
+				Prose: `<p>Thumb thickness uses the shared <code>Size</code> enum (MD ≈ 6dp — the macOS
+overlay default). Reach for SM in dense chrome, LG when the pane is the
+primary scroll surface.</p>`,
+				Snippet: `lotusui.ScrollbarProps{Size: lotusui.SizeSM}
+lotusui.ScrollbarProps{Size: lotusui.SizeLG}`,
+				Demo:  "scroll-area/4",
+				DemoH: 280,
+			},
+			{
+				Heading: "Thumb color",
+				Prose: `<p>Pass <code>Color</code> (a <code>ColorScale</code>) so the thumb walks the interaction
+ladder, or <code>Scheme</code> for full slot control. Zero keeps the muted
+FgSubtle overlay.</p>`,
+				Snippet: `lotusui.ScrollbarProps{Color: lotusui.Teal}`,
+				Demo:    "scroll-area/5",
+				DemoH:   280,
+			},
+			{
+				Heading: "Show track",
+				Prose: `<p>macOS overlay has no track. Set <code>ShowTrack: true</code> when the pane needs
+a clearer gutter (sidebars, code panels).</p>`,
+				Snippet: `lotusui.ScrollbarProps{
+	Variant:   lotusui.ScrollbarAlways,
+	ShowTrack: true,
+}`,
+				Demo:  "scroll-area/6",
+				DemoH: 280,
+			},
+			{
+				Heading: "NoShadowRoom / NoScrollbar",
 				Prose: `<p>Page-level scroll insets <code>shadowRoom</code> for card shadows.
 Pane helpers that already budget Card pad pass
-<code>ScrollAreaProps{NoShadowRoom: true}</code> to avoid double inset.</p>`,
-				Snippet: `page.LayoutWith(th, gtx, lotusui.ScrollAreaProps{NoShadowRoom: true}, content)`,
+<code>NoShadowRoom: true</code> to avoid double inset.
+<code>NoScrollbar: true</code> hides the overlay when a parent owns chrome.</p>`,
+				Snippet: `page.LayoutWith(th, gtx, lotusui.ScrollAreaProps{
+	NoShadowRoom: true,
+	NoScrollbar:  true,
+}, content)`,
 			},
 			{
 				Heading: "ScrollTo / Reset",
@@ -2516,13 +2574,24 @@ Pane helpers that already budget Card pad pass
 				Snippet: `page.Reset()
 page.ScrollTo(y)`,
 			},
+			{
+				Heading: "From the web",
+				Prose: `<p>shadcn/Base UI also document RTL scrollbar placement and native
+<code>overflow</code> styling. lotusui paints an overlay thumb in the logical
+end of the viewport; RTL mirroring of chrome is not wired yet (➖).</p>`,
+			},
 		},
 		Props: []Prop{
 			{"Offset", "int", "Scroll position in px; must outlive the frame."},
 			{"Horizontal", "bool", "Scroll on X when true; zero value scrolls vertically."},
 			{"NoShadowRoom", "bool", "Skip shadowRoom inset (ScrollAreaProps)."},
+			{"NoScrollbar", "bool", "Hide the overlay thumb (ScrollAreaProps)."},
+			{"Scrollbar", "ScrollbarProps", "Overlay thumb: Variant, Size, Color, Scheme, ShowTrack, Horizontal."},
+			{"ScrollbarHover", "ScrollbarVariant", "Fade in on hover/scroll (default, macOS)."},
+			{"ScrollbarAlways", "ScrollbarVariant", "Stay visible while content overflows."},
 			{"Reset()", "method", "Scroll back to the start."},
 			{"ScrollTo(offset)", "method", "Jump to a content offset."},
+			{"Scrollbar.Layout", "method", "Standalone track-box paint; returns content-fraction delta."},
 		},
 	}
 }

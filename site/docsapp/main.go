@@ -118,6 +118,7 @@ type docsUI struct {
 	// without a 200dp column eating the screen.
 	showSidebar bool // >= lg (992dp)
 	showTOC     bool // >= xl (1280dp)
+	showTagline bool // >= md (768dp)
 	burgerBtn   widget.Clickable
 	navDlg      lotusui.Dialog
 	navOpen     bool
@@ -212,6 +213,7 @@ func (ui *docsUI) Layout(th *lotusui.Theme, gtx C) D {
 	// inside it could never reach xl.
 	ui.showSidebar = lotusui.Bools(false).At("lg", true).Resolve(th, gtx)
 	ui.showTOC = lotusui.Bools(false).At("xl", true).Resolve(th, gtx)
+	ui.showTagline = lotusui.Bools(false).At("md", true).Resolve(th, gtx)
 	if ui.showSidebar {
 		ui.navOpen = false // the drawer's contents are on screen again
 	}
@@ -360,13 +362,18 @@ func (ui *docsUI) topbar(th *lotusui.Theme, gtx C) D {
 							layout.Rigid(layout.Spacer{Width: unit.Dp(12)}.Layout),
 							layout.Flexed(1, func(gtx C) D {
 								// The tagline is the first thing to overflow a
-								// phone topbar — it is prose, not navigation.
-								return lotusui.Show(th, gtx, lotusui.Bools(false).At("md", true), func(gtx C) D {
-									l := material.Label(th.Material, unit.Sp(13), siteTag)
-									l.Color = th.Palette.FgSubtle // --text-sec
-									l.MaxLines = 1
-									return l.Layout(gtx)
-								})
+								// phone topbar — it is prose, not navigation, so
+								// it hides below md. The SLOT still claims its
+								// width: a zero-size flexed child collapses, and
+								// the actions would slide left instead of
+								// staying pinned to the right edge.
+								if !ui.showTagline {
+									return D{Size: image.Pt(gtx.Constraints.Max.X, 0)}
+								}
+								l := material.Label(th.Material, unit.Sp(13), siteTag)
+								l.Color = th.Palette.FgSubtle // --text-sec
+								l.MaxLines = 1
+								return l.Layout(gtx)
 							}),
 							// .topbar-actions gap: 10
 							layout.Rigid(func(gtx C) D {

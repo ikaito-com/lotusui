@@ -17,6 +17,10 @@ recorded here in full.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.3.0] - 2026-08-05
+
 ### Added
 
 - `Scrollbar` / `ScrollbarProps` / `ScrollbarVariant` (`ScrollbarHover`,

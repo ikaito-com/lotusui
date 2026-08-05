@@ -34,7 +34,7 @@ type (
 
 const (
 	githubRepo = "https://github.com/ikaito-com/lotusui"
-	siteTag    = "A Go design system for desktop and mobile — one codebase, native apps. Web when you want it."
+	siteTag    = "A Go design system for desktop and mobile — one codebase, natively compiled. Web when you want it."
 )
 
 func main() {

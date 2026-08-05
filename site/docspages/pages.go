@@ -82,8 +82,8 @@ func installationPage() *Page {
 	return &Page{
 		Slug:   "installation",
 		Title:  "Installation",
-		Kicker: "Add lotusui to a Go module and start a native desktop or mobile app.",
-		Intro: `<p>lotusui is a themeable Go UI library for native desktop and mobile apps — a
+		Kicker: "Add lotusui to a Go module and start a desktop or mobile app.",
+		Intro: `<p>lotusui is a themeable Go UI library for desktop and mobile apps — a
 semantic token palette, an embedded font, and the components that make an app read as one
 product. Built on <a href="https://gioui.org">Gio</a>. Every demo on this site is the real
 component running in your browser.</p>`,
@@ -227,7 +227,16 @@ consistent interface on every target, down to the typography. It sits on
 <a href="https://gioui.org">Gio</a> — so desktop, mobile, and WebAssembly are compile
 targets of the same module, not ports. The platform decides input (pointer or touch) and
 packaging, nothing else. The few places where a platform genuinely differs are called out
-across this site with badges like the ones above.</p>`,
+across this site with badges like the ones above.</p>
+
+<p class="note">What "native" means here, precisely: the Go compiler produces a real binary —
+no webview, no JavaScript runtime, no bridge — running in a real platform window, drawing
+through the platform's own GPU API, with text input through the system IME. It does not mean
+platform widgets: Gio draws every control itself, the way Flutter does, so a lotusui Button is
+the same Button on all five targets rather than a UIButton here and a Win32 control there.
+That is the trade — one identical design language everywhere instead of each platform's stock
+controls. Where the platform genuinely owns the interaction (window chrome, IME, file dialogs)
+lotusui defers to it.</p>`,
 		Sections: []Section{
 			{
 				Heading:   "Desktop",
@@ -241,8 +250,8 @@ bar, traffic lights kept. Windows and Linux run with standard decorations.</p>`,
 				Heading:   "Mobile",
 				Platforms: []string{"Android", "iOS"},
 				Prose: `<p>Touch-ready by construction: the theme's tap targets default to a 44dp
-finger size, scrolling (Scrollable, ListView) is native touch scrolling, and text input goes
-through the platform IME. Hover states simply never fire — and that's safe by design, because
+finger size, scrolling (Scrollable, ListView) follows the finger and flings, and text input
+goes through the platform IME. Hover states simply never fire — and that's safe by design, because
 in lotusui hover is always an <em>affordance</em>, never the only signal: selection and
 active states are explicit props (<code>active</code>, <code>Value</code>, <code>Sel</code>),
 so nothing becomes unreachable without a pointer.</p>`,

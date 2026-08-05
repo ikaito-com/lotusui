@@ -14,6 +14,15 @@ var (
 		"&gt;", ">",
 		"&#39;", "'",
 		"&quot;", `"`,
+		// Typographic entities: the renderer strips tags, so anything
+		// left undecoded would print as literal "&ldquo;" in the prose.
+		"&ldquo;", "\u201c",
+		"&rdquo;", "\u201d",
+		"&lsquo;", "\u2018",
+		"&rsquo;", "\u2019",
+		"&mdash;", "\u2014",
+		"&ndash;", "\u2013",
+		"&hellip;", "\u2026",
 	)
 )
 

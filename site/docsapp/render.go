@@ -609,7 +609,7 @@ func homePage(th *lotusui.Theme, ui *docsUI) layout.Widget {
 	tag := siteTag
 	body := "Neutral grays, white cards on a tinted canvas, one accent you choose — a complete UI kit for Go apps that ship to desktop and mobile. One module, one design language; macOS, Windows, Linux, iOS, and Android are compile targets, not ports. The same code reaches the web via WebAssembly when you want it — which is also how every demo on this site is the real component in your browser. Built on Gio."
 	ctaTitle := "You're already running it"
-	ctaBody := "Every control and demo on this page is lotusui itself, compiled to WebAssembly — not screenshots, not a sandbox. The same Go code builds native apps for macOS, Windows, Linux, iOS and Android."
+	ctaBody := "Every control and demo on this page is lotusui itself, compiled to WebAssembly — not screenshots, not a sandbox. The same Go code compiles to a real binary for macOS, Windows, Linux, iOS and Android: no webview, no bridge."
 
 	ui.tocHeadings = ui.tocHeadings[:0]
 	for _, g := range ui.groups {

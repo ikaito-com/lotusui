@@ -5,7 +5,7 @@
 <h1 align="center">lotusui</h1>
 
 <p align="center"><b>A Go design system for desktop and mobile —
-one codebase, native apps. Web when you want it.</b></p>
+one codebase, natively compiled. Web when you want it.</b></p>
 
 <p align="center">
   <a href="https://lotusui.com/">Documentation</a> ·

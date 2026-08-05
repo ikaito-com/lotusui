@@ -1,0 +1,179 @@
+{{define "head"}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{{.Root}}style.css">
+<link rel="icon" type="image/svg+xml" href="{{.Root}}favicon.svg">
+<meta name="theme-color" content="#F3F4FA">
+{{if .Canonical}}<link rel="canonical" href="{{.Canonical}}">
+<meta property="og:url" content="{{.Canonical}}">{{end}}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="lotusui">
+<meta property="og:title" content="{{if .Page}}{{.Page.Title}} — lotusui{{else}}lotusui — Go design system for Gio{{end}}">
+<meta property="og:description" content="{{if .Page}}{{.Page.Kicker}}{{else}}{{.Site.Tag}}{{end}}">
+<meta property="og:image" content="{{.Site.BaseURL}}media/hero-light.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{if .Page}}{{.Page.Title}} — lotusui{{else}}lotusui — Go design system for Gio{{end}}">
+<meta name="twitter:description" content="{{if .Page}}{{.Page.Kicker}}{{else}}{{.Site.Tag}}{{end}}">
+<meta name="twitter:image" content="{{.Site.BaseURL}}media/hero-light.png">
+<script>try{var p=localStorage.getItem("lotusui-palette");if(p)document.documentElement.dataset.palette=p;var l=localStorage.getItem("lotusui-look");if(l)document.documentElement.dataset.style=l}catch(e){}</script>
+{{end}}
+
+{{define "header"}}
+<header class="topbar">
+  <div class="topbar-brand">
+    <a class="wordmark" href="{{.Root}}">lotusui</a>
+    {{if .Site.Version}}
+    <div class="palpick verpick">
+      <button class="palbtn verbtn" id="verbtn" type="button" title="Documentation version">{{.Site.Version}}</button>
+      <div class="palmenu" id="vermenu">
+        {{range .Site.Versions}}
+        {{/* Site-root absolute — not {{$.Root}}-relative. From an archived
+             /v0.4.0/ page, Root-relative links resolve under that prefix
+             (e.g. /v0.4.0/v0.3.0/) and 404. lotusui.com is the apex. */}}
+        <a class="verlink" href="/{{relpath .Path}}">{{.Version}}</a>
+        {{end}}
+      </div>
+    </div>
+    {{end}}
+  </div>
+  <span class="tag">{{.Site.Tag}}</span>
+  <div class="topbar-actions">
+    <div class="palpick lookpick">
+      <button class="palbtn lookbtn" id="lookbtn" type="button" title="Choose a look &amp; feel — font, spacing, radii; combined with the palette it IS the theme">Aa</button>
+      <div class="palmenu" id="lookmenu">
+        {{range .Site.Looks}}
+        <button type="button" data-look="{{.Slug}}">
+          <span class="looksw">Aa</span>
+          <span class="lookname">{{.Name}}<em>{{.Hint}}</em></span>
+        </button>
+        {{end}}
+      </div>
+    </div>
+    <div class="palpick">
+      <button class="palbtn" id="palbtn" type="button" title="Choose a palette — themes are compiled-in data, switching is free">
+        <span style="background:var(--brand)"></span><span style="background:var(--brand-ink)"></span>
+        <span style="background:var(--brand-subtle)"></span><span style="background:var(--on-brand)"></span>
+      </button>
+      <div class="palmenu" id="palmenu">
+        {{range .Site.Palettes}}
+        <button type="button" data-palette="{{.Slug}}">
+          <span class="palsw"><i style="background:{{.BrandSolid}}"></i><i style="background:{{.BrandFg}}"></i><i style="background:{{.BrandSubtle}}"></i><i style="background:{{.BrandContrast}}"></i></span>
+          {{.Name}}
+        </button>
+        {{end}}
+      </div>
+    </div>
+    <a class="repo" href="{{.Site.Repo}}">GitHub</a>
+    <button class="navbtn" id="navbtn" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidenav">
+      <span class="navbtn-bar" aria-hidden="true"></span>
+      <span class="navbtn-bar" aria-hidden="true"></span>
+      <span class="navbtn-bar" aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
+<script>
+(function(){
+  const KEY = "lotusui-palette";
+  const apply = n => {
+    document.documentElement.dataset.palette = n;
+    try { localStorage.setItem(KEY, n); } catch (e) {}
+    // Broadcast into each Preview iframe (same-origin gallery).
+    const msg = {lotusuiPalette: n};
+    window.postMessage(msg, "*");
+    document.querySelectorAll("iframe.demo").forEach(f => {
+      try { f.contentWindow.postMessage(msg, "*"); } catch (_) {}
+    });
+  };
+  const btn = document.getElementById("palbtn"), menu = document.getElementById("palmenu");
+  if (btn && menu) {
+    btn.addEventListener("click", () => menu.classList.toggle("open"));
+    document.addEventListener("click", e => { if (!e.target.closest(".palpick")) menu.classList.remove("open"); });
+    menu.querySelectorAll("[data-palette]").forEach(b =>
+      b.addEventListener("click", () => { apply(b.dataset.palette); menu.classList.remove("open"); }));
+  }
+
+  // The look picker: the second theming axis. Look × palette IS the
+  // applied theme — both compose into one NewTheme in the wasm.
+  const applyLook = n => {
+    document.documentElement.dataset.style = n;
+    try { localStorage.setItem("lotusui-look", n); } catch (e) {}
+    const msg = {lotusuiLook: n};
+    window.postMessage(msg, "*");
+    document.querySelectorAll("iframe.demo").forEach(f => {
+      try { f.contentWindow.postMessage(msg, "*"); } catch (_) {}
+    });
+  };
+  const lbtn = document.getElementById("lookbtn"), lmenu = document.getElementById("lookmenu");
+  if (lbtn && lmenu) {
+    lbtn.addEventListener("click", () => { lmenu.classList.toggle("open"); if (menu) menu.classList.remove("open"); });
+    document.addEventListener("click", e => { if (!e.target.closest(".lookpick")) lmenu.classList.remove("open"); });
+    lmenu.querySelectorAll("[data-look]").forEach(b =>
+      b.addEventListener("click", () => { applyLook(b.dataset.look); lmenu.classList.remove("open"); }));
+  }
+
+  const vbtn = document.getElementById("verbtn"), vmenu = document.getElementById("vermenu");
+  if (vbtn && vmenu) {
+    vbtn.addEventListener("click", () => { vmenu.classList.toggle("open"); if (lmenu) lmenu.classList.remove("open"); if (menu) menu.classList.remove("open"); });
+    document.addEventListener("click", e => { if (!e.target.closest(".verpick")) vmenu.classList.remove("open"); });
+  }
+
+  // Mobile nav waits for DOMContentLoaded: this script lives in the
+  // header, and #sidenav is rendered later in .shell.
+  document.addEventListener("DOMContentLoaded", () => {
+    const navbtn = document.getElementById("navbtn");
+    const sidenav = document.getElementById("sidenav");
+    if (!navbtn || !sidenav) return;
+    const mobile = () => window.matchMedia("(max-width: 900px)").matches;
+    const setOpen = open => {
+      document.body.classList.toggle("nav-open", open);
+      navbtn.setAttribute("aria-expanded", open ? "true" : "false");
+      navbtn.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+      // On desktop the sidebar is the persistent column — never aria-hidden.
+      sidenav.setAttribute("aria-hidden", mobile() && !open ? "true" : "false");
+      if (open) sidenav.focus({ preventScroll: true });
+    };
+    setOpen(false);
+    navbtn.addEventListener("click", e => {
+      e.stopPropagation();
+      setOpen(!document.body.classList.contains("nav-open"));
+    });
+    sidenav.addEventListener("click", e => {
+      if (e.target.closest("a")) setOpen(false);
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false);
+    });
+    window.addEventListener("resize", () => {
+      if (!mobile()) setOpen(false);
+      else if (!document.body.classList.contains("nav-open")) {
+        sidenav.setAttribute("aria-hidden", "true");
+      }
+    });
+  });
+})();
+</script>
+{{end}}
+
+{{define "sidebar"}}
+<nav class="sidebar" id="sidenav" tabindex="-1" aria-label="Documentation" aria-hidden="false">
+  <div class="navdialog-head">
+    <span class="navdialog-title">Menu</span>
+  </div>
+  {{$root := .Root}}
+  {{$current := ""}}{{with .Page}}{{$current = .Slug}}{{end}}
+  {{range .Site.Groups}}
+  <div class="navgroup">
+    <div class="navtitle">{{.Title}}</div>
+    {{range .Pages}}
+    <a href="{{$root}}components/{{.Slug}}/" {{if eq .Slug $current}}class="active" aria-current="page"{{end}}>{{.Title}}</a>
+    {{end}}
+  </div>
+  {{end}}
+</nav>
+{{end}}
+
+{{define "footer"}}
+<footer class="footer">
+  <p>Every demo on this site is the real Go component compiled to WebAssembly — one gallery app, one bundle, each Preview an iframe addressed by URL hash.</p>
+</footer>
+{{end}}

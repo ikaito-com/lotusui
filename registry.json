@@ -1,0 +1,561 @@
+{
+  "name": "lotusui",
+  "version": "0.1.0",
+  "goModule": "github.com/ikaito-com/lotusui",
+  "components": [
+    {
+      "name": "button",
+      "type": "component",
+      "description": "The Button component: one component, styled by VARIANT × SIZE, with disabled and loading states.",
+      "files": [
+        "button.go"
+      ],
+      "carried": [
+        "lerpNRGBA",
+        "seatShadow"
+      ],
+      "dependsOn": [
+        "button-group"
+      ],
+      "hash": "816240d96d733fe6"
+    },
+    {
+      "name": "button-group",
+      "type": "component",
+      "description": "AttachedEdges marks the sides of a control that sit flush against a neighbor — those corners render square and the shared border collapses.",
+      "files": [
+        "buttongroup.go"
+      ],
+      "dependsOn": [
+        "button"
+      ],
+      "hash": "b22c4a600c8a2b8a"
+    },
+    {
+      "name": "badge",
+      "type": "component",
+      "description": "BadgeVariant selects how the badge's scheme paints it.",
+      "files": [
+        "badge.go"
+      ],
+      "dependsOn": [
+        "button"
+      ],
+      "hash": "465d0cd4de44972c"
+    },
+    {
+      "name": "card",
+      "type": "component",
+      "description": "CardVariant selects the card chrome.",
+      "files": [
+        "card.go"
+      ],
+      "carried": [
+        "cardShadow",
+        "seatShadow"
+      ],
+      "dependsOn": [
+        "button",
+        "stack"
+      ],
+      "hash": "c9cb0e9c5516f09f"
+    },
+    {
+      "name": "checkbox",
+      "type": "component",
+      "description": "Checkbox is the checkbox: a rounded box with a check mark when on, a label beside it.",
+      "files": [
+        "checkbox.go"
+      ],
+      "dependsOn": [
+        "button"
+      ],
+      "hash": "8947cad702c94e13"
+    },
+    {
+      "name": "switch",
+      "type": "component",
+      "description": "Switch is the toggle: a rounded track with a sliding thumb, accent-colored when on, animated on the app's shared clock.",
+      "files": [
+        "switch.go"
+      ],
+      "carried": [
+        "slideAnim"
+      ],
+      "dependsOn": [
+        "button"
+      ],
+      "hash": "e88c137113daf86c"
+    },
+    {
+      "name": "input",
+      "type": "component",
+      "description": "InputVariant selects the field chrome.",
+      "files": [
+        "inputs.go"
+      ],
+      "carried": [
+        "fillRect",
+        "seatShadow"
+      ],
+      "dependsOn": [
+        "button",
+        "field",
+        "stack"
+      ],
+      "hash": "c8a49ffbf90aad8d"
+    },
+    {
+      "name": "item",
+      "type": "component",
+      "description": "Item is shadcn's list-row primitive: a flex container for media, title, description and actions.",
+      "files": [
+        "item.go"
+      ],
+      "dependsOn": [
+        "button",
+        "stack"
+      ],
+      "hash": "f60c2c019e802a79"
+    },
+    {
+      "name": "kbd",
+      "type": "component",
+      "description": "Kbd renders a keyboard-key hint — a small bordered cap in muted ink: the \"⌘K\" beside a search field.",
+      "files": [
+        "kbd.go"
+      ],
+      "hash": "cb72eb6b04159af3"
+    },
+    {
+      "name": "input-otp",
+      "type": "component",
+      "description": "InputOTP is the one-time-code input: character slots rendered as attached boxes driven by ONE hidden editor — click anywhere on the row, type or paste, and the code fills left to right.",
+      "files": [
+        "inputotp.go"
+      ],
+      "hash": "86afb4dd0253fa47"
+    },
+    {
+      "name": "field",
+      "type": "component",
+      "description": "Field is the form-field wrapper: label, helper text, error message and required marker around ANY control — an Input, a Dropdown, a Checkbox group, your own widget.",
+      "files": [
+        "field.go"
+      ],
+      "dependsOn": [
+        "input",
+        "stack"
+      ],
+      "hash": "06288756af0641da"
+    },
+    {
+      "name": "select",
+      "type": "component",
+      "description": "Select is the select control: a bordered trigger showing the current choice with a chevron; clicking it opens a FLOATING panel of options over the content beneath (the shared portal primitive), with the selected row check-marked.",
+      "files": [
+        "select.go"
+      ],
+      "carried": [
+        "cardShadow",
+        "dismisser",
+        "fillRect",
+        "inputFrame",
+        "inputMetrics",
+        "layoutSites",
+        "seatShadow"
+      ],
+      "dependsOn": [
+        "button",
+        "input",
+        "listview"
+      ],
+      "hash": "1e7fe12a28218b1e"
+    },
+    {
+      "name": "tabs",
+      "type": "component",
+      "description": "TabsVariant selects the tab look.",
+      "files": [
+        "tabs.go"
+      ],
+      "carried": [
+        "chooseValue",
+        "option",
+        "seatShadow",
+        "valueAt"
+      ],
+      "dependsOn": [
+        "select",
+        "stack"
+      ],
+      "hash": "25c70f18b437ce67"
+    },
+    {
+      "name": "dialog",
+      "type": "component",
+      "description": "Dialog is the one overlay primitive, modeled on Chakra-UI's Dialog : a dimmed scrim over the ENTIRE window with a width-capped SurfaceCard centered on it.",
+      "files": [
+        "dialog.go"
+      ],
+      "carried": [
+        "slideAnim"
+      ],
+      "dependsOn": [
+        "button"
+      ],
+      "hash": "7b3b363b756f0f1b"
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "component",
+      "description": "The DropdownMenu family: a panel of actions.",
+      "files": [
+        "menu.go"
+      ],
+      "carried": [
+        "cardShadow",
+        "dismisser",
+        "layoutSites"
+      ],
+      "dependsOn": [
+        "button",
+        "popover",
+        "stack"
+      ],
+      "hash": "0a779cbeab0cb22a"
+    },
+    {
+      "name": "accordion",
+      "type": "component",
+      "description": "Accordion is the vertically stacked disclosure: titles that expand one panel of content at a time (set Multiple for independent panels).",
+      "files": [
+        "accordion.go"
+      ],
+      "carried": [
+        "slideAnim"
+      ],
+      "dependsOn": [
+        "stack"
+      ],
+      "hash": "a03f77d2dcad4df1"
+    },
+    {
+      "name": "alert",
+      "type": "component",
+      "description": "AlertVariant selects the alert's role.",
+      "files": [
+        "alert.go"
+      ],
+      "dependsOn": [
+        "stack"
+      ],
+      "hash": "87f9a96d79b249f7"
+    },
+    {
+      "name": "alert-dialog",
+      "type": "component",
+      "description": "AlertDialog is the interruption that requires a decision: a Dialog that absorbs every outside click and Escape (no backdrop dismissal, no corner ✕) and offers exactly Cancel and Action.",
+      "files": [
+        "alertdialog.go"
+      ],
+      "dependsOn": [
+        "button",
+        "dialog",
+        "stack"
+      ],
+      "hash": "2380106b3a940013"
+    },
+    {
+      "name": "avatar",
+      "type": "component",
+      "description": "AvatarProps are the avatar's options.",
+      "files": [
+        "avatar.go"
+      ],
+      "dependsOn": [
+        "button"
+      ],
+      "hash": "4cb62d6f29310a70"
+    },
+    {
+      "name": "breadcrumb",
+      "type": "component",
+      "description": "Breadcrumb renders the path to the current page: muted ancestor labels separated by chevrons, the LAST label in full ink as the current page.",
+      "files": [
+        "breadcrumb.go"
+      ],
+      "dependsOn": [
+        "button",
+        "dropdown-menu",
+        "popover"
+      ],
+      "hash": "6200febbf2c255b4"
+    },
+    {
+      "name": "pagination",
+      "type": "component",
+      "description": "Pagination is the page selector: previous/next plus numbered pages, long ranges elided around the current page.",
+      "files": [
+        "pagination.go"
+      ],
+      "dependsOn": [
+        "button"
+      ],
+      "hash": "7281e2fc96d211f2"
+    },
+    {
+      "name": "popover",
+      "type": "component",
+      "description": "Popover is the anchored floating panel for arbitrary content — the general form of Select's dropdown, built on the same portal primitive.",
+      "files": [
+        "popover.go"
+      ],
+      "carried": [
+        "cardShadow",
+        "dismisser",
+        "layoutSites"
+      ],
+      "hash": "ccafb6286ce8975b"
+    },
+    {
+      "name": "hover-card",
+      "type": "component",
+      "description": "HoverCard is the hover-preview panel: rest the pointer on a trigger and a content card floats in on the portal layer — for sighted users to preview what's behind a link (shadcn Hover Card).",
+      "files": [
+        "hovercard.go"
+      ],
+      "carried": [
+        "cardShadow",
+        "layoutSites"
+      ],
+      "dependsOn": [
+        "popover"
+      ],
+      "hash": "5c5f988962b9f07c"
+    },
+    {
+      "name": "annotated-text",
+      "type": "component",
+      "description": "GlossaryTerm is one in-text term with a HoverCard tip.",
+      "files": [
+        "glossary.go"
+      ],
+      "dependsOn": [
+        "hover-card",
+        "stack"
+      ],
+      "hash": "3f08eae91cdc6375"
+    },
+    {
+      "name": "progress",
+      "type": "component",
+      "description": "Progress renders a determinate progress bar: a track in the subtle fill, the filled portion in the brand solid.",
+      "files": [
+        "progress.go"
+      ],
+      "hash": "05a6a6b11c9e634a"
+    },
+    {
+      "name": "radio-group",
+      "type": "component",
+      "description": "RadioOption is one radio choice — the choice contract lives with SelectOption; Description renders muted under the label and Disabled makes this one option unclickable (both replacing the index-aligned slices RadioGroup used to carry).",
+      "files": [
+        "radio.go"
+      ],
+      "carried": [
+        "chooseValue",
+        "option",
+        "valueAt"
+      ],
+      "dependsOn": [
+        "button",
+        "select",
+        "stack"
+      ],
+      "hash": "6f5de6a88219f242"
+    },
+    {
+      "name": "separator",
+      "type": "component",
+      "description": "Separator is the semantic divider: a 1dp hairline in the theme's subtle border ink, horizontal by default.",
+      "files": [
+        "separator.go"
+      ],
+      "hash": "ba13187a3954a350"
+    },
+    {
+      "name": "skeleton",
+      "type": "component",
+      "description": "Skeleton is the loading placeholder: a rounded block pulsing gently between the theme's subtle fills on the shared clock.",
+      "files": [
+        "skeleton.go"
+      ],
+      "hash": "b873c47dce981074"
+    },
+    {
+      "name": "slider",
+      "type": "component",
+      "description": "Slider is the draggable value control: a track, the filled range in the brand solid, a round thumb.",
+      "files": [
+        "slider.go"
+      ],
+      "hash": "32cebcd5a00468cf"
+    },
+    {
+      "name": "spinner",
+      "type": "component",
+      "description": "Spinner is the standalone loading indicator: the same three-quarter arc Button's loading state draws, rotating on the frame clock, in the theme's muted ink (pass a Scheme'd color via SpinnerTint for anything else).",
+      "files": [
+        "spinner.go"
+      ],
+      "carried": [
+        "spinner"
+      ],
+      "dependsOn": [
+        "button"
+      ],
+      "hash": "43a2a5a1e8863024"
+    },
+    {
+      "name": "table",
+      "type": "component",
+      "description": "TableProps are the table's options.",
+      "files": [
+        "table.go"
+      ],
+      "dependsOn": [
+        "stack"
+      ],
+      "hash": "80f794e6cfcc6f2d"
+    },
+    {
+      "name": "textarea",
+      "type": "component",
+      "description": "Textarea is the multi-line sibling of Input: the same frame chrome and size presets, a wrapping editor inside, with a minimum height in rows.",
+      "files": [
+        "textarea.go"
+      ],
+      "carried": [
+        "fillRect",
+        "inputFrame",
+        "inputMetrics",
+        "seatShadow"
+      ],
+      "dependsOn": [
+        "button",
+        "field",
+        "input"
+      ],
+      "hash": "0af14aa00cf2226d"
+    },
+    {
+      "name": "toast",
+      "type": "component",
+      "description": "ToastVariant selects the toast's role.",
+      "files": [
+        "toast.go"
+      ],
+      "carried": [
+        "cardShadow"
+      ],
+      "dependsOn": [
+        "spinner",
+        "stack"
+      ],
+      "hash": "bb5f484653909da4"
+    },
+    {
+      "name": "toggle",
+      "type": "component",
+      "description": "Toggle is the pressed-state button: an icon or label that stays filled while On.",
+      "files": [
+        "toggle.go"
+      ],
+      "carried": [
+        "chooseValue",
+        "option",
+        "valueAt"
+      ],
+      "dependsOn": [
+        "button",
+        "select"
+      ],
+      "hash": "f7ee23a61a80728f"
+    },
+    {
+      "name": "tooltip",
+      "type": "component",
+      "description": "Tooltip attaches a hover label to any widget: hold the pointer over the child for a beat and the label floats in beneath it, inverted chrome (dark surface, light ink).",
+      "files": [
+        "tooltip.go"
+      ],
+      "carried": [
+        "layoutSites"
+      ],
+      "hash": "9c5e04f3c05d6ace"
+    },
+    {
+      "name": "grid",
+      "type": "component",
+      "description": "Grid is the 2D layout primitive: equal-width tracks (repeat(N, 1fr) in web terms), items auto-flowing row-major, each optionally spanning columns and rows.",
+      "files": [
+        "grid.go"
+      ],
+      "hash": "f29229e5ddeda023"
+    },
+    {
+      "name": "listview",
+      "type": "component",
+      "description": "The list family — a lotusui extension: Scrollable (whole-content scrolling for a screen's mixed content), ListView (its VIRTUALIZED sibling for long, uniform collections) and HoverRow (the one way a list row reads as interactive).",
+      "files": [
+        "listview.go"
+      ],
+      "carried": [
+        "lerpNRGBA"
+      ],
+      "hash": "4d5c382d998f4525"
+    },
+    {
+      "name": "split",
+      "type": "component",
+      "description": "Split arranges a screen's main panes as a CAROUSEL.",
+      "files": [
+        "split.go",
+        "split_scroll.go"
+      ],
+      "carried": [
+        "shadowRoom",
+        "slideAnim"
+      ],
+      "dependsOn": [
+        "card",
+        "listview"
+      ],
+      "hash": "ad10f791059ddcdb"
+    },
+    {
+      "name": "stack",
+      "type": "component",
+      "description": "Stack lays out children along one axis with a uniform gap between them — Chakra UI's Stack, as a Gio widget.",
+      "files": [
+        "stack.go"
+      ],
+      "hash": "8a0fd6b63cf833bf"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "login-form",
+      "type": "block",
+      "description": "Package login is the login-form block: a ready-made composition of Card, Field, Input and Button — vendor it with `lotusui add login-form` and shape it to your app.",
+      "files": [
+        "registry/blocks/login/login.go"
+      ],
+      "hash": "542368d80860a732"
+    }
+  ],
+  "skills": [
+    "skills/lotusui/SKILL.md"
+  ]
+}

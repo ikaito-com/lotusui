@@ -1,0 +1,417 @@
+const AlertDefault AlertVariant
+const AlertDestructive
+const BadgeDefault BadgeVariant
+const BadgeDestructive
+const BadgeGhost
+const BadgeOutline
+const BadgeSecondary
+const ButtonDefault ButtonVariant
+const ButtonDestructive
+const ButtonGhost
+const ButtonLink
+const ButtonOutline
+const ButtonSecondary
+const CardElevated
+const CardOutline CardVariant
+const CardSubtle
+const HoverCardBottom HoverCardSide
+const HoverCardLeft
+const HoverCardRight
+const HoverCardTop
+const IconAccept
+const IconAdd
+const IconArchive
+const IconArrowLeft
+const IconBell
+const IconBuilding
+const IconChanges
+const IconChevronDown
+const IconChevronRight
+const IconClock
+const IconCreditCard
+const IconDot
+const IconEdit
+const IconExpand
+const IconEye
+const IconEyeOff
+const IconFile
+const IconInfo
+const IconLock
+const IconMail
+const IconMessage
+const IconMinus
+const IconMoreHorizontal
+const IconPerson
+const IconPlus
+const IconRefuse
+const IconRemove
+const IconSearch
+const IconSettings
+const IconShare
+const IconTextBold
+const IconTextItalic
+const IconTextUnderline
+const IconTrash
+const IconWallet
+const IconWarning
+const InputFlushed
+const InputOutline InputVariant
+const InputSubtle
+const ItemDefault ItemVariant
+const ItemMediaDefault ItemMediaVariant
+const ItemMediaIcon
+const ItemMediaImage
+const ItemMuted
+const ItemOutline
+const PopoverCenter PopoverAlign
+const PopoverEnd
+const PopoverStart
+const Size2XL
+const Size2XS
+const SizeLG
+const SizeMD Size
+const SizeSM
+const SizeXL
+const SizeXS
+const TabsDefault TabsVariant
+const TabsLine
+const TabsSubtle
+const ToastDefault ToastVariant
+const ToastDestructive
+const ToastInfo
+const ToastSuccess
+const ToastWarning
+const TooltipBottom TooltipSide
+const TooltipLeft
+const TooltipRight
+const TooltipTop
+const Version
+func (a *Accordion) Layout(th *Theme, gtx layout.Context, items ...AccordionItem) layout.Dimensions
+func (a *AlertDialog) Appear()
+func (a *AlertDialog) Cancelled(gtx layout.Context) bool
+func (a *AlertDialog) Confirmed(gtx layout.Context) bool
+func (a *AlertDialog) Layout(th *Theme, gtx layout.Context, o AlertDialogProps) layout.Dimensions
+func (b Breakpoints) IndexOf(name string) int
+func (b Breakpoints) Len() int
+func (b Breakpoints) Min(i int) unit.Dp
+func (b Breakpoints) Name(i int) string
+func (c *Checkbox) Clicked(gtx layout.Context) bool
+func (c *Checkbox) Layout(th *Theme, gtx layout.Context, label string) layout.Dimensions
+func (d *Select) Chosen() bool
+func (d *Select) Clear()
+func (d *Select) Layout(th *Theme, gtx layout.Context, label string) layout.Dimensions
+func (d *Select) SetValue(v string)
+func (d *Select) Value() string
+func (f *Input) ApplyConstraints()
+func (f *Input) Layout(th *Theme, gtx layout.Context, label, hint string) layout.Dimensions
+func (f *Input) LayoutField(th *Theme, gtx layout.Context, hint string) layout.Dimensions
+func (f *Input) LayoutSuffix(th *Theme, gtx layout.Context, label, hint, suffix string) layout.Dimensions
+func (g *ToggleGroup) Chosen() bool
+func (g *ToggleGroup) Clear()
+func (g *ToggleGroup) Layout(th *Theme, gtx layout.Context, size Size) layout.Dimensions
+func (g *ToggleGroup) SetValue(v string)
+func (g *ToggleGroup) SetValues(vs []string)
+func (g *ToggleGroup) Value() string
+func (g *ToggleGroup) Values() []string
+func (g Grid) Layout(th *Theme, gtx layout.Context, items ...GridItem) layout.Dimensions
+func (h *HoverCard) Layout(th *Theme, gtx layout.Context, content, trigger layout.Widget) layout.Dimensions
+func (m *Dialog) Appear()
+func (m *Dialog) Layout(th *Theme, gtx layout.Context, onClose func(), content layout.Widget) layout.Dimensions
+func (n *BreadcrumbNav) Layout(th *Theme, gtx layout.Context, segs ...BreadcrumbSeg) layout.Dimensions
+func (o *InputOTP) Layout(th *Theme, gtx layout.Context) layout.Dimensions
+func (o *InputOTP) SetValue(s string)
+func (o *InputOTP) Value() string
+func (o CardProps) Pad() unit.Dp
+func (o RadioOption) Val() string
+func (o SelectOption) Val() string
+func (o TabOption) Val() string
+func (o ToggleOption) Val() string
+func (p *Pagination) Layout(th *Theme, gtx layout.Context, total int) layout.Dimensions
+func (p *Popover) Layout(th *Theme, gtx layout.Context, anchor image.Point, content layout.Widget)
+func (p Palette) Accent() Scheme
+func (p Palette) DangerScheme() Scheme
+func (p Palette) Neutral() Scheme
+func (r *RadioGroup) Chosen() bool
+func (r *RadioGroup) Clear()
+func (r *RadioGroup) Layout(th *Theme, gtx layout.Context) layout.Dimensions
+func (r *RadioGroup) SetValue(v string)
+func (r *RadioGroup) Value() string
+func (r ResponsiveBool) At(name string, v bool) ResponsiveBool
+func (r ResponsiveBool) Resolve(th *Theme, gtx layout.Context) bool
+func (r ResponsiveBool) ResolveAt(th *Theme, idx int) bool
+func (r ResponsiveBool) Set() bool
+func (r ResponsiveDp) At(name string, v unit.Dp) ResponsiveDp
+func (r ResponsiveDp) Resolve(th *Theme, gtx layout.Context) unit.Dp
+func (r ResponsiveDp) ResolveAt(th *Theme, idx int) unit.Dp
+func (r ResponsiveDp) Set() bool
+func (r ResponsiveInt) At(name string, v int) ResponsiveInt
+func (r ResponsiveInt) Compile(bp Breakpoints) []int
+func (r ResponsiveInt) Resolve(th *Theme, gtx layout.Context) int
+func (r ResponsiveInt) ResolveAt(th *Theme, idx int) int
+func (r ResponsiveInt) Set() bool
+func (r ResponsiveSize) At(name string, v Size) ResponsiveSize
+func (r ResponsiveSize) Resolve(th *Theme, gtx layout.Context) Size
+func (r ResponsiveSize) ResolveAt(th *Theme, idx int) Size
+func (r ResponsiveSize) Set() bool
+func (s *DropdownMenuSub) Item(th *Theme, label string, items ...layout.Widget) layout.Widget
+func (s *Slider) Layout(th *Theme, gtx layout.Context) layout.Dimensions
+func (s *Split) Layout(gtx layout.Context, gap unit.Dp, depth int, boxes ...layout.Widget) layout.Dimensions
+func (s *Split) LayoutSolo(gtx layout.Context, gap unit.Dp, solo bool, box0, box1 layout.Widget) layout.Dimensions
+func (s *Switch) Layout(th *Theme, gtx layout.Context) layout.Dimensions
+func (s *VSlide) Layout(gtx layout.Context, th *Theme, open bool, base, over layout.Widget) layout.Dimensions
+func (s *VSlide) Moving() bool
+func (s ColorScale) Scheme() Scheme
+func (s ColorScale) SoftScheme() Scheme
+func (s Stack) Layout(gtx layout.Context, children ...layout.Widget) layout.Dimensions
+func (t *DropdownMenuTrigger) Layout(th *Theme, gtx layout.Context, label string, items ...layout.Widget) layout.Dimensions
+func (t *Tabs) Chosen() bool
+func (t *Tabs) Clear()
+func (t *Tabs) Layout(th *Theme, gtx layout.Context) layout.Dimensions
+func (t *Tabs) SetValue(v string)
+func (t *Tabs) Update(gtx layout.Context)
+func (t *Tabs) Value() string
+func (t *Textarea) Layout(th *Theme, gtx layout.Context, label, hint string) layout.Dimensions
+func (t *Textarea) LayoutField(th *Theme, gtx layout.Context, hint string) layout.Dimensions
+func (t *Theme) ApplyPendingShaper()
+func (t *Theme) SetExtraFaces(faces []font.FontFace, invalidate func())
+func (t *Theme) UpgradeShaperAsync(invalidate func())
+func (t *Toaster) Add(toast Toast)
+func (t *Toaster) Layout(th *Theme, gtx layout.Context) layout.Dimensions
+func (t *Toaster) Update(id string, toast Toast)
+func (t *Toggle) Layout(th *Theme, gtx layout.Context, o ToggleProps) layout.Dimensions
+func (t *Tooltip) Layout(th *Theme, gtx layout.Context, text string, child layout.Widget) layout.Dimensions
+func (th *Theme) BreakpointIndex(gtx layout.Context) int
+func (th *Theme) BreakpointName(gtx layout.Context) string
+func AccordionItemOf(title string, content layout.Widget) AccordionItem
+func AccordionItems(items ...AccordionItem) []AccordionItem
+func Alert(th *Theme, o AlertProps) layout.Widget
+func AnnotatedText(th *Theme, text string, terms []GlossaryTerm, cards []*HoverCard) layout.Widget
+func Avatar(th *Theme, o AvatarProps) layout.Widget
+func AvatarGroup(th *Theme, o AvatarGroupProps, avatars ...AvatarProps) layout.Widget
+func Badge(th *Theme, text string, o BadgeProps) layout.Widget
+func Bools(base bool) ResponsiveBool
+func Breadcrumb(th *Theme, btns []*widget.Clickable, labels ...string) layout.Widget
+func BreadcrumbEllipsis(th *Theme) layout.Widget
+func BreadcrumbLink(th *Theme, btn *widget.Clickable, label string) layout.Widget
+func BreadcrumbPage(th *Theme, label string) layout.Widget
+func BreadcrumbSegLink(btn *widget.Clickable, label string) BreadcrumbSeg
+func BreadcrumbSegOf(label string) BreadcrumbSeg
+func BreadcrumbSegs(segs ...BreadcrumbSeg) []BreadcrumbSeg
+func BreadcrumbSep(th *Theme, icon string) layout.Widget
+func BreakpointsFrom(steps []Breakpoint) (Breakpoints, error)
+func Button(th *Theme, btn *widget.Clickable, label string, o ButtonProps) layout.Widget
+func ButtonGroup(th *Theme, o ButtonGroupProps, items ...ButtonGroupItem) layout.Widget
+func ButtonGroupButton(btn *widget.Clickable, label string, p ButtonProps) ButtonGroupItem
+func ButtonGroupSeparator() ButtonGroupItem
+func ButtonGroupWidget(w layout.Widget, flex float32) ButtonGroupItem
+func Card(th *Theme, o CardProps, content layout.Widget) layout.Widget
+func CardFooter(th *Theme, content layout.Widget) layout.Widget
+func CardHeader(th *Theme, title, description string, action layout.Widget) layout.Widget
+func Cell(w layout.Widget) GridItem
+func ClampCorner(r int, sz image.Point) int
+func Cols(base int) ResponsiveInt
+func Disabled(gtx layout.Context, when bool) layout.Context
+func Dps(base unit.Dp) ResponsiveDp
+func DropdownMenu(th *Theme, items ...layout.Widget) layout.Widget
+func DropdownMenuCheckboxItem(th *Theme, btn *widget.Clickable, label string, checked bool) layout.Widget
+func DropdownMenuCheckboxItemIcon(th *Theme, btn *widget.Clickable, icon, label string, checked bool) layout.Widget
+func DropdownMenuItem(th *Theme, btn *widget.Clickable, label string, danger bool) layout.Widget
+func DropdownMenuItemIcon(th *Theme, btn *widget.Clickable, icon, label string, danger bool) layout.Widget
+func DropdownMenuLabel(th *Theme, text string) layout.Widget
+func DropdownMenuRadioItem(th *Theme, btn *widget.Clickable, label string, selected bool) layout.Widget
+func DropdownMenuRadioItemIcon(th *Theme, btn *widget.Clickable, icon, label string, selected bool) layout.Widget
+func DropdownMenuSeparator(th *Theme) layout.Widget
+func DropdownMenuShortcutItem(th *Theme, btn *widget.Clickable, label, shortcut string, danger bool) layout.Widget
+func Field(th *Theme, o FieldProps, control layout.Widget) layout.Widget
+func FieldError(th *Theme, msg string) layout.Widget
+func FieldGroup(th *Theme, gap unit.Dp, fields ...layout.Widget) layout.Widget
+func Fill(gtx layout.Context, c color.NRGBA) layout.Dimensions
+func Floating(gtx layout.Context, content layout.Widget)
+func FloatingPanel(th *Theme, gtx layout.Context, content layout.Widget) layout.Dimensions
+func FullWidth(w layout.Widget) layout.Widget
+func HSpacer(w unit.Dp) layout.Widget
+func HStack(gap unit.Dp, children ...layout.Widget) layout.Widget
+func Hairline(th *Theme) layout.Widget
+func HoverRow(th *Theme, btn *widget.Clickable, active bool, content layout.Widget) layout.Widget
+func InputFrameErr(th *Theme, gtx layout.Context, invalid bool, content layout.Widget) layout.Dimensions
+func Item(th *Theme, o ItemProps) layout.Widget
+func ItemActions(th *Theme, parts ...layout.Widget) layout.Widget
+func ItemContent(th *Theme, parts ...layout.Widget) layout.Widget
+func ItemDescription(th *Theme, text string) layout.Widget
+func ItemFooter(th *Theme, left, right layout.Widget) layout.Widget
+func ItemGroup(th *Theme, items ...layout.Widget) layout.Widget
+func ItemHeader(th *Theme, left, right layout.Widget) layout.Widget
+func ItemMedia(th *Theme, variant ItemMediaVariant, content layout.Widget) layout.Widget
+func ItemSeparator(th *Theme) layout.Widget
+func ItemTitle(th *Theme, text string) layout.Widget
+func Kbd(th *Theme, key string) layout.Widget
+func LabelBody(th *Theme, txt string) material.LabelStyle
+func LabelCaption(th *Theme, txt string) material.LabelStyle
+func LabelCardTitle(th *Theme, txt string) material.LabelStyle
+func LabelHero(th *Theme, txt string) material.LabelStyle
+func LabelMeta(th *Theme, txt string) material.LabelStyle
+func LabelTitle(th *Theme, txt string) material.LabelStyle
+func LayoutPage(th *Theme, gtx layout.Context, content layout.Widget) layout.Dimensions
+func ListView(th *Theme, list *widget.List, gtx layout.Context, count int, row func(gtx layout.Context, i int) layout.Dimensions) layout.Dimensions
+func MakeSeamlessWindow(view uintptr)
+func MustBreakpoints(steps []Breakpoint) Breakpoints
+func NewTheme(opts ...ThemeOption) *Theme
+func OpenURL(u string) error
+func ParseBreakpointsJSON(data []byte) (Breakpoints, error)
+func Progress(th *Theme, value float32) layout.Widget
+func RadioItem(label string) RadioOption
+func RadioItemValue(value, label string) RadioOption
+func RadioItems(items ...RadioOption) []RadioOption
+func RadioOpts(labels ...string) []RadioOption
+func RegisterIconFS(fsys fs.FS, dir string)
+func RightAligned(w layout.Widget) layout.Widget
+func SVGIcon(name string, size unit.Dp, col color.NRGBA) layout.Widget
+func SVGIconButton(th *Theme, btn *widget.Clickable, icon string, size unit.Dp, active bool) layout.Widget
+func SVGIconButtonTint(th *Theme, btn *widget.Clickable, icon string, size unit.Dp, active bool, tint color.NRGBA) layout.Widget
+func ScaleFrom(anchor color.NRGBA) ColorScale
+func ScreenTitle(th *Theme, text string) layout.Widget
+func Scrollable(th *Theme, list *widget.List, gtx layout.Context, content layout.Widget) layout.Dimensions
+func SectionLabel(th *Theme, text string) layout.Widget
+func SelectGrouped(label string, items ...SelectOption) SelectGroup
+func SelectGroups(groups ...SelectGroup) []SelectGroup
+func SelectItem(label string) SelectOption
+func SelectItemValue(value, label string) SelectOption
+func SelectItems(items ...SelectOption) []SelectOption
+func SelectOpts(labels ...string) []SelectOption
+func Separator(th *Theme) layout.Widget
+func SeparatorVertical(th *Theme) layout.Widget
+func Show(th *Theme, gtx layout.Context, when ResponsiveBool, w layout.Widget) layout.Dimensions
+func SimpleGrid[T any](th *Theme, gtx layout.Context, items []T, p SimpleGridProps, cell func(layout.Context, T) layout.Dimensions) layout.Dimensions
+func Sizes(base Size) ResponsiveSize
+func Skeleton(th *Theme, w, h unit.Dp) layout.Widget
+func SkeletonCircle(th *Theme, d unit.Dp) layout.Widget
+func Sp(th *Theme, ratio float32) unit.Sp
+func Spacer(h unit.Dp) layout.Widget
+func Span(cols int, w layout.Widget) GridItem
+func Spinner(th *Theme, size unit.Dp) layout.Widget
+func SpinnerTint(th *Theme, size unit.Dp, col color.NRGBA) layout.Widget
+func SplitBox(th *Theme, content layout.Widget) layout.Widget
+func SplitBoxFillScroll(th *Theme, list *widget.List, maxH int, content layout.Widget) layout.Widget
+func SplitBoxScroll(th *Theme, list *widget.List, maxH int, content layout.Widget) layout.Widget
+func SplitColumnScroll(th *Theme, list *widget.List, maxH int, content layout.Widget) layout.Widget
+func SplitGlossary(text string, terms []GlossaryTerm) []GlossarySeg
+func SurfaceCard(th *Theme, gtx layout.Context, content layout.Widget) layout.Dimensions
+func TabItem(label string) TabOption
+func TabItemValue(value, label string) TabOption
+func TabItems(items ...TabOption) []TabOption
+func TabOpts(labels ...string) []TabOption
+func Table(th *Theme, o TableProps, header []string, rows [][]layout.Widget) layout.Widget
+func TableText(th *Theme, o TableProps, header []string, rows [][]string) layout.Widget
+func TitleWithIcons(th *Theme, title string, icons ...layout.Widget) layout.Widget
+func ToggleItem(label string) ToggleOption
+func ToggleItemValue(value, label string) ToggleOption
+func ToggleItems(items ...ToggleOption) []ToggleOption
+func ToggleOpts(labels ...string) []ToggleOption
+func TopBar(th *Theme, title string, leading layout.Widget) layout.Widget
+func VStack(gap unit.Dp, children ...layout.Widget) layout.Widget
+func VerticalHairline(th *Theme) layout.Widget
+func WithBreakpoints(bp Breakpoints) ThemeOption
+func WithDuration(d DurationScale) ThemeOption
+func WithFaces(faces []font.FontFace) ThemeOption
+func WithPageMax(max unit.Dp) ThemeOption
+func WithPalette(p Palette) ThemeOption
+func WithRadius(r RadiusScale) ThemeOption
+func WithSpace(s SpaceScale) ThemeOption
+func WithTextSize(sz unit.Sp) ThemeOption
+func Wrap(gap unit.Dp, align layout.Alignment, children ...layout.Widget) layout.Widget
+type Accordion struct { Bordered bool Open int Multiple bool Expanded []bool }
+type AccordionItem struct { Title string Content layout.Widget Disabled bool }
+type AlertDialog struct { }
+type AlertDialogProps struct { Title string Description string Size Size Sizes ResponsiveSize Width unit.Dp Widths ResponsiveDp Media layout.Widget Cancel string Action string Destructive bool }
+type AlertProps struct { Variant AlertVariant Icon string Title string Description string Action layout.Widget Color ColorScale }
+type AlertVariant int
+type AttachedEdges struct { Start, End, Top, Bottom bool }
+type AvatarBadge struct { Color ColorScale Icon string }
+type AvatarGroupProps struct { Size Size Count string CountIcon string }
+type AvatarProps struct { Initials string Size Size Color ColorScale Scheme *Scheme Badge *AvatarBadge }
+type BadgeProps struct { Variant BadgeVariant Size Size Color ColorScale Scheme *Scheme Bg, Fg color.NRGBA Icon string Start, End layout.Widget }
+type BadgeVariant int
+type BreadcrumbNav struct { ItemsToDisplay int }
+type BreadcrumbSeg struct { Label string Btn *widget.Clickable }
+type Breakpoint struct { Name string Min unit.Dp }
+type Breakpoints struct { }
+type ButtonGroupItem struct { Btn *widget.Clickable Label string Props ButtonProps Separator bool Widget layout.Widget Flex float32 }
+type ButtonGroupProps struct { Vertical bool }
+type ButtonProps struct { Variant ButtonVariant Size Size Color ColorScale Scheme *Scheme IconStart, IconEnd string Rounded bool Attached AttachedEdges Loading bool LoadingText string Disabled bool }
+type ButtonVariant int
+type CardProps struct { Variant CardVariant Size Size }
+type CardVariant int
+type Checkbox struct { Value bool Indeterminate bool Invalid bool Disabled bool Size Size }
+type ColorScale struct { C50, C100, C200, C300, C400, C500, C600, C700, C800, C900 color.NRGBA }
+type Dialog struct { Size Size Sizes ResponsiveSize Width unit.Dp Widths ResponsiveDp HideClose bool }
+type DropdownMenuSub struct { Width unit.Dp }
+type DropdownMenuTrigger struct { Open bool KeepOpen bool Width unit.Dp Variant ButtonVariant Icon string Size Size Align PopoverAlign }
+type DurationScale struct { Fast time.Duration Normal time.Duration Slow time.Duration }
+type FieldProps struct { Label string Helper string Error string Required bool }
+type GlossarySeg struct { Text string Term bool }
+type GlossaryTerm struct { Term string Tip string }
+type Grid struct { Columns int Cols ResponsiveInt Gap unit.Dp RowGap unit.Dp ColGap unit.Dp Gaps ResponsiveDp }
+type GridItem struct { ColSpan, RowSpan int ColSpans, RowSpans ResponsiveInt W layout.Widget }
+type HoverCard struct { Side HoverCardSide Align PopoverAlign OpenDelay, CloseDelay time.Duration Width unit.Dp Disabled bool }
+type HoverCardSide int
+type Input struct { Editor widget.Editor Variant InputVariant Size Size Filter string Transform func(string) string Error string Disabled bool Start, End layout.Widget Top, Bottom layout.Widget }
+type InputOTP struct { Length int Groups []int Filter string Disabled bool Invalid bool }
+type InputVariant int
+type ItemMediaVariant int
+type ItemProps struct { Variant ItemVariant Size Size Btn *widget.Clickable Header layout.Widget Media layout.Widget Content layout.Widget Actions layout.Widget Footer layout.Widget }
+type ItemVariant int
+type Pagination struct { Page int Simple bool }
+type Palette struct { Bg color.NRGBA BgSubtle color.NRGBA BgMuted color.NRGBA BgEmphasized color.NRGBA BgPanel color.NRGBA BgInverted color.NRGBA BorderSubtle color.NRGBA BorderMuted color.NRGBA Border color.NRGBA BorderEmphasized color.NRGBA Fg color.NRGBA FgMuted color.NRGBA FgSubtle color.NRGBA FgDisabled color.NRGBA FgInverted color.NRGBA BrandSolid color.NRGBA BrandSubtle color.NRGBA BrandFg color.NRGBA BrandEmphasized color.NRGBA BrandContrast color.NRGBA Success color.NRGBA SuccessBg color.NRGBA Warning color.NRGBA WarningBg color.NRGBA Info color.NRGBA InfoBg color.NRGBA Danger color.NRGBA DangerBg color.NRGBA DangerContrast color.NRGBA Overlay color.NRGBA FocusRing color.NRGBA }
+type Popover struct { Open bool Width unit.Dp Align PopoverAlign }
+type PopoverAlign int
+type RadioGroup struct { Options []RadioOption Size Size Invalid bool }
+type RadioOption struct { Label string Value string Description string Disabled bool }
+type RadiusScale struct { SM unit.Dp MD unit.Dp LG unit.Dp }
+type ResponsiveBool struct { }
+type ResponsiveDp struct { }
+type ResponsiveInt struct { }
+type ResponsiveSize struct { }
+type Scheme struct { Solid color.NRGBA SolidHover color.NRGBA SolidActive color.NRGBA OnSolid color.NRGBA Subtle color.NRGBA SubtleHover color.NRGBA SubtleActive color.NRGBA OnSubtle color.NRGBA Outline color.NRGBA }
+type Select struct { Options []SelectOption Groups []SelectGroup Size Size Placeholder string Disabled bool Invalid bool AlignItemWithTrigger bool }
+type SelectGroup struct { Label string Options []SelectOption }
+type SelectOption struct { Label string Value string Meta string Icon string Content layout.Widget }
+type SimpleGridProps struct { MinChildWidth unit.Dp MaxCols int Columns ResponsiveInt Gap unit.Dp Gaps ResponsiveDp }
+type Size int
+type Slider struct { Value float32 Values []float32 Step float32 Vertical bool Disabled bool }
+type SpaceScale struct { XS unit.Dp SM unit.Dp MD unit.Dp LG unit.Dp XL unit.Dp }
+type Split struct { }
+type Stack struct { Axis layout.Axis Gap unit.Dp Align layout.Alignment }
+type Switch struct { Value bool Size Size Disabled bool Invalid bool }
+type TabOption struct { Label string Value string Icon string Disabled bool }
+type TableProps struct { Widths []float32 Footer []string Caption string }
+type Tabs struct { Options []TabOption Variant TabsVariant Vertical bool }
+type TabsVariant int
+type Textarea struct { Editor widget.Editor Size Size Variant InputVariant Error string Disabled bool Rows int }
+type Theme struct { Material *material.Theme Palette Palette Radius RadiusScale Space SpaceScale Duration DurationScale Breakpoints Breakpoints PageMax unit.Dp PageMaxAt ResponsiveDp BrandScale ColorScale }
+type ThemeOption func(*Theme)
+type Toast struct { Title string Description string Variant ToastVariant ID string Loading bool Duration time.Duration }
+type ToastVariant int
+type Toaster struct { }
+type Toggle struct { On bool }
+type ToggleGroup struct { Options []ToggleOption Multiple bool Outline bool Disabled bool Vertical bool Spacing unit.Dp }
+type ToggleOption struct { Label string Value string Icon string Content layout.Widget }
+type ToggleProps struct { Icon string Label string Content layout.Widget Size Size Outline bool Disabled bool }
+type Tooltip struct { Side TooltipSide }
+type TooltipSide int
+type VSlide struct { }
+var Blue
+var Cyan
+var DefaultBreakpoints
+var DefaultDarkPalette
+var DefaultPalette
+var Duration
+var Gray
+var Green
+var Orange
+var Pink
+var Purple
+var Radius
+var Red
+var Space
+var Teal
+var Yellow

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Site.Name}} gallery</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<style>
+  html, body { height: 100%; margin: 0; background: transparent; }
+  #giowindow { position: fixed; inset: 0; }
+  #loading {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #6F7288; font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+</style>
+</head>
+<body>
+<div id="loading">loading the live demo…</div>
+<script>if(location.hash==="#blank")document.getElementById("loading").style.display="none";</script>
+<div id="giowindow"></div>
+<script src="wasm_exec.js"></script>
+<script>
+(async () => {
+  const go = new Go();
+  let result;
+  try {
+    result = await WebAssembly.instantiateStreaming(fetch("gallery.wasm"), go.importObject);
+  } catch (e) {
+    // Server without the wasm MIME type — fall back to ArrayBuffer.
+    const buf = await (await fetch("gallery.wasm")).arrayBuffer();
+    result = await WebAssembly.instantiate(buf, go.importObject);
+  }
+  document.getElementById("loading").remove();
+  go.run(result.instance);
+})();
+</script>
+<noscript>The live demos need JavaScript + WebAssembly.</noscript>
+</body>
+</html>

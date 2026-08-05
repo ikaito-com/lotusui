@@ -1,0 +1,46 @@
+# ── Build output ─────────────────────────────────────────────────────
+# Binaries never belong in the repo; builds are reproducible from
+# source (and never need the network).
+bin/
+/lotusui
+cmd/lotusui/lotusui
+*.exe
+*.wasm
+
+# ── Test & profiling artifacts ──────────────────────────────────────
+*.test
+*.coverprofile
+coverage.*
+*.prof
+*.pprof
+
+# ── Local Go workspace files ────────────────────────────────────────
+# go.work is a per-machine dev convenience (e.g. linking the consumer
+# apps); committing it would leak local paths into every checkout.
+go.work
+go.work.sum
+
+# ── Docs site build output ──────────────────────────────────────────
+# Also ignored by site/.gitignore; repeated here so tooling run from
+# the root can't accidentally stage it. CI builds and deploys dist/;
+# the repo holds sources only.
+site/dist/
+
+# ── Upstream reference checkouts (local only) ───────────────────────
+# Agents clone shadcn/ui (and optionally chakra) here to read REAL
+# example sources — never commit these trees.
+_ref/
+
+# ── Editor & OS noise ───────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# ── Deliberately NOT ignored (doctrine) ─────────────────────────────
+# assets/icons/*.svg + manifest — fetched at dev time, committed.
+# site/looks/fonts/*.ttf         — fetched at dev time, committed.
+# site/goldens/*.png             — golden screenshots, reviewed like code.
+# *_gen.go, scales_gen.go        — generated AND committed; `lotusui
+#                                  verify` keeps them honest in CI.

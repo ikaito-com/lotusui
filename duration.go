@@ -63,6 +63,9 @@ func (t *Theme) hoverToward(gtx layout.Context, btn *widget.Clickable, target fl
 }
 
 // lerpNRGBA blends a→b by t in [0,1], including alpha.
+// Use this for opaque→opaque ladders (Solid → SolidHover). For fading
+// a color over an existing surface, use fadeNRGBA — lerping from
+// transparent black muddies RGB mid-transition (a dark flash).
 func lerpNRGBA(a, b color.NRGBA, t float32) color.NRGBA {
 	if t <= 0 {
 		return a
@@ -76,4 +79,19 @@ func lerpNRGBA(a, b color.NRGBA, t float32) color.NRGBA {
 		B: uint8(float32(a.B) + (float32(b.B)-float32(a.B))*t + 0.5),
 		A: uint8(float32(a.A) + (float32(b.A)-float32(a.A))*t + 0.5),
 	}
+}
+
+// fadeNRGBA returns c with its alpha scaled by t in [0,1], keeping RGB
+// intact — the Gio material pattern (f32color.MulAlpha) for fading a
+// fill over whatever is already painted. Equivalent in spirit to
+// paint.PushOpacity around an opaque Fill, without an offscreen layer.
+func fadeNRGBA(c color.NRGBA, t float32) color.NRGBA {
+	if t <= 0 {
+		return color.NRGBA{}
+	}
+	if t >= 1 {
+		return c
+	}
+	c.A = uint8(float32(c.A)*t + 0.5)
+	return c
 }

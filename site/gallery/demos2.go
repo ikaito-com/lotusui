@@ -444,9 +444,7 @@ func buttonGroupDemo(th *lotusui.Theme, gtx C) D {
 		}),
 		section(th, "With input", func(gtx C) D {
 			return lotusui.ButtonGroup(th, lotusui.ButtonGroupProps{},
-				lotusui.ButtonGroupItem{Flex: 1, Widget: func(gtx C) D {
-					return bg.search.LayoutField(th, gtx, "Search...")
-				}},
+				lotusui.ButtonGroupInput(&bg.search, "Search...", 1),
 				outline(&bg.searchBtn, "", lotusui.ButtonProps{IconStart: lotusui.IconSearch}),
 			)(gtx)
 		}),

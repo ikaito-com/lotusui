@@ -392,8 +392,9 @@ func buttonGroupPage() *page {
 		Title:  "ButtonGroup",
 		Kicker: "Attached controls: one shared border, square inner corners.",
 		Intro: `<p>Children sit edge-to-edge — neighbors overlap by 1dp so their borders collapse
-to a single line, inner corners render square, and only the group's outer corners keep the
-radius. Slots hold buttons, a separator seam, or any widget (an input) with flex weight.</p>`,
+to a single line, every child stretches to one shared height, inner corners render square, and
+only the group's outer corners keep the radius. Slots hold buttons, a separator seam, an
+<code>Input</code>/<code>Select</code> (auto-attached), or any widget with flex weight.</p>`,
 		Sections: []section{
 			installSection("button-group"),
 			{
@@ -439,9 +440,9 @@ radius. Slots hold buttons, a separator seam, or any widget (an input) with flex
 			},
 			{
 				Heading: "With input",
-				Prose:   `<p>A flexed <code>Widget</code> slot carries any control — the search-and-go row.</p>`,
+				Prose:   `<p>A flexed <code>Input</code> slot fuses with neighboring buttons — shared height, square inner corners, one collapsed border (shadcn ButtonGroup + Input).</p>`,
 				Snippet: `lotusui.ButtonGroup(th, lotusui.ButtonGroupProps{},
-	lotusui.ButtonGroupItem{Flex: 1, Widget: searchInput},
+	lotusui.ButtonGroupInput(&search, "Search...", 1),
 	lotusui.ButtonGroupItem{Btn: &go_, Props: lotusui.ButtonProps{Variant: lotusui.ButtonOutline, IconStart: lotusui.IconSearch}},
 )`,
 				Demo:  "button-group/5",
@@ -451,9 +452,10 @@ radius. Slots hold buttons, a separator seam, or any widget (an input) with flex
 		Props: []prop{
 			{"ButtonGroupProps.Vertical", "bool", "Stack the group top-to-bottom."},
 			{"ButtonGroupItem.Btn / Label / Props", "…", "A button slot; the group sets Props.Attached."},
+			{"ButtonGroupItem.Input / Hint / Flex", "*Input / string / float32", "A field slot; the group sets Input.Attached and stretches height."},
 			{"ButtonGroupItem.Separator", "bool", "The hairline seam (ButtonGroupSeparator())."},
-			{"ButtonGroupItem.Widget / Flex", "layout.Widget / float32", "Arbitrary content; flexed weight."},
-			{"ButtonProps.Attached", "AttachedEdges", "Squares the corners on attached sides — set by the group."},
+			{"ButtonGroupItem.Widget / Flex", "layout.Widget / float32", "Arbitrary content (no auto-attach); prefer Input for fields."},
+			{"ButtonProps.Attached / Input.Attached", "AttachedEdges", "Squares corners on attached sides — set by the group."},
 		},
 	}
 }

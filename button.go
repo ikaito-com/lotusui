@@ -264,7 +264,7 @@ func Button(th *Theme, btn *widget.Clickable, label string, o ButtonProps) layou
 				defer op.Offset(image.Pt(0, gtx.Dp(1))).Push(gtx.Ops).Pop()
 			}
 			m := op.Record(gtx.Ops)
-			dims := layout.Inset{Top: vPad, Bottom: vPad, Left: hPad, Right: hPad}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+			content := layout.Inset{Top: vPad, Bottom: vPad, Left: hPad, Right: hPad}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 				txt := label
 				if o.Loading && o.LoadingText != "" {
 					txt = o.LoadingText
@@ -312,24 +312,19 @@ func Button(th *Theme, btn *widget.Clickable, label string, o ButtonProps) layou
 			})
 			call := m.Stop()
 
+			// Expand to Min (ButtonGroup stretches siblings to one
+			// height) and center the label/icon in the spare room —
+			// shadcn's items-stretch + flex items-center.
+			sz := gtx.Constraints.Constrain(content.Size)
+			ox, oy := (sz.X-content.Size.X)/2, (sz.Y-content.Size.Y)/2
+			dims := layout.Dimensions{Size: sz, Baseline: content.Baseline + oy}
+
 			r := gtx.Dp(unit.Dp(8))
 			if o.Rounded {
 				r = dims.Size.Y / 2
 			}
 			r = ClampCorner(r, dims.Size)
-			rr := clip.RRect{Rect: image.Rectangle{Max: dims.Size}, NW: r, NE: r, SE: r, SW: r}
-			if o.Attached.Start {
-				rr.NW, rr.SW = 0, 0
-			}
-			if o.Attached.End {
-				rr.NE, rr.SE = 0, 0
-			}
-			if o.Attached.Top {
-				rr.NW, rr.NE = 0, 0
-			}
-			if o.Attached.Bottom {
-				rr.SW, rr.SE = 0, 0
-			}
+			rr := attachedRRect(dims.Size, r, o.Attached)
 			attached := o.Attached != (AttachedEdges{})
 			switch o.Variant {
 			case ButtonDefault, ButtonSecondary, ButtonDestructive, ButtonOutline:
@@ -359,14 +354,17 @@ func Button(th *Theme, btn *widget.Clickable, label string, o ButtonProps) layou
 				if pressed {
 					paint.Fill(gtx.Ops, subtleBg)
 				} else if mix > 0.01 {
-					paint.Fill(gtx.Ops, lerpNRGBA(color.NRGBA{}, subtleTarget(sc), mix))
+					// Fade the hover fill in via alpha (Gio MulAlpha /
+					// PushOpacity model) — never lerp RGB from
+					// transparent black, which flashes dark mid-fade.
+					paint.Fill(gtx.Ops, fadeNRGBA(subtleTarget(sc), mix))
 				}
 				border(outline)
 			case ButtonGhost:
 				if pressed {
 					paint.Fill(gtx.Ops, subtleBg)
 				} else if mix > 0.01 {
-					paint.Fill(gtx.Ops, lerpNRGBA(color.NRGBA{}, subtleTarget(sc), mix))
+					paint.Fill(gtx.Ops, fadeNRGBA(subtleTarget(sc), mix))
 				}
 			case ButtonLink:
 				// ink only; hover underlines, like the link it imitates.
@@ -376,7 +374,7 @@ func Button(th *Theme, btn *widget.Clickable, label string, o ButtonProps) layou
 						ulFg.A = uint8(float32(fg.A)*mix + 0.5)
 					}
 					lh := gtx.Dp(1)
-					ul := image.Rect(gtx.Dp(hPad), dims.Size.Y-gtx.Dp(vPad)+lh, dims.Size.X-gtx.Dp(hPad), dims.Size.Y-gtx.Dp(vPad)+2*lh)
+					ul := image.Rect(gtx.Dp(hPad)+ox, dims.Size.Y-gtx.Dp(vPad)-oy+lh, dims.Size.X-gtx.Dp(hPad)-ox, dims.Size.Y-gtx.Dp(vPad)-oy+2*lh)
 					paint.FillShape(gtx.Ops, ulFg, clip.Rect(ul).Op())
 				}
 			}
@@ -387,7 +385,9 @@ func Button(th *Theme, btn *widget.Clickable, label string, o ButtonProps) layou
 					return layout.Dimensions{Size: dims.Size}
 				})
 			}
+			off := op.Offset(image.Pt(ox, oy)).Push(gtx.Ops)
 			call.Add(gtx.Ops)
+			off.Pop()
 			return dims
 		})
 	}

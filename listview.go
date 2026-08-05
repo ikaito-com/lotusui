@@ -2,7 +2,6 @@ package lotusui
 
 import (
 	"image"
-	"image/color"
 
 	"gioui.org/io/pointer"
 	"gioui.org/layout"
@@ -89,7 +88,7 @@ func HoverRow(th *Theme, btn *widget.Clickable, active bool, content layout.Widg
 				th.hoverToward(gtx, btn, 1)
 				paint.Fill(gtx.Ops, th.Palette.BgSubtle)
 			} else if m := th.hoverToward(gtx, btn, target); m > 0.01 {
-				paint.Fill(gtx.Ops, lerpNRGBA(color.NRGBA{}, th.Palette.BgSubtle, m))
+				paint.Fill(gtx.Ops, fadeNRGBA(th.Palette.BgSubtle, m))
 			}
 			call.Add(gtx.Ops)
 			return dims

@@ -203,6 +203,8 @@ func BreakpointsFrom(steps []Breakpoint) (Breakpoints, error)
 func Button(th *Theme, btn *widget.Clickable, label string, o ButtonProps) layout.Widget
 func ButtonGroup(th *Theme, o ButtonGroupProps, items ...ButtonGroupItem) layout.Widget
 func ButtonGroupButton(btn *widget.Clickable, label string, p ButtonProps) ButtonGroupItem
+func ButtonGroupInput(in *Input, hint string, flex float32) ButtonGroupItem
+func ButtonGroupSelect(sel *Select, flex float32) ButtonGroupItem
 func ButtonGroupSeparator() ButtonGroupItem
 func ButtonGroupWidget(w layout.Widget, flex float32) ButtonGroupItem
 func Card(th *Theme, o CardProps, content layout.Widget) layout.Widget
@@ -336,7 +338,7 @@ type BreadcrumbNav struct { ItemsToDisplay int }
 type BreadcrumbSeg struct { Label string Btn *widget.Clickable }
 type Breakpoint struct { Name string Min unit.Dp }
 type Breakpoints struct { }
-type ButtonGroupItem struct { Btn *widget.Clickable Label string Props ButtonProps Separator bool Widget layout.Widget Flex float32 }
+type ButtonGroupItem struct { Btn *widget.Clickable Label string Props ButtonProps Separator bool Input *Input Hint string Select *Select Widget layout.Widget Flex float32 }
 type ButtonGroupProps struct { Vertical bool }
 type ButtonProps struct { Variant ButtonVariant Size Size Color ColorScale Scheme *Scheme IconStart, IconEnd string Rounded bool Attached AttachedEdges Loading bool LoadingText string Disabled bool }
 type ButtonVariant int
@@ -355,7 +357,7 @@ type Grid struct { Columns int Cols ResponsiveInt Gap unit.Dp RowGap unit.Dp Col
 type GridItem struct { ColSpan, RowSpan int ColSpans, RowSpans ResponsiveInt W layout.Widget }
 type HoverCard struct { Side HoverCardSide Align PopoverAlign OpenDelay, CloseDelay time.Duration Width unit.Dp Disabled bool }
 type HoverCardSide int
-type Input struct { Editor widget.Editor Variant InputVariant Size Size Filter string Transform func(string) string Error string Disabled bool Start, End layout.Widget Top, Bottom layout.Widget }
+type Input struct { Editor widget.Editor Variant InputVariant Size Size Filter string Transform func(string) string Error string Disabled bool Start, End layout.Widget Top, Bottom layout.Widget Attached AttachedEdges }
 type InputOTP struct { Length int Groups []int Filter string Disabled bool Invalid bool }
 type InputVariant int
 type ItemMediaVariant int
@@ -373,7 +375,7 @@ type ResponsiveDp struct { }
 type ResponsiveInt struct { }
 type ResponsiveSize struct { }
 type Scheme struct { Solid color.NRGBA SolidHover color.NRGBA SolidActive color.NRGBA OnSolid color.NRGBA Subtle color.NRGBA SubtleHover color.NRGBA SubtleActive color.NRGBA OnSubtle color.NRGBA Outline color.NRGBA }
-type Select struct { Options []SelectOption Groups []SelectGroup Size Size Placeholder string Disabled bool Invalid bool AlignItemWithTrigger bool }
+type Select struct { Options []SelectOption Groups []SelectGroup Size Size Placeholder string Disabled bool Invalid bool Attached AttachedEdges AlignItemWithTrigger bool }
 type SelectGroup struct { Label string Options []SelectOption }
 type SelectOption struct { Label string Value string Meta string Icon string Content layout.Widget }
 type SimpleGridProps struct { MinChildWidth unit.Dp MaxCols int Columns ResponsiveInt Gap unit.Dp Gaps ResponsiveDp }

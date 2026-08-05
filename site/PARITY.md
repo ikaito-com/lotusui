@@ -23,13 +23,13 @@ because it is auditable.
 | **Badge** | demo ✓ · variants ✓ · icon ✓ · colors ✓ · spinner ✓ · link ➖ · rtl ➖ |
 | **Breadcrumb** | demo ✓ · basic ✓ · link ✓ · separator ✓ · ellipsis ✓ · dropdown ✓ · responsive ✓(BreadcrumbNav) · rtl ➖ |
 | **Button** | demo ✓ · default ✓ · secondary ✓ · destructive ✓ · outline ✓ · ghost ✓ · link ✓ · icon ✓ · with-icon ✓ · rounded ✓ · spinner ✓ · size ✓ · render ➖ · rtl ➖ |
-| **ButtonGroup** | demo ✓ · orientation ✓ · size ✓ · separator ✓ · split ✓ · input ✓ · nested 🧩(flex Widget slot) · input-group ⏳ · select ⏳ · popover ⏳ · dropdown 🧩(trigger beside group) |
+| **ButtonGroup** | demo ✓ · orientation ✓ · size ✓ · separator ✓ · split ✓ · input ✓ · select ✓(ButtonGroupSelect) · nested 🧩(flex Widget slot) · input-group ⏳ · popover ⏳ · dropdown 🧩(trigger beside group) |
 | **Card** | demo ✓ · small ✓ · spacing ✓ · image ✓ · edge-to-edge ✓ · rtl ➖ |
 | **Checkbox** | demo ✓ · basic ✓ · description ✓ · disabled ✓ · group ✓ · invalid ✓ · table ✓ · rtl ➖ |
 | **Dialog** | demo ✓ · close-button ✓ · no-close-button ✓ · scrollable-content ✓ · sticky-footer ✓ · **responsive width** ✓ · rtl ➖ |
 | **DropdownMenu** | demo ✓ · basic ✓ · icons ✓ · shortcuts ✓ · checkboxes ✓ · radio-group ✓ · destructive ✓ · complex ✓ · checkboxes-icons ✓ · radio-icons ✓ · submenu ✓ · avatar ⏳ · rtl ➖ |
 | **Field** | demo ✓ · input ✓ · select ✓ · textarea ✓ · group 🧩 · checkbox ⏳ · radio ⏳ · switch ⏳ · slider ⏳ · fieldset ⏳ · choice-card ⏳ · responsive ⏳ · rtl ➖ |
-| **Input** | demo ✓ · basic ✓ · disabled ✓ · field ✓ · fieldgroup ✓ · grid ✓ · badge ✓ · inline ✓ · invalid ✓ · required ✓ · input-group 🧩(Start/End) · button-group ⏳ · file ➖ · form ➖ · rtl ➖ |
+| **Input** | demo ✓ · basic ✓ · disabled ✓ · field ✓ · fieldgroup ✓ · grid ✓ · badge ✓ · inline ✓ · invalid ✓ · required ✓ · input-group 🧩(Start/End) · button-group ✓(ButtonGroupInput + Attached) · file ➖ · form ➖ · rtl ➖ |
 | **Item** | demo ✓ · variant ✓ · size ✓ · icon ✓ · avatar ✓ · image ✓ · group ✓ · header ✓ · link ✓ · dropdown 🧩(DropdownMenu) · rtl ➖ |
 | **InputGroup** | icon ✓ · text ✓ · kbd ✓ · spinner ✓ · button ✓ · block-start ✓ · block-end ✓ · basic ✓(Input frame) · textarea ⏳ · dropdown ⏳ · tooltip ⏳ · custom 🧩 — mapped onto Input's Start/End/Top/Bottom slots + Kbd |
 | **InputOTP** | demo ✓ · separator ✓ · four-digits ✓ · pattern ✓ · disabled ✓ · invalid ✓ · controlled ✓(Value/SetValue) · form 🧩 · rtl ➖ |

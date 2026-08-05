@@ -33,7 +33,7 @@ func (t *Textarea) LayoutField(th *Theme, gtx layout.Context, hint string) layou
 		rows = 3
 	}
 	ratio, _, _ := inputMetrics(t.Size)
-	return inputFrame(th, gtx, t.Variant, t.Size, t.Error != "", func(gtx layout.Context) layout.Dimensions {
+	return inputFrame(th, gtx, t.Variant, t.Size, t.Error != "", AttachedEdges{}, func(gtx layout.Context) layout.Dimensions {
 		lineH := gtx.Sp(Sp(th, ratio)) * 13 / 10
 		gtx.Constraints.Min.Y = rows * lineH
 		ed := material.Editor(th.Material, &t.Editor, hint)

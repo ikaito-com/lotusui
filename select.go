@@ -156,6 +156,10 @@ type Select struct {
 	// Invalid renders the trigger in danger chrome — pair it with a
 	// Field error message.
 	Invalid bool
+	// Attached marks sides that sit against a neighbor in a
+	// ButtonGroup: those corners render square and the seat shadow
+	// drops.
+	Attached AttachedEdges
 	// AlignItemWithTrigger positions the OPEN panel so the selected
 	// row sits directly over the trigger (the native-select feel),
 	// instead of dropping below it. Long lists still scroll; the
@@ -272,16 +276,9 @@ func (d *Select) Layout(th *Theme, gtx layout.Context, label string) layout.Dime
 		}
 	}
 
-	var children []layout.FlexChild
-	if label != "" {
-		children = append(children,
-			layout.Rigid(SectionLabel(th, label)),
-			layout.Rigid(Spacer(th.Space.XS)),
-		)
-	}
-	children = append(children, layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+	trigger := func(gtx layout.Context) layout.Dimensions {
 		dims := d.btn.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-			return inputFrame(th, gtx, InputOutline, d.Size, d.Invalid, func(gtx layout.Context) layout.Dimensions {
+			return inputFrame(th, gtx, InputOutline, d.Size, d.Invalid, d.Attached, func(gtx layout.Context) layout.Dimensions {
 				defer clip.Rect(image.Rectangle{Max: gtx.Constraints.Max}).Push(gtx.Ops).Pop()
 				if !d.Disabled {
 					pointer.CursorPointer.Add(gtx.Ops)
@@ -334,8 +331,15 @@ func (d *Select) Layout(th *Theme, gtx layout.Context, label string) layout.Dime
 			d.layoutPanel(th, gtx, dims.Size)
 		}
 		return dims
-	}))
-	return layout.Flex{Axis: layout.Vertical}.Layout(gtx, children...)
+	}
+	if label == "" {
+		return trigger(gtx)
+	}
+	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+		layout.Rigid(SectionLabel(th, label)),
+		layout.Rigid(Spacer(th.Space.XS)),
+		layout.Rigid(trigger),
+	)
 }
 
 // layoutOptionLabel is Icon+Label (or Label alone) for the string path.

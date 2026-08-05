@@ -44,27 +44,43 @@ func inputMetrics(sz Size) (ratio float32, v, h unit.Dp) {
 // inputFrame draws the text-input chrome for a variant: outline is
 // the bordered panel field, subtle a borderless fill, flushed a bare
 // underline. invalid always wins with danger ink on whatever edge the
-// variant draws.
-func inputFrame(th *Theme, gtx layout.Context, variant InputVariant, sz Size, invalid bool, content layout.Widget) layout.Dimensions {
+// variant draws. Attached squares neighboring corners and drops the
+// seat shadow so the field can fuse into a ButtonGroup.
+func inputFrame(th *Theme, gtx layout.Context, variant InputVariant, sz Size, invalid bool, attached AttachedEdges, content layout.Widget) layout.Dimensions {
 	_, vPad, hPad := inputMetrics(sz)
 	if variant == InputFlushed {
 		hPad = 0
 	}
-	gtx.Constraints.Min.X = gtx.Constraints.Max.X
+	// Prefer an Exact cross-axis from ButtonGroup stretch; otherwise
+	// span the available width like a normal form field.
+	if gtx.Constraints.Min.X == 0 {
+		gtx.Constraints.Min.X = gtx.Constraints.Max.X
+	}
 	m := op.Record(gtx.Ops)
-	dims := layout.Inset{Top: vPad, Bottom: vPad, Left: hPad, Right: hPad}.Layout(gtx, content)
+	contentDims := layout.Inset{Top: vPad, Bottom: vPad, Left: hPad, Right: hPad}.Layout(gtx, content)
 	call := m.Stop()
-	dims.Size.X = gtx.Constraints.Max.X
+	szPt := gtx.Constraints.Constrain(image.Pt(gtx.Constraints.Max.X, contentDims.Size.Y))
+	if gtx.Constraints.Min.Y > szPt.Y {
+		szPt.Y = gtx.Constraints.Min.Y
+	}
+	ox, oy := (szPt.X-contentDims.Size.X)/2, (szPt.Y-contentDims.Size.Y)/2
+	dims := layout.Dimensions{Size: szPt, Baseline: contentDims.Baseline + oy}
+	isAttached := attached != (AttachedEdges{})
 	danger := th.Palette.DangerScheme().Solid
 	switch variant {
 	case InputSubtle:
 		r := ClampCorner(gtx.Dp(th.Radius.SM+2), dims.Size)
-		defer clip.UniformRRect(image.Rectangle{Max: dims.Size}, r).Push(gtx.Ops).Pop()
+		rr := attachedRRect(dims.Size, r, attached)
+		defer rr.Push(gtx.Ops).Pop()
 		paint.Fill(gtx.Ops, th.Palette.BgSubtle)
 		if invalid {
-			widget.Border{Color: danger, Width: unit.Dp(1), CornerRadius: th.Radius.SM + 2}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-				return layout.Dimensions{Size: dims.Size}
-			})
+			if isAttached {
+				paint.FillShape(gtx.Ops, danger, clip.Stroke{Path: rr.Path(gtx.Ops), Width: float32(gtx.Dp(1)) * 2}.Op())
+			} else {
+				widget.Border{Color: danger, Width: unit.Dp(1), CornerRadius: th.Radius.SM + 2}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+					return layout.Dimensions{Size: dims.Size}
+				})
+			}
 		}
 	case InputFlushed:
 		lineCol := th.Palette.Border
@@ -77,25 +93,34 @@ func inputFrame(th *Theme, gtx layout.Context, variant InputVariant, sz Size, in
 		st.Pop()
 	default: // InputOutline
 		r := ClampCorner(gtx.Dp(th.Radius.SM+2), dims.Size)
-		seatShadow(gtx, dims.Size, r)
-		defer clip.UniformRRect(image.Rectangle{Max: dims.Size}, r).Push(gtx.Ops).Pop()
+		rr := attachedRRect(dims.Size, r, attached)
+		if !isAttached {
+			seatShadow(gtx, dims.Size, r)
+		}
+		defer rr.Push(gtx.Ops).Pop()
 		paint.Fill(gtx.Ops, th.Palette.BgPanel)
 		border := th.Palette.Border
 		if invalid {
 			border = danger
 		}
-		widget.Border{Color: border, Width: unit.Dp(1), CornerRadius: th.Radius.SM + 2}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-			return layout.Dimensions{Size: dims.Size}
-		})
+		if isAttached {
+			paint.FillShape(gtx.Ops, border, clip.Stroke{Path: rr.Path(gtx.Ops), Width: float32(gtx.Dp(1)) * 2}.Op())
+		} else {
+			widget.Border{Color: border, Width: unit.Dp(1), CornerRadius: th.Radius.SM + 2}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+				return layout.Dimensions{Size: dims.Size}
+			})
+		}
 	}
+	off := op.Offset(image.Pt(ox, oy)).Push(gtx.Ops)
 	call.Add(gtx.Ops)
+	off.Pop()
 	return dims
 }
 
 // InputFrameErr draws the default outline field chrome around any
 // content — for composite fields that manage their own editor.
 func InputFrameErr(th *Theme, gtx layout.Context, invalid bool, content layout.Widget) layout.Dimensions {
-	return inputFrame(th, gtx, InputOutline, SizeMD, invalid, content)
+	return inputFrame(th, gtx, InputOutline, SizeMD, invalid, AttachedEdges{}, content)
 }
 
 // Input is the single-line text input: quiet label above a bordered
@@ -127,6 +152,10 @@ type Input struct {
 	// above/below the editor line — the block addons (a header, a
 	// status row with actions).
 	Top, Bottom layout.Widget
+	// Attached marks sides that sit against a neighbor in a
+	// ButtonGroup: those corners render square and the seat shadow
+	// drops. ButtonGroup sets this for Input slots.
+	Attached AttachedEdges
 }
 
 // ApplyConstraints enforces the input-layer rules (allow-list +
@@ -225,7 +254,7 @@ func (f *Input) LayoutField(th *Theme, gtx layout.Context, hint string) layout.D
 			return VStack(th.Space.SM, rows...)(gtx)
 		}
 	}
-	return inputFrame(th, gtx, f.Variant, f.Size, f.Error != "", content)
+	return inputFrame(th, gtx, f.Variant, f.Size, f.Error != "", f.Attached, content)
 }
 
 func (f *Input) Layout(th *Theme, gtx layout.Context, label, hint string) layout.Dimensions {

@@ -199,9 +199,7 @@ func TestComponentsSurviveHostileConstraints(t *testing.T) {
 				ButtonGroupItem{Btn: &back, Label: "Copy", Props: ButtonProps{Variant: ButtonSecondary}},
 				ButtonGroupSeparator(),
 				ButtonGroupItem{Btn: &iconBtn, Label: "Paste", Props: ButtonProps{Variant: ButtonSecondary}},
-				ButtonGroupItem{Flex: 1, Widget: func(gtx layout.Context) layout.Dimensions {
-					return field.LayoutField(th, gtx, "Search...")
-				}},
+				ButtonGroupInput(&field, "Search...", 1),
 			)(gtx)
 		},
 		"InputOTP": func(gtx layout.Context) layout.Dimensions {

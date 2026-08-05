@@ -21,6 +21,29 @@ recorded here in full.
 
 - `IconGithub` — Simple Icons GitHub mark (`simple-icons:github`), for
   mono tinting via `SVGIcon` like the other Fluent mono icons.
+- `Input.Attached` / `Select.Attached` (`AttachedEdges`) — square
+  neighboring corners and drop the seat shadow so a field/trigger can
+  fuse into a `ButtonGroup` (shadcn ButtonGroup + Input / Select).
+- `ButtonGroupItem.Input` / `Hint`, `ButtonGroupInput(in, hint, flex)` —
+  field slot with auto-`Attached` (prefer over a bare `Widget` slot).
+- `ButtonGroupItem.Select`, `ButtonGroupSelect(sel, flex)` — Select
+  trigger slot with auto-`Attached`.
+
+### Changed
+
+- `ButtonGroup` stretches every child to one shared cross-axis size
+  (shadcn `items-stretch`) so split/icon segments match the bar height
+  instead of sitting as a shorter centered chip.
+- `Button` expands to `Constraints.Min` and centers its label/icon —
+  required for the group stretch to paint full-height chrome.
+
+### Fixed
+
+- Hover fade no longer flashes a darker mud mid-transition: outline /
+  ghost / row fills use alpha-only fade (`fadeNRGBA`, Gio's
+  `f32color.MulAlpha` model) instead of lerping RGB from transparent
+  black. The hover clock also primes on the first frame (no invented
+  16ms dt) so the ease starts from the resting color.
 
 ## [0.1.0] - 2026-08-05
 

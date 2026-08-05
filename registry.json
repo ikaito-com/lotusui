@@ -11,13 +11,15 @@
         "button.go"
       ],
       "carried": [
+        "attachedRRect",
+        "fadeNRGBA",
         "lerpNRGBA",
         "seatShadow"
       ],
       "dependsOn": [
         "button-group"
       ],
-      "hash": "816240d96d733fe6"
+      "hash": "b7de95b9c49ab2de"
     },
     {
       "name": "button-group",
@@ -27,9 +29,11 @@
         "buttongroup.go"
       ],
       "dependsOn": [
-        "button"
+        "button",
+        "input",
+        "select"
       ],
-      "hash": "b22c4a600c8a2b8a"
+      "hash": "3186bdc7952ffbf8"
     },
     {
       "name": "badge",
@@ -95,15 +99,17 @@
         "inputs.go"
       ],
       "carried": [
+        "attachedRRect",
         "fillRect",
         "seatShadow"
       ],
       "dependsOn": [
         "button",
+        "button-group",
         "field",
         "stack"
       ],
-      "hash": "c8a49ffbf90aad8d"
+      "hash": "15a294cf3c67c8f4"
     },
     {
       "name": "item",
@@ -157,6 +163,7 @@
         "select.go"
       ],
       "carried": [
+        "attachedRRect",
         "cardShadow",
         "dismisser",
         "fillRect",
@@ -167,10 +174,11 @@
       ],
       "dependsOn": [
         "button",
+        "button-group",
         "input",
         "listview"
       ],
-      "hash": "1e7fe12a28218b1e"
+      "hash": "871f13928d6e0aaa"
     },
     {
       "name": "tabs",
@@ -437,6 +445,7 @@
         "textarea.go"
       ],
       "carried": [
+        "attachedRRect",
         "fillRect",
         "inputFrame",
         "inputMetrics",
@@ -444,10 +453,11 @@
       ],
       "dependsOn": [
         "button",
+        "button-group",
         "field",
         "input"
       ],
-      "hash": "0af14aa00cf2226d"
+      "hash": "de71a1a144a572d1"
     },
     {
       "name": "toast",
@@ -512,9 +522,9 @@
         "listview.go"
       ],
       "carried": [
-        "lerpNRGBA"
+        "fadeNRGBA"
       ],
-      "hash": "4d5c382d998f4525"
+      "hash": "0a4bacaabd6aeeac"
     },
     {
       "name": "split",

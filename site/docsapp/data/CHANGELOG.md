@@ -17,6 +17,10 @@ recorded here in full.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.2.0] - 2026-08-05
+
 ### Changed
 
 - Docs Performance page: driven by `site/bench.json` (layout→ops medians,

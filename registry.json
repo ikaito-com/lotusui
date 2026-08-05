@@ -1,6 +1,6 @@
 {
   "name": "lotusui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "goModule": "github.com/ikaito-com/lotusui",
   "components": [
     {

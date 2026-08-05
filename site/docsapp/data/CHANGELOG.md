@@ -17,6 +17,19 @@ recorded here in full.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.3.2] - 2026-08-06
+
+`go.mod` now carries `retract [v0.4.0, v0.8.0]`. Those versions are an
+ABANDONED lineage — this history was squashed and re-tagged from
+v0.1.0, but the proxy caches the pre-squash tags forever, and they are
+a different codebase (no `item.go`, no `ScrollArea`). Resolving one
+reads as a downgrade with missing API. **Always upgrade to an explicit
+tag, never `@latest`:** cmd/go only honours retractions from the
+module's highest version, so while the ghost v0.8.0 remains the
+highest this directive is inert and `@latest` still lands on it.
+
 ### Added
 
 | Symbol | Notes |

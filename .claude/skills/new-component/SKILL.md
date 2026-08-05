@@ -57,12 +57,12 @@ procedure.
 - [ ] `<name>.go` in the library root.
 - [ ] Registry entry in `cmd/lotusui/registry.go` components table,
       then `go run ./cmd/lotusui registry`.
-- [ ] Gallery demo (`site/gallery/main.go`): one `section(...)` per
+- [ ] Gallery / live demo (`site/live/demos.go`): one `section(...)` per
       capability, indexes matching the docs page's `Demo: "<slug>/N"`.
       One state struct per on-screen instance — identity is the
       struct. Floating demos: the docs box must be tall enough to
       CONTAIN the open panel (DemoH).
-- [ ] Docs page (`site/gen/pages.go`): installSection first, then
+- [ ] Docs page (`site/docspages/pages.go` or pages2.go): installSection first, then
       Usage, then shadcn's sections in shadcn's order, then our
       extras; nav entry in alphabetical Components order.
 - [ ] Smoke-test entry in `layout_test.go`.

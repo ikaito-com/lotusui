@@ -1,19 +1,19 @@
-package main
+package docspages
 
 // The second wave of component pages — same anatomy as the first:
 // install → usage → one section per capability, demos index-aligned
 // with site/gallery/demos2.go.
 
-func accordionPage() *page {
-	return &page{
+func accordionPage() *Page {
+	return &Page{
 		Slug:   "accordion",
 		Title:  "Accordion",
 		Kicker: "Stacked disclosures: one panel at a time, animated on the shared clock.",
 		Intro: `<p>Titles that expand one panel of content at a time (<code>Multiple</code> for
 independent panels). The reveal grows on the shared clock — content is measured at natural
 height and clipped, never reflowed mid-flight.</p>`,
-		Sections: []section{
-			installSection("accordion"),
+		Sections: []Section{
+			InstallSection("accordion"),
 			{
 				Heading: "Usage",
 				Snippet: `var acc lotusui.Accordion // zero value: all closed, single-open
@@ -53,7 +53,7 @@ acc.Layout(th, gtx,
 				DemoH:   240,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Open", "int", "The expanded item in single mode; -1 = all closed."},
 			{"Multiple", "bool", "Independent panels, tracked in Expanded."},
 			{"Expanded", "[]bool", "Per-item state in Multiple mode."},
@@ -61,15 +61,15 @@ acc.Layout(th, gtx,
 	}
 }
 
-func alertPage() *page {
-	return &page{
+func alertPage() *Page {
+	return &Page{
 		Slug:   "alert",
 		Title:  "Alert",
 		Kicker: "The static callout: icon, title, description — it informs, never acts.",
 		Intro: `<p>A bordered, tinted box with an icon, a title and an optional description. For
 interruptions that require action, use <a href="../alert-dialog/">AlertDialog</a>.</p>`,
-		Sections: []section{
-			installSection("alert"),
+		Sections: []Section{
+			InstallSection("alert"),
 			{
 				Heading: "Usage",
 				Snippet: `lotusui.Alert(th, lotusui.AlertProps{
@@ -112,7 +112,7 @@ pastel way — tinted well, deep same-hue ink, readability preserved by construc
 				DemoH: 150,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Variant", "AlertVariant", "AlertDefault, AlertDestructive."},
 			{"Icon", "string", "Overrides the variant's default (info / warning)."},
 			{"Title / Description", "string", "Description optional."},
@@ -122,16 +122,16 @@ pastel way — tinted well, deep same-hue ink, readability preserved by construc
 	}
 }
 
-func alertDialogPage() *page {
-	return &page{
+func alertDialogPage() *Page {
+	return &Page{
 		Slug:   "alert-dialog",
 		Title:  "AlertDialog",
 		Kicker: "The interruption that requires a decision — no backdrop dismissal.",
 		Intro: `<p>A Dialog that absorbs every outside click and Escape and offers exactly Cancel
 and Action. Poll <code>Confirmed</code>/<code>Cancelled</code> each frame while open; lay it
 out at window constraints like Dialog.</p>`,
-		Sections: []section{
-			installSection("alert-dialog"),
+		Sections: []Section{
+			InstallSection("alert-dialog"),
 			{
 				Heading: "Usage",
 				Snippet: `var confirm lotusui.AlertDialog
@@ -172,7 +172,7 @@ medallion above the title; <code>Size</code> picks the width preset.</p>`,
 				DemoH: 400,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Appear()", "method", "Restart the entrance animation on the closed→open transition."},
 			{"Confirmed(gtx) / Cancelled(gtx)", "bool", "Poll each frame while open."},
 			{"Title / Description", "string", "The decision's copy."},
@@ -186,8 +186,8 @@ medallion above the title; <code>Size</code> picks the width preset.</p>`,
 	}
 }
 
-func annotatedTextPage() *page {
-	return &page{
+func annotatedTextPage() *Page {
+	return &Page{
 		Slug:   "annotated-text",
 		Title:  "AnnotatedText",
 		Kicker: "In-text glossary terms with HoverCard tips — BrandFg ink, stay-open panels.",
@@ -200,8 +200,8 @@ squeezes labels into one-character columns. <code>Tooltip</code> is the wrong to
 inverted string tips do not stay open on the panel.
 HoverCard defaults stay max-320dp / 700ms (card hugs content); compact UIs set <code>Width</code>, <code>OpenDelay</code>,
 and <code>Side</code> on each card.</p>`,
-		Sections: []section{
-			installSection("annotated-text"),
+		Sections: []Section{
+			InstallSection("annotated-text"),
 			{
 				Heading: "Usage",
 				Prose:   `<p>Neutral glossary terms (API, SLA) — one <code>HoverCard</code> per term identity; multi-site Layout covers repeats.</p>`,
@@ -226,7 +226,7 @@ lotusui.AnnotatedText(th,
 				Snippet: `lotusui.SplitGlossary(text, terms)`,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"GlossaryTerm", "struct", "Term (literal) + Tip (Caption in the card)."},
 			{"SplitGlossary", "func", "[]GlossarySeg — plain vs term runs."},
 			{"AnnotatedText", "widget", "BrandFg terms; cards[i] for terms[i] (nil / short slice = ink only)."},
@@ -234,15 +234,15 @@ lotusui.AnnotatedText(th,
 	}
 }
 
-func avatarPage() *page {
-	return &page{
+func avatarPage() *Page {
+	return &Page{
 		Slug:   "avatar",
 		Title:  "Avatar",
 		Kicker: "The circular identity mark: initials, a fallback glyph, any scale's tint.",
 		Intro: `<p>Initials centered on a tinted circle; empty initials fall back to the person
 glyph. <code>Color</code> re-tints the pastel way from any scale.</p>`,
-		Sections: []section{
-			installSection("avatar"),
+		Sections: []Section{
+			InstallSection("avatar"),
 			{
 				Heading: "Usage",
 				Snippet: `lotusui.Avatar(th, lotusui.AvatarProps{Initials: "AL"})
@@ -285,7 +285,7 @@ lotusui.Avatar(th, lotusui.AvatarProps{Initials: "PP",
 				DemoH:   110,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Initials", "string", "Centered in the circle; empty falls back to the person glyph."},
 			{"Size", "Size", "The shared size presets (Size2XS–Size2XL)."},
 			{"Color", "ColorScale", "Pastel re-tint from any scale."},
@@ -296,8 +296,8 @@ lotusui.Avatar(th, lotusui.AvatarProps{Initials: "PP",
 	}
 }
 
-func breadcrumbPage() *page {
-	return &page{
+func breadcrumbPage() *Page {
+	return &Page{
 		Slug:   "breadcrumb",
 		Title:  "Breadcrumb",
 		Kicker: "The path to the current page: muted ancestors, chevrons, current in ink.",
@@ -306,8 +306,8 @@ page and never interactive. Pass clickables to make ancestors navigate. The shad
 collapses middle segments behind an ellipsis <code>DropdownMenuTrigger</code> (ghost icon-only,
 <code>PopoverStart</code>). For automatic collapse use <code>BreadcrumbNav</code> — same
 <code>ITEMS_TO_DISPLAY</code> rule as shadcn's responsive example.</p>`,
-		Sections: []section{
-			installSection("breadcrumb"),
+		Sections: []Section{
+			InstallSection("breadcrumb"),
 			{
 				Heading: "Usage",
 				Prose: `<p>The primary demo mirrors shadcn's: Home, an ellipsis menu
@@ -374,7 +374,7 @@ nav.Layout(th, gtx,
 				DemoH: 320,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"btns", "[]*widget.Clickable", "Index-aligned; makes ancestor labels clickable, nil = static."},
 			{"labels", "...string", "The path; the LAST label is the current page, never interactive."},
 			{"BreadcrumbNav", "struct", "Responsive trail: ItemsToDisplay (default 3), auto ellipsis menu, md truncate."},
@@ -386,8 +386,8 @@ nav.Layout(th, gtx,
 	}
 }
 
-func buttonGroupPage() *page {
-	return &page{
+func buttonGroupPage() *Page {
+	return &Page{
 		Slug:   "button-group",
 		Title:  "ButtonGroup",
 		Kicker: "Attached controls: one shared border, square inner corners.",
@@ -395,8 +395,8 @@ func buttonGroupPage() *page {
 to a single line, every child stretches to one shared height, inner corners render square, and
 only the group's outer corners keep the radius. Slots hold buttons, a separator seam, an
 <code>Input</code>/<code>Select</code> (auto-attached), or any widget with flex weight.</p>`,
-		Sections: []section{
-			installSection("button-group"),
+		Sections: []Section{
+			InstallSection("button-group"),
 			{
 				Heading: "Usage",
 				Snippet: `lotusui.ButtonGroup(th, lotusui.ButtonGroupProps{},
@@ -449,7 +449,7 @@ only the group's outer corners keep the radius. Slots hold buttons, a separator 
 				DemoH: 120,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"ButtonGroupProps.Vertical", "bool", "Stack the group top-to-bottom."},
 			{"ButtonGroupItem.Btn / Label / Props", "…", "A button slot; the group sets Props.Attached."},
 			{"ButtonGroupItem.Input / Hint / Flex", "*Input / string / float32", "A field slot; the group sets Input.Attached and stretches height."},
@@ -460,16 +460,16 @@ only the group's outer corners keep the radius. Slots hold buttons, a separator 
 	}
 }
 
-func inputOTPPage() *page {
-	return &page{
+func inputOTPPage() *Page {
+	return &Page{
 		Slug:   "input-otp",
 		Title:  "InputOTP",
 		Kicker: "The one-time-code input: attached character slots, one hidden editor.",
 		Intro: `<p>Click anywhere on the row, type or paste — the code fills left to right, and the
 active slot carries the focus ring. One editor drives every slot, so paste and backspace
 behave exactly like a text field.</p>`,
-		Sections: []section{
-			installSection("input-otp"),
+		Sections: []Section{
+			InstallSection("input-otp"),
 			{
 				Heading: "Usage",
 				Snippet: `var code lotusui.InputOTP // six slots by default
@@ -513,7 +513,7 @@ value := code.Value()`,
 				DemoH:   140,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Length", "int", "Slot count; zero means 6."},
 			{"Groups", "[]int", "Slots per group, a dash between groups."},
 			{"Filter", "string", "Allow-list; empty accepts everything."},
@@ -523,15 +523,15 @@ value := code.Value()`,
 	}
 }
 
-func paginationPage() *page {
-	return &page{
+func paginationPage() *Page {
+	return &Page{
 		Slug:   "pagination",
 		Title:  "Pagination",
 		Kicker: "Previous, next, numbered pages — long ranges elide around the current one.",
 		Intro: `<p><code>Page</code> is 1-based and lives on the struct; clicks are processed at the
 top of Layout, so the click's own frame renders the new page.</p>`,
-		Sections: []section{
-			installSection("pagination"),
+		Sections: []Section{
+			InstallSection("pagination"),
 			{
 				Heading: "Usage",
 				Snippet: `var pg = lotusui.Pagination{Page: 1}
@@ -555,15 +555,15 @@ current := pg.Page`,
 				DemoH:   320,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Page", "int", "1-based current page — yours; clicks processed at the top of Layout."},
 			{"total", "int", "Layout parameter — total page count; long ranges elide."},
 		},
 	}
 }
 
-func hoverCardPage() *page {
-	return &page{
+func hoverCardPage() *Page {
+	return &Page{
 		Slug:   "hover-card",
 		Title:  "HoverCard",
 		Kicker: "Sighted preview of what's behind a link — a floating card on hover.",
@@ -573,8 +573,8 @@ layer. Unlike <a href="../tooltip/">Tooltip</a> (inverted chrome, a string label
 card itself. Web composition (<code>HoverCardTrigger</code>/<code>HoverCardContent</code>) is
 "from the web": Go's <code>Layout(th, gtx, content, trigger)</code> wraps both. RTL layout is
 not yet supported by the underlying toolkit.</p>`,
-		Sections: []section{
-			installSection("hover-card"),
+		Sections: []Section{
+			InstallSection("hover-card"),
 			{
 				Heading: "Usage",
 				Snippet: `var tip lotusui.HoverCard
@@ -648,7 +648,7 @@ hovered site paints. <strong>Compact tips:</strong> set <code>Width</code>,
 stay-open glossary panels (inverted string tip, no card hover).</p>`,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Layout(th, gtx, content, trigger)", "method", "Wrap any trigger; content is the card body. Opens after OpenDelay; stays up while the pointer is over trigger or card."},
 			{"Side", "HoverCardSide", "HoverCardBottom (default), HoverCardTop, HoverCardLeft, HoverCardRight."},
 			{"Align", "PopoverAlign", "PopoverCenter (default, shadcn), PopoverStart, PopoverEnd along the side."},
@@ -659,16 +659,16 @@ stay-open glossary panels (inverted string tip, no card hover).</p>`,
 	}
 }
 
-func popoverPage() *page {
-	return &page{
+func popoverPage() *Page {
+	return &Page{
 		Slug:   "popover",
 		Title:  "Popover",
 		Kicker: "Arbitrary content on the floating layer, anchored to a trigger.",
 		Intro: `<p>The general form of Select's dropdown, on the same portal primitive: the caller
 owns <code>Open</code>, the panel floats 4dp below the anchor, and pressing anywhere else or
 Escape closes it.</p>`,
-		Sections: []section{
-			installSection("popover"),
+		Sections: []Section{
+			InstallSection("popover"),
 			{
 				Heading: "Usage",
 				Snippet: `var pop lotusui.Popover
@@ -689,7 +689,7 @@ pop.Align = lotusui.PopoverEnd`,
 				DemoH: 280,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Open", "bool", "Caller-owned; toggled from the trigger's click."},
 			{"Width", "unit.Dp", "Max panel width; zero matches the anchor. Non-zero: hug content up to Width."},
 			{"Align", "PopoverAlign", "PopoverCenter (default, shadcn), PopoverStart, PopoverEnd against the anchor."},
@@ -697,15 +697,15 @@ pop.Align = lotusui.PopoverEnd`,
 	}
 }
 
-func progressPage() *page {
-	return &page{
+func progressPage() *Page {
+	return &Page{
 		Slug:   "progress",
 		Title:  "Progress",
 		Kicker: "A determinate bar in the brand solid; negative value sweeps indeterminate.",
 		Intro: `<p><code>value</code> is clamped to [0, 1]; pass a negative value for the
 indeterminate sweep (self-invalidating — mount only while in flight).</p>`,
-		Sections: []section{
-			installSection("progress"),
+		Sections: []Section{
+			InstallSection("progress"),
 			{
 				Heading: "Usage",
 				Snippet: `lotusui.Progress(th, 0.66)`,
@@ -726,14 +726,14 @@ indeterminate sweep (self-invalidating — mount only while in flight).</p>`,
 				DemoH:   130,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"value", "float32", "Clamped to [0, 1]; negative = the indeterminate sweep."},
 		},
 	}
 }
 
-func radioGroupPage() *page {
-	return &page{
+func radioGroupPage() *Page {
+	return &Page{
 		Slug:   "radio-group",
 		Title:  "RadioGroup",
 		Kicker: "The exclusive choice: labeled circles, exactly one selected.",
@@ -743,8 +743,8 @@ clicks are processed at the top of Layout, so the click's own frame renders the 
 unexported, <code>Value()</code>/<code>SetValue()</code> read and write it, the zero value picks
 the first option, and an unknown value clears rather than falling back to option 0 — see
 <a href="../select/">Select</a> for the full contract.</p>`,
-		Sections: []section{
-			installSection("radio-group"),
+		Sections: []Section{
+			InstallSection("radio-group"),
 			{
 				Heading: "Usage",
 				Snippet: `density := lotusui.RadioGroup{
@@ -786,7 +786,7 @@ stored = density.Value()`,
 				DemoH:   240,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Options", "[]RadioOption", "The choices: Label, Value, Description (muted sub-label) and Disabled. RadioOpts(\"a\",\"b\") builds label-only lists."},
 			{"Value() / SetValue(v)", "string", "The chosen option's value; SetValue with an unknown value clears."},
 			{"Clear() / Chosen()", "method", "Drop the choice; whether anything is chosen."},
@@ -796,16 +796,16 @@ stored = density.Value()`,
 	}
 }
 
-func separatorPage() *page {
-	return &page{
+func separatorPage() *Page {
+	return &Page{
 		Slug:   "separator",
 		Title:  "Separator",
 		Kicker: "The semantic divider: a 1dp hairline, horizontal or vertical.",
 		Intro: `<p>Visually separates content — shadcn Separator. <code>Separator</code> /
 <code>SeparatorVertical</code> are the component form of <code>Hairline</code> /
 <code>VerticalHairline</code> (same paint; prefer the Separator names in app code).</p>`,
-		Sections: []section{
-			installSection("separator"),
+		Sections: []Section{
+			InstallSection("separator"),
 			{
 				Heading: "Usage",
 				Snippet: `lotusui.Separator(th)          // horizontal
@@ -832,7 +832,7 @@ Use Separator in screens; Hairline remains for internal/composed chrome
 lotusui.VerticalHairline(th) // ≡ SeparatorVertical`,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Separator(th)", "widget", "The horizontal 1dp rule (forces full width)."},
 			{"SeparatorVertical(th)", "widget", "Divides horizontal siblings."},
 			{"Hairline(th) / VerticalHairline(th)", "widget", "Low-level aliases; prefer Separator in app code."},
@@ -840,16 +840,16 @@ lotusui.VerticalHairline(th) // ≡ SeparatorVertical`,
 	}
 }
 
-func skeletonPage() *page {
-	return &page{
+func skeletonPage() *Page {
+	return &Page{
 		Slug:   "skeleton",
 		Title:  "Skeleton",
 		Kicker: "The loading placeholder: rounded blocks and circles pulsing on the shared clock.",
 		Intro: `<p>Give it the shape of the content it stands in for. Zero width fills the available
 width; <code>SkeletonCircle</code> is the round form. Self-invalidating — mount only while
 loading.</p>`,
-		Sections: []section{
-			installSection("skeleton"),
+		Sections: []Section{
+			InstallSection("skeleton"),
 			{
 				Heading: "Usage",
 				Snippet: `layout.Flex{Alignment: layout.Middle}.Layout(gtx,
@@ -907,22 +907,22 @@ loading.</p>`,
 				DemoH: 130,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Skeleton(th, w, h)", "unit.Dp", "A pulsing rounded block; w = 0 fills the available width."},
 			{"SkeletonCircle(th, d)", "unit.Dp", "The round form — avatars, icon slots."},
 		},
 	}
 }
 
-func sliderPage() *page {
-	return &page{
+func sliderPage() *Page {
+	return &Page{
 		Slug:   "slider",
 		Title:  "Slider",
 		Kicker: "The draggable value: track, brand fill, a ringed thumb.",
 		Intro: `<p><code>Value</code> is a fraction in [0, 1] — map it to your domain at the call
 site. Press or drag anywhere on the control; <code>Step</code> snaps to multiples.</p>`,
-		Sections: []section{
-			installSection("slider"),
+		Sections: []Section{
+			InstallSection("slider"),
 			{
 				Heading: "Usage",
 				Snippet: `var volume = lotusui.Slider{Value: 0.4}
@@ -967,7 +967,7 @@ s.Layout(th, gtx)`,
 				DemoH: 220,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Value", "float32", "Fraction in [0, 1] — map to your domain at the call site."},
 			{"Values", "[]float32", "Multi-thumb mode: one thumb per entry, kept ordered; two = range."},
 			{"Step", "float32", "Snaps to multiples; zero = continuous."},
@@ -977,15 +977,15 @@ s.Layout(th, gtx)`,
 	}
 }
 
-func spinnerPage() *page {
-	return &page{
+func spinnerPage() *Page {
+	return &Page{
 		Slug:   "spinner",
 		Title:  "Spinner",
 		Kicker: "The standalone loading arc — Button's spinner, mountable anywhere.",
 		Intro: `<p>Self-invalidating; mount it only while loading. <code>SpinnerTint</code> takes
 any ink.</p>`,
-		Sections: []section{
-			installSection("spinner"),
+		Sections: []Section{
+			InstallSection("spinner"),
 			{
 				Heading: "Usage",
 				Snippet: `lotusui.Spinner(th, 24)
@@ -1002,23 +1002,23 @@ lotusui.SpinnerTint(th, 24, th.Palette.BrandFg)`,
 				DemoH: 100,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Spinner(th, size)", "unit.Dp", "The arc in muted ink; self-invalidating."},
 			{"SpinnerTint(th, size, color)", "color.NRGBA", "The arc in any ink."},
 		},
 	}
 }
 
-func tablePage() *page {
-	return &page{
+func tablePage() *Page {
+	return &Page{
 		Slug:   "table",
 		Title:  "Table",
 		Kicker: "Bounded tabular data: muted header, hairline rows, widget cells.",
 		Intro: `<p>For the comparison-shaped data a screen actually shows. Cells are arbitrary
 widgets (<code>Table</code>) or plain strings (<code>TableText</code>); column weights via
 <code>Widths</code>. Long collections belong in <a href="../listview/">ListView</a>.</p>`,
-		Sections: []section{
-			installSection("table"),
+		Sections: []Section{
+			InstallSection("table"),
 			{
 				Heading: "Usage",
 				Snippet: `lotusui.TableText(th, lotusui.TableProps{
@@ -1048,7 +1048,7 @@ menu.Layout(th, gtx, "⋯",
 				DemoH: 380,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Widths", "[]float32", "Per-column flex weights; nil = equal."},
 			{"Footer", "[]string", "A final emphasized row (totals) above the caption."},
 			{"Caption", "string", "Muted caption under the table."},
@@ -1056,15 +1056,15 @@ menu.Layout(th, gtx, "⋯",
 	}
 }
 
-func textareaPage() *page {
-	return &page{
+func textareaPage() *Page {
+	return &Page{
 		Slug:   "textarea",
 		Title:  "Textarea",
 		Kicker: "The multi-line Input: same chrome, wrapping editor, minimum rows.",
 		Intro: `<p>Mechanisms mirror Input — <code>Error</code> for danger chrome,
 <code>Disabled</code> for read-only, the shared sizes, Field for structure.</p>`,
-		Sections: []section{
-			installSection("textarea"),
+		Sections: []Section{
+			InstallSection("textarea"),
 			{
 				Heading: "Usage",
 				Snippet: `var msg lotusui.Textarea
@@ -1095,7 +1095,7 @@ msg.Layout(th, gtx, "Message", "Tell us what happened")`,
 				DemoH: 200,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Size", "Size", "The shared size presets (Size2XS–Size2XL)."},
 			{"Variant", "InputVariant", "InputOutline (default), InputSubtle, InputFlushed."},
 			{"Rows", "int", "Minimum visible lines; zero means 3."},
@@ -1105,16 +1105,16 @@ msg.Layout(th, gtx, "Message", "Tell us what happened")`,
 	}
 }
 
-func toastPage() *page {
-	return &page{
+func toastPage() *Page {
+	return &Page{
 		Slug:   "toast",
 		Title:  "Toast",
 		Kicker: "Transient notifications: bottom-right stack, auto-dismissing.",
 		Intro: `<p><code>Toaster</code> owns the queue: <code>Add</code> from anywhere, Layout ONCE
 per frame at window constraints (the same portal rule as Dialog). Each toast dismisses after
 its duration; destructive toasts carry danger ink.</p>`,
-		Sections: []section{
-			installSection("toast"),
+		Sections: []Section{
+			InstallSection("toast"),
 			{
 				Heading: "Usage",
 				Snippet: `var toaster lotusui.Toaster // one per window
@@ -1146,7 +1146,7 @@ toaster.Update("create", lotusui.Toast{Variant: lotusui.ToastSuccess, Title: "Ev
 				DemoH: 340,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Toaster.Add(Toast)", "method", "Enqueue from anywhere; safe during event handling."},
 			{"Toaster.Update(id, Toast)", "method", "Replace the live toast with that ID in place — the promise pattern."},
 			{"Toast.Title / Description", "string", "The notification's copy."},
@@ -1158,16 +1158,16 @@ toaster.Update("create", lotusui.Toast{Variant: lotusui.ToastSuccess, Title: "Ev
 	}
 }
 
-func togglePage() *page {
-	return &page{
+func togglePage() *Page {
+	return &Page{
 		Slug:   "toggle",
 		Title:  "Toggle",
 		Kicker: "The pressed-state button, and groups with single or multiple selection.",
 		Intro: `<p><code>Toggle</code> stays filled while <code>On</code>; clicking flips it.
 <code>ToggleGroup</code> coordinates a row — radio semantics by default
 (<code>Sel</code>), independent bools with <code>Multiple</code>.</p>`,
-		Sections: []section{
-			installSection("toggle"),
+		Sections: []Section{
+			InstallSection("toggle"),
 			{
 				Heading: "Usage",
 				Snippet: `var bold lotusui.Toggle
@@ -1252,7 +1252,7 @@ stored = marks.Values() // in Options order`,
 				DemoH:   180,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"On", "bool", "The pressed state — yours; clicking flips it."},
 			{"Icon / Label", "string", "One or both."},
 			{"Content", "layout.Widget", "Replaces Icon/Label with arbitrary content in the chrome."},
@@ -1269,16 +1269,16 @@ stored = marks.Values() // in Options order`,
 	}
 }
 
-func tooltipPage() *page {
-	return &page{
+func tooltipPage() *Page {
+	return &Page{
 		Slug:   "tooltip",
 		Title:  "Tooltip",
 		Kicker: "The hover label: inverted chrome, a rest delay, pass-through events.",
 		Intro: `<p>Wrap any widget; hold the pointer for a beat and the label floats in beneath it
 on the portal layer. The hover area passes events through — the child keeps its own
 interactions. One Tooltip struct per wrapped instance.</p>`,
-		Sections: []section{
-			installSection("tooltip"),
+		Sections: []Section{
+			InstallSection("tooltip"),
 			{
 				Heading: "Usage",
 				Snippet: `var tip lotusui.Tooltip
@@ -1295,14 +1295,14 @@ tip.Layout(th, gtx, "Add to library",
 				DemoH:   180,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Layout(th, gtx, text, child)", "method", "Wrap any widget; label floats in after a rest delay."},
 		},
 	}
 }
 
-func itemPage() *page {
-	return &page{
+func itemPage() *Page {
+	return &Page{
 		Slug:   "item",
 		Title:  "Item",
 		Kicker: "A versatile row for media, title, description, and actions.",
@@ -1310,8 +1310,8 @@ func itemPage() *page {
 description, and actions. Group with <code>ItemGroup</code> for lists.
 Use <code>Field</code> when the row is a form control; use <code>Item</code>
 when it is display content (including multiline <code>SelectOption.Content</code>).</p>`,
-		Sections: []section{
-			installSection("item"),
+		Sections: []Section{
+			InstallSection("item"),
 			{
 				Heading: "Usage",
 				Snippet: `lotusui.Item(th, lotusui.ItemProps{
@@ -1394,7 +1394,7 @@ and the platform's text direction. Dropdown-on-item is composition with
 <code>DropdownMenu</code>.</p>`,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"ItemProps.Variant", "ItemVariant", "ItemDefault, ItemOutline, ItemMuted."},
 			{"ItemProps.Size", "Size", "Padding scale; MD default, SM/XS match shadcn sm/xs."},
 			{"ItemProps.Btn", "*widget.Clickable", "Nil = static; set for whole-row click/hover."},

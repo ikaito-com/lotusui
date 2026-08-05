@@ -1,8 +1,7 @@
 name: site
 
-# Builds the docs site (site/ nested module) and deploys the static
-# output to GitHub Pages. Built WASM bundles are never committed —
-# the repo holds sources only.
+# Builds the docsapp WASM site and deploys to GitHub Pages.
+# Built WASM bundles are never committed — the repo holds sources only.
 on:
   push:
     branches: [main]
@@ -23,28 +22,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Archived doc versions are built from release tags via
-          # `git worktree add <tag>` — need the tags (and enough history).
           fetch-depth: 0
           fetch-tags: true
       - uses: actions/setup-go@v5
         with:
           go-version-file: site/go.mod
       - run: make -C site build
-      # Archived doc versions: every versions.json entry with a
-      # non-root path is built FROM ITS TAG into that subdirectory —
-      # old versions stay frozen, the root always serves the newest.
+      # Archived doc versions: build each tagged release into /vX.Y.Z/
+      # when that tag still knew `make -C site build` (docsapp or legacy).
       - name: Build archived versions
         run: |
           python3 - <<'PY'
-          import json, subprocess, os
+          import json, subprocess, os, shutil
           for v in json.load(open('site/versions.json')):
               if v['path'] == '/':
                   continue
               tag, sub = v['version'], v['path'].strip('/')
               wt = f'/tmp/lotusui-{tag}'
               subprocess.run(['git', 'worktree', 'add', '--detach', wt, tag], check=True)
-              subprocess.run(['make', '-C', f'{wt}/site', 'build'], check=True)
+              # Prefer docsapp build; fall back to whatever the tag provides.
+              r = subprocess.run(['make', '-C', f'{wt}/site', 'build'])
+              if r.returncode != 0:
+                  print(f'skip archive {tag}: make build failed')
+                  continue
               os.makedirs(f'site/dist/{sub}', exist_ok=True)
               subprocess.run(['cp', '-R', f'{wt}/site/dist/.', f'site/dist/{sub}/'], check=True)
           PY

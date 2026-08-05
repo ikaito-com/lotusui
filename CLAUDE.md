@@ -170,7 +170,7 @@ The permanent rules, each learned the hard way:
   theming resolves at NewTheme, never per frame; hot paths stay
   zero-alloc with benchmarks pinning it (`bench_test.go`).
 - EVERY component change ships IN THE SAME COMMIT with: its docs page
-  (site/gen/pages.go), its gallery demo (site/gallery), a smoke-test
+  (site/docspages/), its gallery/live demo (site/live or site/gallery), a smoke-test
   entry (layout_test.go), registry.json regenerated when files moved,
   and consumer updates (vaultalia-simple, app-mandarin) when the API
   moved.
@@ -214,7 +214,9 @@ identity only; no AI co-authors, committers, or taggers.
    exact added/removed symbols.
 2. Record every one of them in CHANGELOG.md [Unreleased] under the
    right section (Renamed table / Removed-with-replacement / Changed
-   signatures / Added), exact symbols, old→new.
+   signatures / Added), exact symbols, old→new. **MERGE only — never
+   replace the whole [Unreleased] block** (existing bullets stay
+   unless the human says otherwise; see `.cursor/rules/changelog-merge.mdc`).
 3. `go run ./cmd/lotusui api -o api.txt` to accept the new baseline.
 4. Update both consumer apps if the change touched them.
 5. Commit code + changelog + api.txt + consumers TOGETHER, message in
@@ -251,16 +253,12 @@ carries the invariants:
   The LIBRARY ROOT stays lean forever — its files ship in every
   consumer's module zip, immutably, per version.
 - The site is Chakra-style: per-component pages with prose + Go
-  snippet + a LIVE demo. The demos are the real components compiled
-  to WebAssembly (`GOOS=js GOARCH=wasm` — a first-class Gio target):
-  ONE gallery app routing to a component/state by URL hash, compiled
-  ONCE — never a separate wasm *binary* per component (each bundle is
-  several MB with fonts embedded). Each docs Preview is a gallery
-  iframe for that hash (`loading="lazy"`); the prose carries SEO, the
-  iframe carries the demo.
-- The gallery app doubles as the component test bed — the browser
-  twin of vltl's `VLTL_PREVIEW` state harness: every component gets
-  addressable states, screenshot-able without click choreography.
+  snippet + a LIVE demo, all inside one Gio docs app (`site/docsapp`)
+  compiled once to WebAssembly. Previews render `site/live` demos
+  in-process — never a separate wasm binary per component, never an
+  HTML iframe shell. Native: `make run-docsapp`.
+- `site/gallery` remains the screenshot / golden harness (media,
+  goldens); prefer `site/live` for new demos shared with docsapp.
 - Built WASM bundles are NEVER committed: CI builds the site and
   deploys the static output (GitHub Pages / Cloudflare Pages). The
   repo holds sources only.

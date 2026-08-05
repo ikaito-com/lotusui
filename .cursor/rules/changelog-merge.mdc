@@ -1,0 +1,29 @@
+---
+description: Never replace CHANGELOG [Unreleased] — always merge
+alwaysApply: true
+---
+
+# CHANGELOG.md — merge only (NON-NEGOTIABLE)
+
+`CHANGELOG.md` `[Unreleased]` is cumulative. **Never rewrite or
+replace the whole section.** Agents have wiped ButtonGroup /
+Attached / bench-doc entries by pasting a fresh Unreleased block —
+that must not happen again.
+
+## When adding changelog notes
+
+1. **Read** the current `[Unreleased]` first (`git show HEAD:CHANGELOG.md`
+   and the working tree).
+2. **Insert** new bullets under the right subsection (Added / Changed /
+   Fixed / Removed / Renamed). Keep every existing bullet unless the
+   user explicitly asks to drop it.
+3. **Never** `Write` the full changelog from a partial draft. Prefer
+   surgical edits (`StrReplace` / patch) that only touch the lines you
+   are adding or correcting.
+4. If you must regenerate prose for one entry, **diff against HEAD**
+   afterward and restore any removed Unreleased bullets before
+   finishing.
+5. When syncing `site/docsapp/data/CHANGELOG.md`, copy **after** the
+   merge is complete — never the other way around as a source of truth.
+
+This outranks convenience. Prefer a messy merge over a clean wipe.

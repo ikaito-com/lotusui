@@ -1,76 +1,7 @@
-package main
+package docspages
 
-import (
-	"html/template"
-
-	"github.com/ikaito-com/lotusui/site/looks"
-	"github.com/ikaito-com/lotusui/site/palettes"
-)
-
-// theSite is the whole docs site as data: groups → pages → sections.
-// A component change and its page here update in the SAME commit.
-// Every feature gets its OWN section with its OWN focused live demo
-// ("slug/N" narrows the gallery to section N).
-//
-// FLOATING DEMOS: a section whose demo opens a floating panel
-// (Select, future menus/popovers) must set DemoH tall enough to
-// CONTAIN the open panel. In the docs strip each demo box is the
-// panel's entire window — a panel taller than its box paints into
-// the next slot (op.Defer escapes clips by design).
-func theSite() *site {
-	var pals []palettePreset
-	for _, p := range palettes.Presets {
-		pals = append(pals, palettePreset{
-			Slug: p.Slug, Name: p.Name,
-			BrandSolid:    palettes.Hex(p.Palette.BrandSolid),
-			BrandSubtle:   palettes.Hex(p.Palette.BrandSubtle),
-			BrandFg:       palettes.Hex(p.Palette.BrandFg),
-			BrandContrast: palettes.Hex(p.Palette.BrandContrast),
-			Bg:            palettes.Hex(p.Palette.Bg),
-		})
-	}
-	var lks []lookPreset
-	for _, l := range looks.Presets {
-		lks = append(lks, lookPreset{
-			Slug: l.Slug, Name: l.Name, Hint: l.Hint,
-			CSSFamily: l.CSSFamily, FontFile: l.FontFile,
-			RadiusMD: int(l.Radius.MD), RadiusLG: int(l.Radius.LG),
-		})
-	}
-	return &site{
-		Name:     "lotusui",
-		BaseURL:  "https://lotusui.com/",
-		Looks:    lks,
-		Tag:      "A Go design system for desktop and mobile — one codebase, native apps. Web when you want it.",
-		Repo:     "https://github.com/ikaito-com/lotusui",
-		Palettes: pals,
-		Groups: []group{
-			{Title: "Get started", Pages: []*page{
-				installationPage(), quickstartPage(), registryPage(), platformsPage(), changelogPage(),
-			}},
-			{Title: "Theming", Pages: []*page{
-				themePage(), darkModePage(), typographyPage(),
-			}},
-			{Title: "Guides", Pages: []*page{
-				layoutPage(), responsivePage(), iconsPage(), seamlessPage(), principlesPage(), performancePage(),
-			}},
-			{Title: "Components", Pages: []*page{
-				accordionPage(), alertPage(), alertDialogPage(), annotatedTextPage(), avatarPage(),
-				badgePage(), breadcrumbPage(), buttonPage(), buttonGroupPage(), cardPage(),
-				checkboxPage(), dialogPage(), menuPage(), fieldPage(), gridPage(),
-				hoverCardPage(),
-				inputPage(), inputOTPPage(), itemPage(), listViewPage(), paginationPage(), popoverPage(),
-				progressPage(), radioGroupPage(), selectPage(), separatorPage(),
-				simpleGridPage(), skeletonPage(), sliderPage(), spinnerPage(),
-				splitPage(), stackPage(), switchPage(), tablePage(), tabsPage(),
-				textareaPage(), toastPage(), togglePage(), tooltipPage(), wrapPage(),
-			}},
-		},
-	}
-}
-
-func registryPage() *page {
-	return &page{
+func registryPage() *Page {
+	return &Page{
 		Slug:   "registry",
 		Title:  "Registry",
 		Kicker: "Own the code when you need to: vendor any component, keep updating it with real merges.",
@@ -80,7 +11,7 @@ add</code> copies a component's source into your app, where it is yours to edit 
 snapshot, it stays updatable. Every capability here is BUILD-time: <code>registry.json</code>
 is generated from the source, consumed by the CLI and by AI agents, and never read by app code
 at runtime.</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading: "Add a component",
 				Prose: `<p>The copy still imports the lotusui core (theme, scales, icons): exported
@@ -134,36 +65,21 @@ vendoring involves — app code never does.</p>`,
 	}
 }
 
-// installSection is the per-component install block — the module
-// import as the default, `lotusui add` as the ownership path.
-func installSection(component string) section {
-	return section{
-		Heading: "Installation",
-		Prose: `<p>Use the module import (the default), or own the source: <code>lotusui add</code>
-vendors the component into your app and <code>lotusui update</code> keeps the copy mergeable —
-see <a href="../registry/">Registry</a>.</p>`,
-		Snippet: `go get github.com/ikaito-com/lotusui
-
-# or vendor the source into your app:
-go run github.com/ikaito-com/lotusui/cmd/lotusui add ` + component,
+// ChangelogPage wraps pre-rendered changelog HTML (GFM).
+func ChangelogPage(bodyHTML string) *Page {
+	if bodyHTML == "" {
+		bodyHTML = "<p>CHANGELOG.md could not be loaded.</p>"
 	}
-}
-
-func changelogPage() *page {
-	body, err := renderMarkdown("../CHANGELOG.md")
-	if err != nil {
-		body = template.HTML("<p>CHANGELOG.md could not be loaded: " + template.HTMLEscapeString(err.Error()) + "</p>")
-	}
-	return &page{
+	return &Page{
 		Slug:   "changelog",
 		Title:  "Changelog",
 		Kicker: "Every release, every API change — written so a developer can migrate from it alone.",
-		Intro:  template.HTML(`<div class="mdpage">`) + body + template.HTML(`</div>`),
+		Intro:  `<div class="mdpage">` + bodyHTML + `</div>`,
 	}
 }
 
-func installationPage() *page {
-	return &page{
+func installationPage() *Page {
+	return &Page{
 		Slug:   "installation",
 		Title:  "Installation",
 		Kicker: "Add lotusui to a Go module and start a native desktop or mobile app.",
@@ -171,7 +87,7 @@ func installationPage() *page {
 semantic token palette, an embedded font, and the components that make an app read as one
 product. Built on <a href="https://gioui.org">Gio</a>. Every demo on this site is the real
 component running in your browser.</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading: "Install",
 				Prose: `<p>lotusui is a normal Go module. The runtime stack brings its own platform
@@ -240,15 +156,15 @@ together.</p>`,
 	}
 }
 
-func quickstartPage() *page {
-	return &page{
+func quickstartPage() *Page {
+	return &Page{
 		Slug:   "quickstart",
 		Title:  "Quickstart",
 		Kicker: "A themed native window with a button, in one Go file.",
 		Intro: `<p><code>NewTheme</code> builds the one Theme instance — palette plus the embedded
 DM Sans font. Pass it to every component. The event loop is a standard Go app loop (Gio):
 paint the canvas, lay out content in the readable column, hand the frame back.</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading: "A minimal app",
 				Snippet: `package main
@@ -300,8 +216,8 @@ func loop(w *app.Window) error {
 	}
 }
 
-func platformsPage() *page {
-	return &page{
+func platformsPage() *Page {
+	return &Page{
 		Slug:      "platforms",
 		Title:     "Platforms",
 		Kicker:    "Desktop and mobile first — same Go module; the web is a compile target too.",
@@ -312,7 +228,7 @@ consistent interface on every target, down to the typography. It sits on
 targets of the same module, not ports. The platform decides input (pointer or touch) and
 packaging, nothing else. The few places where a platform genuinely differs are called out
 across this site with badges like the ones above.</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading:   "Desktop",
 				Platforms: []string{"macOS", "Windows", "Linux"},
@@ -335,11 +251,12 @@ so nothing becomes unreachable without a pointer.</p>`,
 				Heading:   "Web",
 				Platforms: []string{"WASM"},
 				Prose: `<p>The same Go module reaches the browser via WebAssembly — Gio’s first-class
-<code>GOOS=js GOARCH=wasm</code> target, not a separate port, and how this documentation site
-shows live demos. Build once; one gallery bundle for every Preview. The binary embeds its
-fonts (roughly 13&nbsp;MB raw, a fraction over the wire compressed); each docs Preview is a
-gallery iframe addressed by URL hash (<code>loading=&quot;lazy&quot;</code> so off-screen
-examples boot on demand).</p>`,
+<code>GOOS=js GOARCH=wasm</code> target, not a separate port. This documentation site
+<em>is</em> a lotusui WASM app (<code>site/docsapp</code>): chrome, nav, Previews and
+Code tabs are real widgets in one binary. Build once with
+<code>-ldflags=&quot;-s -w&quot;</code>; fonts are embedded (several MB raw, less over the wire
+compressed). Hero screenshots ship as static <code>media/</code> siblings so the wasm
+stays leaner.</p>`,
 				Snippet: `GOOS=js GOARCH=wasm go build -ldflags="-s -w" -o app.wasm .
 # serve with wasm_exec.js from $(go env GOROOT)/lib/wasm/
 # and a <div id="giowindow"> for the canvas host`,
@@ -356,8 +273,8 @@ Everything else in the library builds on every target.</p>`,
 	}
 }
 
-func principlesPage() *page {
-	return &page{
+func principlesPage() *Page {
+	return &Page{
 		Slug:   "design-principles",
 		Title:  "Design principles",
 		Kicker: "The rules that make an app built on lotusui read as one product.",
@@ -365,7 +282,7 @@ func principlesPage() *page {
 fixed — components enforce them so screens don't have to remember them. The look itself is
 yours: every rule below operates on theme tokens, so a custom palette keeps the discipline
 while changing the skin (see <a href="../theme/">Theme &amp; palette</a>).</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading: "One accent, quiet grays",
 				Prose: `<p>Neutral grays by default: panels floating on a tinted canvas, hierarchy from
@@ -391,8 +308,8 @@ animation clock drives every transition, so everything in an app moves identical
 	}
 }
 
-func themePage() *page {
-	return &page{
+func themePage() *Page {
+	return &Page{
 		Slug:   "theme",
 		Title:  "Theming",
 		Kicker: "Paired role tokens, color scales, schemes — resolved once at NewTheme.",
@@ -402,7 +319,7 @@ readable ink (<code>BrandSolid</code>+<code>BrandContrast</code>,
 <code>Danger</code>+<code>DangerContrast</code>, each status ink with its pastel background) —
 so a component that paints a surface always knows what stays readable on it. Dark mode is just
 another palette: see <a href="../dark-mode/">Dark mode</a>.</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading: "Tokens",
 				Prose: `<p>The standard semantic vocabulary: background ladder (<code>Bg</code>,
@@ -552,8 +469,8 @@ th := lotusui.NewTheme(
 	}
 }
 
-func darkModePage() *page {
-	return &page{
+func darkModePage() *Page {
+	return &Page{
 		Slug:   "dark-mode",
 		Title:  "Dark mode",
 		Kicker: "Not a mode — a palette. Build both themes at startup, swap a pointer.",
@@ -562,7 +479,7 @@ applied with <code>WithPalette</code>. <code>DefaultDarkPalette</code> ships in 
 same lavender brand on a deep cool-gray canvas, every ladder keeping the light palette's ORDER
 (faint → prominent), so components never know which world they're in. Try it live: pick
 <strong>Midnight</strong> in this site's palette picker — every demo on every page flips.</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading: "Usage",
 				Prose: `<p>Construct both themes once at startup; following the system appearance (or a
@@ -598,15 +515,15 @@ unreadable pairing a build failure, whichever world it is in.</p>`,
 	}
 }
 
-func typographyPage() *page {
-	return &page{
+func typographyPage() *Page {
+	return &Page{
 		Slug:   "typography",
 		Title:  "Typography",
 		Kicker: "A fixed label scale in DM Sans — hierarchy from size and color, not bold shouting.",
 		Intro: `<p>Every piece of text uses one of seven named styles. The scale is deliberately
 small: one hero per screen, semibold only for titles, and quiet grays doing the hierarchy
 work.</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading: "The scale",
 				Prose: `<p>Each helper returns a <code>material.LabelStyle</code>, so call <code>.Layout(gtx)</code>
@@ -626,8 +543,8 @@ lotusui.SectionLabel(th, "GROUP")            // quiet group caption`,
 	}
 }
 
-func layoutPage() *page {
-	return &page{
+func layoutPage() *Page {
+	return &Page{
 		Slug:   "layout",
 		Title:  "Layout",
 		Kicker: "The readable page column, scrolling, titles, and virtualized lists.",
@@ -635,7 +552,7 @@ func layoutPage() *page {
 centers it; <code>Scrollable</code> makes mixed content reachable; <code>ListView</code> is the
 virtualized list for real data. How those pieces (plus Wrap, SimpleGrid, Tabs) reflow when the
 window changes size is the <a href="../responsive/">Responsive</a> guide.</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading: "The page column",
 				Prose: `<p><code>LayoutPage</code> is the readable column: content capped at 920dp,
@@ -671,7 +588,7 @@ icons). Empty icons → title alone.</p>`,
 can grow with data, the virtualized <a href="../listview/">ListView</a> component.</p>`,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"TitleWithIcons(th, title, icons…)", "widget", "LabelTitle + trailing icons (Space.XS between icons only)."},
 			{"TopBar(th, title, leading)", "widget", "Screen chrome — centered title, optional leading."},
 			{"LayoutPage(th, gtx, content)", "widget", "Readable column; cap th.PageMax (default 920) or PageMaxAt."},
@@ -679,8 +596,8 @@ can grow with data, the virtualized <a href="../listview/">ListView</a> componen
 	}
 }
 
-func stackPage() *page {
-	return &page{
+func stackPage() *Page {
+	return &Page{
 		Slug:   "stack",
 		Title:  "Stack",
 		Kicker: "VStack and HStack: children size themselves, the gap is the whole job.",
@@ -688,8 +605,8 @@ func stackPage() *page {
 children between rows. <code>VStack</code> stacks vertically, <code>HStack</code> horizontally
 with children centered on the cross axis. For flowing chips that wrap to the next line, see
 <a href="../wrap/">Wrap</a>. For 1dp rules, see <a href="../separator/">Separator</a>.</p>`,
-		Sections: []section{
-			installSection("stack"),
+		Sections: []Section{
+			InstallSection("stack"),
 			{
 				Heading: "VStack",
 				Snippet: `lotusui.VStack(th.Space.SM, first, second, third)`,
@@ -711,7 +628,7 @@ are not using a Stack.</p>`,
 lotusui.HSpacer(th.Space.SM)  // horizontal`,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"VStack(gap, children...)", "unit.Dp", "Vertical stack; the gap is the whole job."},
 			{"HStack(gap, children...)", "unit.Dp", "Horizontal stack, children centered on the cross axis. Never wraps."},
 			{"Spacer(h) / HSpacer(w)", "unit.Dp", "Fixed gaps for ad-hoc composition."},
@@ -719,8 +636,8 @@ lotusui.HSpacer(th.Space.SM)  // horizontal`,
 	}
 }
 
-func wrapPage() *page {
-	return &page{
+func wrapPage() *Page {
+	return &Page{
 		Slug:   "wrap",
 		Title:  "Wrap",
 		Kicker: "Flex-wrap row: chips and labels flow left-to-right, then the next line.",
@@ -730,8 +647,8 @@ Measures each child at its intrinsic width so labels never squeeze into one-char
 columns the way <code>HStack</code> can under a narrow <code>Max.X</code>. Prefer
 <a href="../simplegrid/">SimpleGrid</a> when you want equal cells and a fixed column count.
 See the <a href="../responsive/">Responsive</a> guide for how Wrap fits the full toolkit.</p>`,
-		Sections: []section{
-			installSection("stack"),
+		Sections: []Section{
+			InstallSection("stack"),
 			{
 				Heading: "Usage",
 				Prose: `<p>Same gap between items and between lines. Cross-axis <code>align</code> is per line
@@ -755,14 +672,14 @@ lotusui.Wrap(th.Space.SM, layout.Middle, chips...)
 lotusui.HStack(th.Space.SM, switchW, label)`,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Wrap(gap, align, children...)", "unit.Dp, Alignment", "Flex-wrap row; intrinsic widths; same gap for items and lines."},
 		},
 	}
 }
 
-func responsivePage() *page {
-	return &page{
+func responsivePage() *Page {
+	return &Page{
 		Slug:   "responsive",
 		Title:  "Responsive",
 		Kicker: "Continuous Max.X plus Theme breakpoints — reflow by default, stepped structure when you need it.",
@@ -773,7 +690,7 @@ the continuous layer (<a href="../wrap/">Wrap</a>, auto-fit
 props resolve against them with a zero-alloc walk.</p>
 <p><strong>Resize the browser</strong> on the demos below. Apps override breakpoint sizes with
 JSON loaded at <code>NewTheme</code> — not <code>registry.json</code>.</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading: "The doctrine",
 				Prose: `<p><strong>Pass the width you have; never invent a fake one.</strong> Gio hands every
@@ -897,15 +814,15 @@ horizontal reflow.</p>`,
 	}
 }
 
-func iconsPage() *page {
-	return &page{
+func iconsPage() *Page {
+	return &Page{
 		Slug:   "icons",
 		Title:  "Icons",
 		Kicker: "Fluent SVGs, embedded in the binary — builds never need the network.",
 		Intro: `<p>Icons are SVGs fetched once by the CLI (normalized at fetch time) and committed. A
 build-failing test asserts every icon rasterizes. There is exactly one icon path — never add a
 second.</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading: "SVGIcon and SVGIconButton",
 				Prose: `<p>Full-color icons ignore the tint; mono icons take it via
@@ -946,8 +863,8 @@ go run github.com/ikaito-com/lotusui/cmd/lotusui icons \
 	}
 }
 
-func seamlessPage() *page {
-	return &page{
+func seamlessPage() *Page {
+	return &Page{
 		Slug:      "seamless-window",
 		Title:     "Seamless window",
 		Kicker:    "Native edge-to-edge macOS chrome: no title bar, traffic lights kept, zero flash.",
@@ -955,7 +872,7 @@ func seamlessPage() *page {
 		Intro: `<p>Content owns the whole window. The macOS title bar disappears as a bar, the three
 traffic lights stay — comfortably inset, native, draggable strip and all — and the decorated
 bar never appears, not even for one frame at launch.</p>`,
-		Sections: []section{
+		Sections: []Section{
 			{
 				Heading: "The pairing",
 				Prose: `<p>Two calls, both required. <code>app.Decorated(false)</code> makes Gio hide the
@@ -989,14 +906,14 @@ launch on macOS — the pairing depends on how Gio's decoration handling reads t
 style mask, which has changed between Gio versions before.</p>`,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"view", "uintptr", "The AppKit view from app.AppKitViewEvent — pass e.View; zero is ignored."},
 		},
 	}
 }
 
-func buttonPage() *page {
-	return &page{
+func buttonPage() *Page {
+	return &Page{
 		Slug:   "button",
 		Title:  "Button",
 		Kicker: "Six variants × seven sizes × any color, options-driven.",
@@ -1006,8 +923,8 @@ steps, so a custom theme restyles all of it. Pressing nudges the button 1dp down
 tactile response on every variant; the pointer cursor signals interactivity. Anchor-style
 rendering (as-link) and RTL are "from the web": a Link-variant button IS the link here, and RTL
 layout is not yet supported by the toolkit.</p>`,
-		Sections: []section{
-			installSection("button"),
+		Sections: []Section{
+			InstallSection("button"),
 			{
 				Heading: "Usage",
 				Snippet: `var save widget.Clickable
@@ -1150,7 +1067,7 @@ focus is never signalled by color alone. <code>FullWidth</code> makes any button
 column; <code>RightAligned</code> anchors a dialog's button row to the right edge.</p>`,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Variant", "ButtonVariant", "ButtonDefault (default), ButtonSecondary, ButtonDestructive, ButtonOutline, ButtonGhost, ButtonLink."},
 			{"Size", "Size", "Size2XS … Size2XL, SizeMD default — the shared size presets."},
 			{"Color", "ColorScale", "Re-colors the variant from a scale; the interaction ladder derives from it."},
@@ -1164,16 +1081,16 @@ column; <code>RightAligned</code> anchors a dialog's button row to the right edg
 	}
 }
 
-func fieldPage() *page {
-	return &page{
+func fieldPage() *Page {
+	return &Page{
 		Slug:   "field",
 		Title:  "Field",
 		Kicker: "Label, helper, error and required — around any control.",
 		Intro: `<p><code>Field</code> is the form-field wrapper: it adds the label above, helper or
 error text below, and the required marker — around <em>any</em> control (Input, Select,
 Checkbox, a custom widget). The control knows nothing about it; composition, not slots.</p>`,
-		Sections: []section{
-			installSection("field"),
+		Sections: []Section{
+			InstallSection("field"),
 			{
 				Heading: "Usage",
 				Snippet: `lotusui.Field(th, lotusui.FieldProps{Label: "Email"}, func(gtx C) D {
@@ -1214,7 +1131,7 @@ with the control's own invalid chrome.</p>`,
 				DemoH: 140,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Label", "string", "The label above the control."},
 			{"Helper", "string", "Muted guidance below; recomputed each frame (counters)."},
 			{"Error", "string", "Replaces Helper in danger ink."},
@@ -1223,8 +1140,8 @@ with the control's own invalid chrome.</p>`,
 	}
 }
 
-func inputPage() *page {
-	return &page{
+func inputPage() *Page {
+	return &Page{
 		Slug:   "input",
 		Title:  "Input",
 		Kicker: "The single-line input: three variants, seven sizes, composable everything else.",
@@ -1233,8 +1150,8 @@ COMPOSITION — nil-able <code>Start</code>/<code>End</code> slots and the <code
 wrapper; behavior (filters, transforms) is caller-owned functions. A file input is a native
 picker on the web — out of scope for a canvas UI, use your platform's file dialog ("from the
 web").</p>`,
-		Sections: []section{
-			installSection("input"),
+		Sections: []Section{
+			InstallSection("input"),
 			{
 				Heading: "Usage",
 				Snippet: `var name lotusui.Input
@@ -1414,7 +1331,7 @@ search.End = lotusui.Kbd(th, "⌘K")`,
 				DemoH:   120,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Variant", "InputVariant", "InputOutline (default), InputSubtle, InputFlushed."},
 			{"Size", "Size", "The shared size presets (Size2XS–Size2XL)."},
 			{"Filter", "string", "Allow-list of runes; empty accepts everything."},
@@ -1429,16 +1346,16 @@ search.End = lotusui.Kbd(th, "⌘K")`,
 	}
 }
 
-func checkboxPage() *page {
-	return &page{
+func checkboxPage() *Page {
+	return &Page{
 		Slug:   "checkbox",
 		Title:  "Checkbox",
 		Kicker: "A themed box, a check, a label — plus indeterminate, invalid and sizes.",
 		Intro: `<p>State lives in the caller's struct (<code>Value</code>); the component renders and
 reports clicks. One struct per on-screen instance — identity in immediate mode is the
 struct.</p>`,
-		Sections: []section{
-			installSection("checkbox"),
+		Sections: []Section{
+			InstallSection("checkbox"),
 			{
 				Heading: "Usage",
 				Snippet: `var accept lotusui.Checkbox
@@ -1507,7 +1424,7 @@ terms.Invalid = true`,
 				DemoH:   110,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Value", "bool", "The state — yours."},
 			{"Size", "Size", "The shared size presets (Size2XS–Size2XL)."},
 			{"Indeterminate", "bool", "The parent-of-mixed-children dash."},
@@ -1517,15 +1434,134 @@ terms.Invalid = true`,
 	}
 }
 
-func switchPage() *page {
-	return &page{
+func codeBlockPage() *Page {
+	return &Page{
+		Slug:   "code-block",
+		Title:  "Code Block",
+		Kicker: "Fenced source chrome: caption, optional Copy, pre-formatted body.",
+		Intro: `<p>A lotusui extension for showing source in apps and docs. The library
+owns the chrome and paints token runs; it does <strong>not</strong> embed a highlighter —
+pass <code>Lines [][]CodeSpan</code> from your tokenizer (chroma, tree-sitter, build-time)
+so the module zip stays lean. <code>Plain</code> is the unstyled fallback.</p>`,
+		Sections: []Section{
+			InstallSection("code-block"),
+			{
+				Heading: "Usage",
+				Prose: `<p>Caption language + body. Prefer highlighted <code>Lines</code>;
+<code>Plain</code> alone is fine for short snippets.</p>`,
+				Snippet: `lotusui.CodeBlock(th, lotusui.CodeBlockProps{
+	Lang:  "go",
+	Plain: "fmt.Println(\"hello\")",
+})`,
+				Demo:  "code-block/0",
+				DemoH: 160,
+			},
+			{
+				Heading: "Highlighted spans",
+				Prose: `<p>Each line is a slice of <code>CodeSpan</code> — text, color, optional bold.
+The docs site tokenizes with chroma and maps token kinds onto palette roles
+(BrandFg keywords, Success strings, …).</p>`,
+				Snippet: `lotusui.CodeBlock(th, lotusui.CodeBlockProps{
+	Lang: "go",
+	Lines: [][]lotusui.CodeSpan{
+		{{Text: "package ", Color: muted}, {Text: "main", Color: fg, Bold: true}},
+	},
+})`,
+				Demo:  "code-block/1",
+				DemoH: 200,
+			},
+			{
+				Heading: "Copy",
+				Prose: `<p>Pass a durable <code>*widget.Clickable</code> on <code>Copy</code> — the
+button writes <code>Plain</code> (or joined Lines text) to the clipboard.</p>`,
+				Snippet: `var copy widget.Clickable
+lotusui.CodeBlock(th, lotusui.CodeBlockProps{
+	Lang: "go", Plain: src, Copy: &copy,
+})`,
+				Demo:  "code-block/2",
+				DemoH: 180,
+			},
+			{
+				Heading: "Nested",
+				Prose: `<p><code>Nested: true</code> omits the outer border/radius — use inside
+<a href="../example/">Example</a> Code chrome (or any parent card).</p>`,
+				Snippet: `lotusui.CodeBlock(th, lotusui.CodeBlockProps{Nested: true, Plain: src})`,
+				Demo:    "code-block/3",
+				DemoH:   140,
+			},
+		},
+		Props: []Prop{
+			{"Lang", "string", "Caption label (empty → \"Go\")."},
+			{"Lines", "[][]CodeSpan", "Highlighted rows of token runs (preferred)."},
+			{"Plain", "string", "Unstyled body / clipboard source when Lines empty."},
+			{"Copy", "*widget.Clickable", "Optional Copy button (clipboard write)."},
+			{"Nested", "bool", "Omit outer frame — for parent card chrome."},
+			{"CodeSpan", "struct", "Text + Color + Bold — one highlighted run."},
+		},
+	}
+}
+
+func examplePage() *Page {
+	return &Page{
+		Slug:   "example",
+		Title:  "Example",
+		Kicker: "Preview|Code chrome: one card, tab strip on top, live widget inside.",
+		Intro: `<p>A lotusui extension for recipe surfaces (docs, design systems, in-app
+guides). Not <code>Tabs</code> — the strip is the top of a bordered card, and the body is
+either a live Preview or a Code panel. Pair Code with
+<code>CodeBlock{Nested: true}</code> so the fence does not double-frame.</p>`,
+		Sections: []Section{
+			InstallSection("example"),
+			{
+				Heading: "Usage",
+				Prose: `<p>Durable state on <code>*Example</code>. Pass Preview always; omit Code for
+Preview-only.</p>`,
+				Snippet: `var ex lotusui.Example
+ex.Layout(th, gtx, lotusui.ExampleProps{
+	Preview: liveWidget,
+	Code:    lotusui.CodeBlock(th, lotusui.CodeBlockProps{Nested: true, Plain: src}),
+})`,
+				Demo:  "example/0",
+				DemoH: 220,
+			},
+			{
+				Heading: "Preview only",
+				Prose:   `<p>When <code>Code</code> is nil, the Code tab is hidden and Preview stays active.</p>`,
+				Snippet: `ex.Layout(th, gtx, lotusui.ExampleProps{Preview: liveWidget})`,
+				Demo:    "example/1",
+				DemoH:   160,
+			},
+			{
+				Heading: "With CodeBlock",
+				Prose: `<p>The docs site uses this for every capability section: Preview renders the
+live demo; Code shows the snippet (chroma → <code>CodeSpan</code> in the site module).</p>`,
+				Snippet: `ex.Layout(th, gtx, lotusui.ExampleProps{
+	Preview: preview,
+	Code: lotusui.CodeBlock(th, lotusui.CodeBlockProps{
+		Nested: true, Lang: "go", Plain: src, Lines: spans,
+	}),
+})`,
+				Demo:  "example/2",
+				DemoH: 260,
+			},
+		},
+		Props: []Prop{
+			{"Example", "*Example", "Durable Preview|Code tab state; must outlive the frame."},
+			{"ExampleProps.Preview", "layout.Widget", "Live body (required)."},
+			{"ExampleProps.Code", "layout.Widget", "Code panel; nil → Preview only."},
+		},
+	}
+}
+
+func switchPage() *Page {
+	return &Page{
 		Slug:   "switch",
 		Title:  "Switch",
 		Kicker: "The toggle: sliding thumb, accent when on, animated on the shared clock.",
 		Intro: `<p>A rounded track with a sliding thumb. Clicking flips <code>Value</code>; the thumb
 animates on the shared animation clock so every toggle in an app moves identically.</p>`,
-		Sections: []section{
-			installSection("switch"),
+		Sections: []Section{
+			InstallSection("switch"),
 			{
 				Heading: "Usage",
 				Snippet: `var notify lotusui.Switch
@@ -1567,7 +1603,7 @@ composition.</p>`,
 				DemoH: 200,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Value", "bool", "The state; clicking flips it."},
 			{"Size", "Size", "The shared size presets (Size2XS–Size2XL)."},
 			{"Invalid", "bool", "Danger chrome."},
@@ -1576,8 +1612,8 @@ composition.</p>`,
 	}
 }
 
-func selectPage() *page {
-	return &page{
+func selectPage() *Page {
+	return &Page{
 		Slug:   "select",
 		Title:  "Select",
 		Kicker: "Trigger + chevron, a floating panel of options, check-marked selection.",
@@ -1588,8 +1624,8 @@ option, pressing anywhere else, or Escape closes it; the panel opens aligned to 
 selection. Web-specific composition (<code>SelectTrigger</code>/<code>SelectValue</code>
 sub-components) and RTL are "from the web": Go structs replace composition, and RTL layout is
 not yet supported by the underlying toolkit.</p>`,
-		Sections: []section{
-			installSection("select"),
+		Sections: []Section{
+			InstallSection("select"),
 			{
 				Heading: "Usage",
 				Prose: `<p>Options carry a <code>Label</code> (what the user reads) and a
@@ -1706,7 +1742,7 @@ sel.Options = lotusui.SelectItems(
 				DemoH:   480,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Options", "[]SelectOption", "The choices: Label is what the user reads, Value what your app stores (HTML's &lt;option value&gt;). Empty Value = the Label is the value; SelectItem / SelectOpts build lists."},
 			{"SelectOption.Icon", "string", "Leading icon on the option row and closed trigger when Content is nil."},
 			{"SelectOption.Content", "layout.Widget", "Build-time rich row body (multiline plan cards, …). Replaces Icon+Label in the panel and trigger; Label/Value still own identity."},
@@ -1725,8 +1761,8 @@ sel.Options = lotusui.SelectItems(
 	}
 }
 
-func tabsPage() *page {
-	return &page{
+func tabsPage() *Page {
+	return &Page{
 		Slug:   "tabs",
 		Title:  "Tabs",
 		Kicker: "Three variants and an explicit Update contract.",
@@ -1738,8 +1774,8 @@ one-frame lag (which survives review).</p>
 unexported, <code>Value()</code>/<code>SetValue()</code> read and write it, the zero value picks
 the first option, and an unknown value clears rather than falling back to option 0 — see
 <a href="../select/">Select</a> for the full contract.</p>`,
-		Sections: []section{
-			installSection("tabs"),
+		Sections: []Section{
+			InstallSection("tabs"),
 			{
 				Heading: "Usage",
 				Prose: `<p>The default look: the strip sits in a muted rounded well and the active tab is
@@ -1813,7 +1849,7 @@ height. Resize the demo box: the strip reflows. <code>Vertical</code> stays a co
 				DemoH: 180,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Options", "[]TabOption", "The tabs: Label, Value, Icon and Disabled. TabOpts(\"a\",\"b\") builds label-only strips."},
 			{"Update(gtx)", "method", "Processes clicks. MUST run before anything reads the selection in a frame — Layout never processes clicks."},
 			{"Value() / SetValue(v)", "string", "The selected tab's value; SetValue with an unknown value clears."},
@@ -1824,8 +1860,8 @@ height. Resize the demo box: the strip reflows. <code>Vertical</code> stays a co
 	}
 }
 
-func dialogPage() *page {
-	return &page{
+func dialogPage() *Page {
+	return &Page{
 		Slug:   "dialog",
 		Title:  "Dialog",
 		Kicker: "The one overlay primitive: dimmed scrim, width-capped card, caller-owned visibility.",
@@ -1833,8 +1869,8 @@ func dialogPage() *page {
 <code>SurfaceCard</code> centered on it. It wraps arbitrary content and knows nothing about
 what's inside; visibility stays with the caller — the isOpen/onClose contract. Don't call
 <code>Layout</code> when closed.</p>`,
-		Sections: []section{
-			installSection("dialog"),
+		Sections: []Section{
+			InstallSection("dialog"),
 			{
 				Heading: "Usage",
 				Prose: `<p><code>onClose</code> controls backdrop dismissal: pass your close func to let a
@@ -1916,7 +1952,7 @@ d.Widths = lotusui.Dps(320).At("lg", 720)`,
 				DemoH: 420,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Appear()", "method", "Restart the entrance animation — call on the closed→open transition."},
 			{"HideClose", "bool", "Suppress the corner ✕ on dismissable dialogs."},
 			{"Size", "Size", "Width preset: Size2XS 280dp … Size2XL 840dp (SizeMD, the default, is 480dp)."},
@@ -1929,8 +1965,8 @@ d.Widths = lotusui.Dps(320).At("lg", 720)`,
 	}
 }
 
-func menuPage() *page {
-	return &page{
+func menuPage() *Page {
+	return &Page{
 		Slug:   "dropdown-menu",
 		Title:  "DropdownMenu",
 		Kicker: "Labels, items, separators, checkboxes, radio groups — the full menu grammar.",
@@ -1941,8 +1977,8 @@ raw panel for inline use. The row family covers plain items, icon items, shortcu
 toggleable checkbox items, exclusive radio items, group labels and separators; all row STATE
 lives with the caller. Submenus are on the roadmap; web-specific composition and RTL are
 "from the web".</p>`,
-		Sections: []section{
-			installSection("dropdown-menu"),
+		Sections: []Section{
+			InstallSection("dropdown-menu"),
 			{
 				Heading: "Usage",
 				Prose:   `<p>The trigger opens the panel; labels head groups, separators divide them, items act.</p>`,
@@ -2040,7 +2076,7 @@ menu.Layout(th, gtx, "Open",
 				DemoH: 480,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"DropdownMenuTrigger.Open", "bool", "The panel's state; the trigger toggles it."},
 			{"DropdownMenuTrigger.KeepOpen", "bool", "Suppress close-on-selection — checkbox/radio menus."},
 			{"DropdownMenuTrigger.Width", "unit.Dp", "Max panel width; zero means min 224dp and grow with content."},
@@ -2058,15 +2094,15 @@ menu.Layout(th, gtx, "Open",
 	}
 }
 
-func badgePage() *page {
-	return &page{
+func badgePage() *Page {
+	return &Page{
 		Slug:   "badge",
 		Title:  "Badge",
 		Kicker: "Small rounded labels: four variants × seven sizes × any color.",
 		Intro: `<p>A small rounded label for counts, statuses and health. The status doctrine holds
 whatever the colors: tinted pill + deep ink, never saturated fill + white text.</p>`,
-		Sections: []section{
-			installSection("badge"),
+		Sections: []Section{
+			InstallSection("badge"),
 			{
 				Heading: "Usage",
 				Snippet: `lotusui.Badge(th, "Badge", lotusui.BadgeProps{})`,
@@ -2143,7 +2179,7 @@ lotusui.Badge(th, "New", lotusui.BadgeProps{Size: lotusui.Size2XL})`,
 				DemoH: 100,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Variant", "BadgeVariant", "BadgeDefault (default), BadgeSecondary, BadgeDestructive, BadgeOutline, BadgeGhost."},
 			{"Size", "Size", "The shared size presets (Size2XS–Size2XL)."},
 			{"Color", "ColorScale", "Re-colors the badge the pastel way (SoftScheme) from any scale."},
@@ -2155,8 +2191,8 @@ lotusui.Badge(th, "New", lotusui.BadgeProps{Size: lotusui.Size2XL})`,
 	}
 }
 
-func cardPage() *page {
-	return &page{
+func cardPage() *Page {
+	return &Page{
 		Slug:   "card",
 		Title:  "Card",
 		Kicker: "The grouping surface: three variants, size-scaled padding, everything else composed.",
@@ -2171,8 +2207,8 @@ chrome. Budget with <code>CardProps{Size: …}.Pad()</code> (or use Split pane h
 hardcode <code>20</code>. Content <code>Min.Y</code> is zeroed before the child layouts; re-assert
 <code>Min.Y = Max.Y</code> on the content if you need fill layout inside (see
 <a href="../split/">SplitBoxFillScroll</a>).</p>`,
-		Sections: []section{
-			installSection("card"),
+		Sections: []Section{
+			InstallSection("card"),
 			{
 				Heading: "Usage",
 				Prose: `<p>Header, content and footer are COMPOSITION — the login card: title and
@@ -2241,7 +2277,7 @@ while the title and the action stay fixed.</p>`,
 				DemoH: 160,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Variant", "CardVariant", "CardOutline (default), CardElevated, CardSubtle."},
 			{"Size", "Size", "Scales content padding via Pad() (Size2XS–Size2XL)."},
 			{"Pad()", "unit.Dp", "Content inset for Size — use when budgeting Max.Y around fill/scroll children."},
@@ -2250,8 +2286,8 @@ while the title and the action stay fixed.</p>`,
 	}
 }
 
-func gridPage() *page {
-	return &page{
+func gridPage() *Page {
+	return &Page{
 		Slug:   "grid",
 		Title:  "Grid",
 		Kicker: "The 2D layout primitive: equal tracks, spans, and stepped columns.",
@@ -2260,8 +2296,8 @@ each item takes the first slot wide and deep enough for its spans. Fixed
 <code>Columns</code>, or stepped <code>Cols: Cols(1).At("md", 2).At("lg", 4)</code> against
 <a href="../responsive/">Theme breakpoints</a>. Row heights derive from content; spanning
 items stretch.</p>`,
-		Sections: []section{
-			installSection("grid"),
+		Sections: []Section{
+			InstallSection("grid"),
 			{
 				Heading: "Col span",
 				Snippet: `lotusui.Grid{Columns: 4, Gap: th.Space.SM}.Layout(th, gtx,
@@ -2294,7 +2330,7 @@ track count follows Theme breakpoints (defaults: md=768, lg=992).</p>`,
 				DemoH: 200,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"Columns", "int", "Fixed track count when Cols unset (min 1)."},
 			{"Cols", "ResponsiveInt", "Stepped columns; Cols(n).At(\"md\", 2). When Set(), overrides Columns."},
 			{"Gap / RowGap / ColGap", "unit.Dp", "Spacing; Gap covers both axes unless overridden."},
@@ -2306,8 +2342,8 @@ track count follows Theme breakpoints (defaults: md=768, lg=992).</p>`,
 	}
 }
 
-func simpleGridPage() *page {
-	return &page{
+func simpleGridPage() *Page {
+	return &Page{
 		Slug:   "simplegrid",
 		Title:  "SimpleGrid",
 		Kicker: "Equal cells: continuous minChildWidth or stepped Columns.",
@@ -2316,8 +2352,8 @@ func simpleGridPage() *page {
 sets <code>Columns: Cols(…).At(…)</code> against <a href="../responsive/">Theme
 breakpoints</a>. Every cell in a row gets the tallest cell's height. Reach for
 <code>Grid</code> when you need explicit tracks and spans.</p>`,
-		Sections: []section{
-			installSection("grid"),
+		Sections: []Section{
+			InstallSection("grid"),
 			{
 				Heading: "Usage — continuous columns",
 				Prose: `<p>Columns derive from <code>available width / MinChildWidth</code>. Narrow the
@@ -2350,7 +2386,7 @@ its minimum — cards in a row stay flush.</p>`,
 				DemoH: 200,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"th", "*Theme", "Breakpoints for stepped Columns / Gaps."},
 			{"items", "[]T", "One cell per item, any type."},
 			{"SimpleGridProps.MinChildWidth", "unit.Dp", "Continuous mode: width / this → columns."},
@@ -2362,17 +2398,18 @@ its minimum — cards in a row stay flush.</p>`,
 	}
 }
 
-func listViewPage() *page {
-	return &page{
+func listViewPage() *Page {
+	return &Page{
 		Slug:   "listview",
 		Title:  "ListView",
 		Kicker: "The virtualized list: 10,000 rows cost a screenful per frame.",
 		Intro: `<p>A lotusui extension — the list family: <code>ListView</code> lays out only the rows
 intersecting the viewport, <code>Scrollable</code> is its whole-content sibling for a screen's
-mixed content, and <code>HoverRow</code> is the one way a list row reads as interactive. Scroll
-position lives in the caller's <code>widget.List</code>.</p>`,
-		Sections: []section{
-			installSection("listview"),
+mixed content (no portals), and <code>HoverRow</code> is the one way a list row reads as
+interactive. For Floating hosts prefer <a href="../scroll-area/">ScrollArea</a>. Scroll
+position for ListView/Scrollable lives in the caller's <code>widget.List</code>.</p>`,
+		Sections: []Section{
+			InstallSection("listview"),
 			{
 				Heading: "Usage — virtualization",
 				Prose: `<p>Only visible rows are laid out. In the library's benchmarks a 10,000-row
@@ -2399,32 +2436,99 @@ the hovered row speak the same language.</p>`,
 				Heading: "Scrollable — the non-virtualized sibling",
 				Prose: `<p><code>Scrollable</code> lays its whole content out every frame — right for a
 form or a settings screen, wrong past a few dozen rows. Reach for <code>ListView</code> the
-moment a collection can grow with data.</p>
+moment a collection can grow with data. Prefer <a href="../scroll-area/">ScrollArea</a>
+when content hosts Floating widgets. Keep <code>Scrollable</code> when you want
+material.List's scrollbar and no floating layer.</p>
 <p><strong>Hard rule — List vs Flexed:</strong> <code>material.List</code> (and thus
 <code>Scrollable</code> / <code>ListView</code> items) measures with effectively unbounded
 <code>Max.Y</code>. A <code>layout.Flexed</code> “fill remaining” <em>inside a list item cannot
 work</em> (pinned footers break). For fill panes with Flexed body + Rigid footer, use bounded
 <code>Min.Y = Max.Y</code> <strong>without</strong> an outer list — see
-<a href="../split/">SplitBoxFillScroll</a>.</p>
-<p><code>Scrollable</code> insets <code>shadowRoom</code> for <em>page</em>-level card shadows.
-Split <em>pane</em> helpers budget <code>CardProps{}.Pad()</code>, not shadow room — never nest
-<code>Scrollable</code> inside Split pane helpers by default (double inset). Pane/column
-scrollers set <code>Track.MajorPadding = 0</code> so the thumb meets content.</p>`,
+<a href="../split/">SplitBoxFillScroll</a>.</p>`,
 				Snippet: `var scroll widget.List
-
 lotusui.Scrollable(th, &scroll, gtx, screenContent)`,
 			},
 		},
-		Props: []prop{
-			{"list", "*widget.List", "Scroll position; must outlive the frame."},
-			{"count", "int", "Number of rows."},
-			{"row", "func(C, int) D", "Lays out row i at the viewport's width."},
+		Props: []Prop{
+			{"list", "*widget.List", "Scroll position; must outlive the frame. (ListView / Scrollable)"},
+			{"count", "int", "Number of rows. (ListView)"},
+			{"row", "func(C, int) D", "Lays out row i at the viewport's width. (ListView)"},
 		},
 	}
 }
 
-func splitPage() *page {
-	return &page{
+func scrollAreaPage() *Page {
+	return &Page{
+		Slug:   "scroll-area",
+		Title:  "Scroll Area",
+		Kicker: "Bounded viewport scroll that lets Floating portals escape.",
+		Intro: `<p>shadcn Scroll Area — whole-content scrolling inside a clipped viewport
+<strong>without</strong> <code>layout.List</code>'s <code>op.Record</code> macros. Floating
+(Select, Menu, Popover, Tooltip, HoverCard) records into <code>op.Defer</code>; List-backed
+scroll traps those ops so open panels look like they push the page.
+<code>ScrollArea</code> clips and offsets on the root ops stack so portals paint correctly.</p>
+<p>Prefer <code>ScrollArea</code> for screens that host Floating. Prefer
+<a href="../listview/">ListView</a> for long virtualized collections.
+<code>Scrollable</code> remains the List-backed scrollbar path when there are no portals.</p>`,
+		Sections: []Section{
+			InstallSection("scroll-area"),
+			{
+				Heading: "Usage",
+				Prose: `<p>State (<code>Offset</code>) must outlive the frame. Give the viewport a
+bounded height (parent constraints or an explicit max).</p>`,
+				Snippet: `var page lotusui.ScrollArea
+page.Layout(th, gtx, screenContent)`,
+				Demo:  "scroll-area/0",
+				DemoH: 280,
+			},
+			{
+				Heading: "Horizontal",
+				Prose:   `<p>Set <code>Horizontal: true</code> for sideways scroll (works strip, tag row). The zero value scrolls vertically — <code>layout.Axis</code> is not used (its zero is Horizontal).</p>`,
+				Snippet: `var strip lotusui.ScrollArea
+strip.Horizontal = true
+strip.Layout(th, gtx, wideRow)`,
+				Demo:  "scroll-area/1",
+				DemoH: 160,
+			},
+			{
+				Heading: "Floating inside",
+				Prose: `<p>Open a Select (or Menu) while scrolling — the panel paints above the
+frame, not trapped inside the scroller. That is the whole reason ScrollArea exists
+beside Scrollable.</p>`,
+				Snippet: `var page lotusui.ScrollArea
+page.Layout(th, gtx, lotusui.VStack(th.Space.MD,
+	lotusui.LabelBody(th, "…").Layout,
+	func(gtx C) D { return env.Layout(th, gtx, "Environment") },
+))`,
+				Demo:  "scroll-area/2",
+				DemoH: 320,
+			},
+			{
+				Heading: "NoShadowRoom",
+				Prose: `<p>Page-level scroll insets <code>shadowRoom</code> for card shadows.
+Pane helpers that already budget Card pad pass
+<code>ScrollAreaProps{NoShadowRoom: true}</code> to avoid double inset.</p>`,
+				Snippet: `page.LayoutWith(th, gtx, lotusui.ScrollAreaProps{NoShadowRoom: true}, content)`,
+			},
+			{
+				Heading: "ScrollTo / Reset",
+				Prose:   `<p>Jump on route changes or TOC clicks; clamp happens on the next Layout.</p>`,
+				Snippet: `page.Reset()
+page.ScrollTo(y)`,
+			},
+		},
+		Props: []Prop{
+			{"Offset", "int", "Scroll position in px; must outlive the frame."},
+			{"Horizontal", "bool", "Scroll on X when true; zero value scrolls vertically."},
+			{"NoShadowRoom", "bool", "Skip shadowRoom inset (ScrollAreaProps)."},
+			{"Reset()", "method", "Scroll back to the start."},
+			{"ScrollTo(offset)", "method", "Jump to a content offset."},
+		},
+	}
+}
+
+func splitPage() *Page {
+	return &Page{
 		Slug:   "split",
 		Title:  "Split",
 		Kicker: "The carousel of panes — content is revealed and hidden, never reflowed.",
@@ -2439,8 +2543,8 @@ Use <code>SplitColumnScroll</code> (column scrolls, stacked natural cards),
 <code>SplitBoxFillScroll</code> (flush height, Flexed body + Rigid footer — <em>no</em> outer list).
 Pane helpers subtract <code>2×CardProps{}.Pad()</code> from content <code>Max.Y</code>; they do not
 nest <code>Scrollable</code>.</p>`,
-		Sections: []section{
-			installSection("split"),
+		Sections: []Section{
+			InstallSection("split"),
 			{
 				Heading: "Usage",
 				Prose: `<p>Pass every pane the screen can show — including currently hidden ones — so
@@ -2508,7 +2612,7 @@ footer work. Do not wrap that content in a list.</p>`,
 				DemoH: 320,
 			},
 		},
-		Props: []prop{
+		Props: []Prop{
 			{"gap", "unit.Dp", "Layout parameter — spacing between the strip's panes."},
 			{"depth", "int", "Which panes the viewport shows: 0 = pane 0 full width; n = panes n-1 and n side by side."},
 			{"boxes", "...layout.Widget", "Every pane the screen can show, hidden ones included, so mid-animation frames slide instead of pop."},

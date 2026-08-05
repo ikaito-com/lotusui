@@ -1,10 +1,9 @@
-package main
+package docspages
 
 import (
 	"encoding/json"
 	"fmt"
 	"html"
-	"html/template"
 	"math"
 	"os"
 	"strings"
@@ -55,11 +54,17 @@ type BenchRow struct {
 	AllocsPerOp int64   `json:"allocsPerOp"`
 }
 
-func loadBenchReport(path string) (BenchReport, error) {
+func LoadBenchReport(path string) (BenchReport, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return BenchReport{}, err
 	}
+	return ParseBenchReport(b)
+}
+
+// ParseBenchReport unmarshals a bench.json blob (also used when the
+// report is embedded in the docsapp WASM).
+func ParseBenchReport(b []byte) (BenchReport, error) {
 	var r BenchReport
 	if err := json.Unmarshal(b, &r); err != nil {
 		return BenchReport{}, err
@@ -182,15 +187,7 @@ func benchLabel(name string) string {
 }
 
 // performancePage builds the docs Performance page from site/bench.json.
-func performancePage() *page {
-	r, err := loadBenchReport("bench.json")
-	if err != nil {
-		r = BenchReport{Note: "bench.json missing — run make bench-doc"}
-	}
-	return buildPerformancePage(r)
-}
-
-func buildPerformancePage(r BenchReport) *page {
+func PerformancePage(r BenchReport) *Page {
 	icon, _ := r.byName("SVGIconCacheHit")
 	btn, _ := r.byName("ButtonFrame")
 	card, _ := r.byName("CardFrame")
@@ -486,20 +483,20 @@ go test github.com/ikaito-com/lotusui -run TestSVGIconCacheZeroAlloc
 		formatNs(btn.NsPerOp),
 	)
 
-	return &page{
+	return &Page{
 		Slug:   "performance",
 		Title:  "Performance",
 		Kicker: "Quiet when idle. Cheap on long lists. Measured — not marketed.",
-		Intro:  template.HTML(intro),
-		Sections: []section{
-			{Heading: "How we measure", Prose: template.HTML(measure)},
-			{Heading: "Long lists", Prose: template.HTML(lists)},
-			{Heading: "Everyday controls", Prose: template.HTML(controls)},
-			{Heading: "Idle windows", Prose: template.HTML(idle)},
-			{Heading: "How big is a tiny app?", Prose: template.HTML(ship)},
-			{Heading: "What we don’t compare", Prose: template.HTML(honest)},
-			{Heading: "Full snapshot", Prose: template.HTML(numbers)},
-			{Heading: "How we keep it cheap", Prose: template.HTML(howto)},
+		Intro:  intro,
+		Sections: []Section{
+			{Heading: "How we measure", Prose: measure},
+			{Heading: "Long lists", Prose: lists},
+			{Heading: "Everyday controls", Prose: controls},
+			{Heading: "Idle windows", Prose: idle},
+			{Heading: "How big is a tiny app?", Prose: ship},
+			{Heading: "What we don’t compare", Prose: honest},
+			{Heading: "Full snapshot", Prose: numbers},
+			{Heading: "How we keep it cheap", Prose: howto},
 			{
 				Heading: "Reproduce",
 				Prose:   `<p>Absolute ns/op move with CPU and Go version. Contracts and units do not.</p>`,

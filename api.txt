@@ -103,6 +103,7 @@ func (d *Select) Clear()
 func (d *Select) Layout(th *Theme, gtx layout.Context, label string) layout.Dimensions
 func (d *Select) SetValue(v string)
 func (d *Select) Value() string
+func (e *Example) Layout(th *Theme, gtx layout.Context, o ExampleProps) layout.Dimensions
 func (f *Input) ApplyConstraints()
 func (f *Input) Layout(th *Theme, gtx layout.Context, label, hint string) layout.Dimensions
 func (f *Input) LayoutField(th *Theme, gtx layout.Context, hint string) layout.Dimensions
@@ -155,6 +156,10 @@ func (r ResponsiveSize) Resolve(th *Theme, gtx layout.Context) Size
 func (r ResponsiveSize) ResolveAt(th *Theme, idx int) Size
 func (r ResponsiveSize) Set() bool
 func (s *DropdownMenuSub) Item(th *Theme, label string, items ...layout.Widget) layout.Widget
+func (s *ScrollArea) Layout(th *Theme, gtx layout.Context, content layout.Widget) layout.Dimensions
+func (s *ScrollArea) LayoutWith(th *Theme, gtx layout.Context, o ScrollAreaProps, content layout.Widget) layout.Dimensions
+func (s *ScrollArea) Reset()
+func (s *ScrollArea) ScrollTo(offset int)
 func (s *Slider) Layout(th *Theme, gtx layout.Context) layout.Dimensions
 func (s *Split) Layout(gtx layout.Context, gap unit.Dp, depth int, boxes ...layout.Widget) layout.Dimensions
 func (s *Split) LayoutSolo(gtx layout.Context, gap unit.Dp, solo bool, box0, box1 layout.Widget) layout.Dimensions
@@ -212,6 +217,7 @@ func CardFooter(th *Theme, content layout.Widget) layout.Widget
 func CardHeader(th *Theme, title, description string, action layout.Widget) layout.Widget
 func Cell(w layout.Widget) GridItem
 func ClampCorner(r int, sz image.Point) int
+func CodeBlock(th *Theme, o CodeBlockProps) layout.Widget
 func Cols(base int) ResponsiveInt
 func Disabled(gtx layout.Context, when bool) layout.Context
 func Dps(base unit.Dp) ResponsiveDp
@@ -345,11 +351,15 @@ type ButtonVariant int
 type CardProps struct { Variant CardVariant Size Size }
 type CardVariant int
 type Checkbox struct { Value bool Indeterminate bool Invalid bool Disabled bool Size Size }
+type CodeBlockProps struct { Lang string Lines [][]CodeSpan Plain string Copy *widget.Clickable Nested bool }
+type CodeSpan struct { Text string Color color.NRGBA Bold bool }
 type ColorScale struct { C50, C100, C200, C300, C400, C500, C600, C700, C800, C900 color.NRGBA }
 type Dialog struct { Size Size Sizes ResponsiveSize Width unit.Dp Widths ResponsiveDp HideClose bool }
 type DropdownMenuSub struct { Width unit.Dp }
 type DropdownMenuTrigger struct { Open bool KeepOpen bool Width unit.Dp Variant ButtonVariant Icon string Size Size Align PopoverAlign }
 type DurationScale struct { Fast time.Duration Normal time.Duration Slow time.Duration }
+type Example struct { }
+type ExampleProps struct { Preview layout.Widget Code layout.Widget }
 type FieldProps struct { Label string Helper string Error string Required bool }
 type GlossarySeg struct { Text string Term bool }
 type GlossaryTerm struct { Term string Tip string }
@@ -375,6 +385,8 @@ type ResponsiveDp struct { }
 type ResponsiveInt struct { }
 type ResponsiveSize struct { }
 type Scheme struct { Solid color.NRGBA SolidHover color.NRGBA SolidActive color.NRGBA OnSolid color.NRGBA Subtle color.NRGBA SubtleHover color.NRGBA SubtleActive color.NRGBA OnSubtle color.NRGBA Outline color.NRGBA }
+type ScrollArea struct { Offset int Horizontal bool }
+type ScrollAreaProps struct { NoShadowRoom bool }
 type Select struct { Options []SelectOption Groups []SelectGroup Size Size Placeholder string Disabled bool Invalid bool Attached AttachedEdges AlignItemWithTrigger bool }
 type SelectGroup struct { Label string Options []SelectOption }
 type SelectOption struct { Label string Value string Meta string Icon string Content layout.Widget }

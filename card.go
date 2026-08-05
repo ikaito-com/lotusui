@@ -2,6 +2,7 @@ package lotusui
 
 import (
 	"image"
+	"sync"
 
 	"gioui.org/layout"
 	"gioui.org/op"
@@ -85,6 +86,20 @@ func CardFooter(th *Theme, content layout.Widget) layout.Widget {
 	}
 }
 
+// measureOps pools scratch Ops for Record-free chrome measure passes
+// (Card, …). Nested measure is safe: each call gets its own Ops.
+var measureOps = sync.Pool{New: func() any { return new(op.Ops) }}
+
+func measureContent(gtx layout.Context, w layout.Widget) layout.Dimensions {
+	ops := measureOps.Get().(*op.Ops)
+	ops.Reset()
+	defer measureOps.Put(ops)
+	mgtx := gtx
+	mgtx = mgtx.Disabled()
+	mgtx.Ops = ops
+	return w(mgtx)
+}
+
 // Card is the grouping surface: a rounded panel around arbitrary
 // content — header, body and footer are composition (stack them),
 // not slots. It honors gtx.Constraints.Min.Y: a card asked to be at
@@ -92,7 +107,10 @@ func CardFooter(th *Theme, content layout.Widget) layout.Widget {
 // (content stays top-aligned), which is what makes equal-height card
 // rows possible (see SimpleGrid's measure pass).
 //
-// Content Min.Y is zeroed before the child layouts; re-assert
+// Content is laid out WITHOUT op.Record so Floating portals (Select,
+// Menu, Popover) escape the card — the chrome size is measured on a
+// disabled scratch pass first, then content lays out live on the root
+// ops stack. Content Min.Y is zeroed before the child layouts; re-assert
 // Min.Y = Max.Y on the content if you need fill layout inside (see
 // SplitBoxFillScroll). Max.X is reduced by 2× Pad(); Max.Y is not —
 // children that fill Max.Y can paint under the pad unless the caller
@@ -100,18 +118,19 @@ func CardFooter(th *Theme, content layout.Widget) layout.Widget {
 func Card(th *Theme, o CardProps, content layout.Widget) layout.Widget {
 	return func(gtx layout.Context) layout.Dimensions {
 		pad := gtx.Dp(o.Pad())
-		m := op.Record(gtx.Ops)
-		inner := gtx
-		inner.Constraints.Max.X -= 2 * pad
-		if inner.Constraints.Max.X < 0 {
-			inner.Constraints.Max.X = 0
+		innerMaxX := gtx.Constraints.Max.X - 2*pad
+		if innerMaxX < 0 {
+			innerMaxX = 0
 		}
-		inner.Constraints.Min.X = inner.Constraints.Max.X
-		inner.Constraints.Min.Y = 0
-		dims := content(inner)
-		call := m.Stop()
 
-		cardSize := image.Pt(gtx.Constraints.Max.X, dims.Size.Y+2*pad)
+		mdims := measureContent(gtx, func(gtx layout.Context) layout.Dimensions {
+			gtx.Constraints.Max.X = innerMaxX
+			gtx.Constraints.Min.X = innerMaxX
+			gtx.Constraints.Min.Y = 0
+			return content(gtx)
+		})
+
+		cardSize := image.Pt(gtx.Constraints.Max.X, mdims.Size.Y+2*pad)
 		if cardSize.Y < gtx.Constraints.Min.Y {
 			cardSize.Y = gtx.Constraints.Min.Y
 		}
@@ -139,8 +158,14 @@ func Card(th *Theme, o CardProps, content layout.Widget) layout.Widget {
 				})
 		}
 
+		// Live content on the root ops stack — Floating must not sit
+		// inside an op.Record macro.
 		st := op.Offset(image.Pt(pad, pad)).Push(gtx.Ops)
-		call.Add(gtx.Ops)
+		inner := gtx
+		inner.Constraints.Max.X = innerMaxX
+		inner.Constraints.Min.X = innerMaxX
+		inner.Constraints.Min.Y = 0
+		content(inner)
 		st.Pop()
 
 		return layout.Dimensions{Size: cardSize}

@@ -23,6 +23,11 @@ import (
 // viewport by wrapping it in a single-item material.List — a scrollbar
 // and trackpad/wheel scrolling instead of silent clipping.
 //
+// Prefer ScrollArea when content hosts Floating widgets (Select, Menu,
+// Popover, …): layout.List records children and traps op.Defer portals.
+// Scrollable stays useful when you want material.List's scrollbar and
+// the content has no floating layer.
+//
 // content must not itself contain a layout.Flexed expecting to fill
 // "remaining" vertical space — layout.List measures a list item against
 // an effectively unbounded height. Give anything that needs a bounded

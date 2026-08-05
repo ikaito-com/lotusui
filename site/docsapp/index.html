@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lotusui</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+  html, body { height: 100%; margin: 0; background: #F3F4FA; }
+  #giowindow { position: fixed; inset: 0; }
+  #loading {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #6F7288; font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  #booterr {
+    display: none; position: fixed; left: 16px; right: 16px; bottom: 16px;
+    max-height: 45%; overflow: auto; z-index: 10;
+    background: #1c1917; color: #fecaca; border-radius: 8px; padding: 12px 14px;
+    font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+<div id="loading">loading lotusui docs…</div>
+<div id="giowindow"></div>
+<pre id="booterr"></pre>
+<script>
+function bootErr(msg) {
+  const el = document.getElementById('booterr');
+  el.style.display = 'block';
+  el.textContent += msg + '\n';
+  console.error(msg);
+}
+window.addEventListener('error', (e) => bootErr('error: ' + (e.message || e)));
+window.addEventListener('unhandledrejection', (e) => bootErr('rejection: ' + e.reason));
+</script>
+<script src="wasm_exec.js"></script>
+<script>
+(async () => {
+  const loading = document.getElementById('loading');
+  try {
+    if (typeof Go !== 'function') throw new Error('wasm_exec.js did not define Go');
+    const go = new Go();
+    let result;
+    try {
+      result = await WebAssembly.instantiateStreaming(fetch('docsapp.wasm'), go.importObject);
+    } catch (e) {
+      bootErr('instantiateStreaming failed (' + e + '); falling back');
+      const resp = await fetch('docsapp.wasm');
+      if (!resp.ok) throw new Error('fetch docsapp.wasm: HTTP ' + resp.status);
+      const buf = await resp.arrayBuffer();
+      bootErr('wasm bytes ' + buf.byteLength);
+      result = await WebAssembly.instantiate(buf, go.importObject);
+    }
+    loading.remove();
+    go.run(result.instance);
+  } catch (e) {
+    loading.textContent = 'failed to start docs';
+    bootErr(String(e && e.stack ? e.stack : e));
+  }
+})();
+</script>
+<noscript>lotusui docs need JavaScript + WebAssembly.</noscript>
+</body>
+</html>

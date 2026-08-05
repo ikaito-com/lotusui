@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="site/gen/static/favicon.svg" width="88" alt="lotusui">
+  <img src="site/favicon.svg" width="88" alt="lotusui">
 </p>
 
 <h1 align="center">lotusui</h1>

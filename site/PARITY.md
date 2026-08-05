@@ -51,8 +51,8 @@ because it is auditable.
 | **Toggle** | demo ✓ · outline ✓ · text ✓ · sizes ✓ · disabled ✓ · rtl ➖ |
 | **ToggleGroup** | demo ✓ · outline ✓ · sizes ✓ · disabled ✓ · vertical ✓ · spacing ✓ · font-weight-selector ✓ · rtl ➖ |
 | **Tooltip** | demo ✓ · sides ✓ · keyboard ⏳ · disabled ⏳ · rtl ➖ |
-| **Extensions** (no counterpart) | Grid (spans, auto-flow, row contract, **Cols responsive**) ✓ · SimpleGrid (continuous minChildWidth + **stepped Columns**) ✓ · Theme breakpoints (ParseBreakpointsJSON / WithBreakpoints) ✓ · Show / ResponsiveInt|Dp|Bool ✓ · Stack (VStack / HStack) ✓ · Wrap ✓ · Split + VSlide ✓ · Split scroll helpers (ColumnScroll / BoxScroll / FillScroll) ✓ · TitleWithIcons ✓ · AnnotatedText / SplitGlossary ✓ · ListView (virtualized) ✓ · Floating (portal) ✓ |
-| **Missing families** | Empty, Combobox, Command, Menubar, Navigation Menu, Sheet/Drawer, Calendar, Context Menu ⏳ · Scroll Area ➖ (Scrollable) · Item ✓ |
+| **Extensions** (no counterpart) | Grid (spans, auto-flow, row contract, **Cols responsive**) ✓ · SimpleGrid (continuous minChildWidth + **stepped Columns**) ✓ · Theme breakpoints (ParseBreakpointsJSON / WithBreakpoints) ✓ · Show / ResponsiveInt|Dp|Bool ✓ · Stack (VStack / HStack) ✓ · Wrap ✓ · Split + VSlide ✓ · Split scroll helpers (ColumnScroll / BoxScroll / FillScroll) ✓ · TitleWithIcons ✓ · AnnotatedText / SplitGlossary ✓ · ListView (virtualized) ✓ · Floating (portal) ✓ · **CodeBlock** / CodeSpan (highlighter stays in the app) ✓ · **Example** (Preview\|Code chrome) ✓ · **ScrollArea** (Floating-safe scroll; List-backed Scrollable remains) ✓ |
+| **Missing families** | Empty, Combobox, Command, Menubar, Navigation Menu, Sheet/Drawer, Calendar, Context Menu ⏳ · Item ✓ |
 
 ## Working order
 

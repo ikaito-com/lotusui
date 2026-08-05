@@ -62,7 +62,7 @@
         "button",
         "stack"
       ],
-      "hash": "c9cb0e9c5516f09f"
+      "hash": "17cb16cc25cd66b5"
     },
     {
       "name": "checkbox",
@@ -75,6 +75,23 @@
         "button"
       ],
       "hash": "8947cad702c94e13"
+    },
+    {
+      "name": "code-block",
+      "type": "component",
+      "description": "CodeSpan is one styled run inside a CodeBlock line — typically a highlighter token.",
+      "files": [
+        "codeblock.go"
+      ],
+      "carried": [
+        "measureContent",
+        "measureOps"
+      ],
+      "dependsOn": [
+        "card",
+        "stack"
+      ],
+      "hash": "20ace6c2ea4f10b0"
     },
     {
       "name": "switch",
@@ -232,6 +249,22 @@
         "stack"
       ],
       "hash": "0a779cbeab0cb22a"
+    },
+    {
+      "name": "example",
+      "type": "component",
+      "description": "Example is Preview|Code chrome: one bordered rounded card whose tab strip is the top of the card (surface2), not a free-floating Tabs well.",
+      "files": [
+        "example.go"
+      ],
+      "carried": [
+        "measureContent",
+        "measureOps"
+      ],
+      "dependsOn": [
+        "card"
+      ],
+      "hash": "61c0511244d5e270"
     },
     {
       "name": "accordion",
@@ -524,7 +557,22 @@
       "carried": [
         "fadeNRGBA"
       ],
-      "hash": "0a4bacaabd6aeeac"
+      "hash": "414edc6a6c6082e2"
+    },
+    {
+      "name": "scroll-area",
+      "type": "component",
+      "description": "ScrollArea is shadcn Scroll Area — whole-content scrolling inside a bounded viewport WITHOUT layout.List's op.Record macros.",
+      "files": [
+        "scrollarea.go"
+      ],
+      "carried": [
+        "shadowRoom"
+      ],
+      "dependsOn": [
+        "listview"
+      ],
+      "hash": "f1f720c0ce435e2c"
     },
     {
       "name": "split",

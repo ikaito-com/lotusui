@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{.Site.Name}} gallery</title>
+<title>lotusui gallery</title>
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <style>
   html, body { height: 100%; margin: 0; background: transparent; }
@@ -26,7 +26,6 @@
   try {
     result = await WebAssembly.instantiateStreaming(fetch("gallery.wasm"), go.importObject);
   } catch (e) {
-    // Server without the wasm MIME type — fall back to ArrayBuffer.
     const buf = await (await fetch("gallery.wasm")).arrayBuffer();
     result = await WebAssembly.instantiate(buf, go.importObject);
   }

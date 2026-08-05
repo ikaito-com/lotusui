@@ -1,0 +1,112 @@
+{
+  "generated": "2026-08-05T17:54:12+07:00",
+  "go": "go1.26.5",
+  "goos": "darwin",
+  "goarch": "amd64",
+  "cpu": "Intel(R) Core(TM) i7-4980HQ CPU @ 2.80GHz",
+  "note": "layout/ops microbenchmarks \u2014 ops generation cost per frame, not painted GPU FPS. Medians of 5\u00d7300ms runs.",
+  "appBytes": 8120624,
+  "appNote": "minimal one-button desktop app (Theme + Button, darwin/amd64, -ldflags=-s -w); includes Go runtime + Gio + fonts + lotusui",
+  "minimalWasmBytes": 11979285,
+  "minimalWasmGzipBytes": 3299599,
+  "minimalWasmNote": "same minimal one-button app \u00b7 GOOS=js GOARCH=wasm -ldflags=-s -w \u00b7 includes Go+Gio+fonts+lotusui (browser does not supply those)",
+  "wasmBytes": 21032360,
+  "wasmGzipBytes": 5092038,
+  "wasmNote": "docs gallery (web \u00b7 GOOS=js GOARCH=wasm, -ldflags=-s -w); every component demo + fonts \u00b7 gzip = Content-Encoding transfer size",
+  "wasmExecGzipBytes": 4352,
+  "wasmExecNote": "go env GOROOT lib/wasm/wasm_exec.js \u00b7 usually served beside the .wasm (~17 KB raw)",
+  "benches": [
+    {
+      "name": "SVGIconCacheHit",
+      "nsPerOp": 50.63,
+      "bytesPerOp": 0,
+      "allocsPerOp": 0
+    },
+    {
+      "name": "LabelFrame",
+      "nsPerOp": 3269,
+      "bytesPerOp": 27,
+      "allocsPerOp": 0
+    },
+    {
+      "name": "BadgeFrame",
+      "nsPerOp": 2311,
+      "bytesPerOp": 15,
+      "allocsPerOp": 0
+    },
+    {
+      "name": "ButtonFrame",
+      "nsPerOp": 3854,
+      "bytesPerOp": 924,
+      "allocsPerOp": 0
+    },
+    {
+      "name": "CardFrame",
+      "nsPerOp": 3034,
+      "bytesPerOp": 25,
+      "allocsPerOp": 0
+    },
+    {
+      "name": "CheckboxFrame",
+      "nsPerOp": 4405,
+      "bytesPerOp": 933,
+      "allocsPerOp": 0
+    },
+    {
+      "name": "SwitchFrame",
+      "nsPerOp": 2639,
+      "bytesPerOp": 1838,
+      "allocsPerOp": 0
+    },
+    {
+      "name": "InputFrame",
+      "nsPerOp": 11987,
+      "bytesPerOp": 6279,
+      "allocsPerOp": 8
+    },
+    {
+      "name": "TabsFrame",
+      "nsPerOp": 30936,
+      "bytesPerOp": 19531,
+      "allocsPerOp": 50
+    },
+    {
+      "name": "SimpleGridFrame",
+      "nsPerOp": 247640,
+      "bytesPerOp": 16666,
+      "allocsPerOp": 152
+    },
+    {
+      "name": "ListView10k",
+      "nsPerOp": 48312,
+      "bytesPerOp": 414,
+      "allocsPerOp": 3
+    },
+    {
+      "name": "Scrollable10k",
+      "nsPerOp": 15313131,
+      "bytesPerOp": 3271185,
+      "allocsPerOp": 10967
+    },
+    {
+      "name": "NewTheme",
+      "nsPerOp": 2321798,
+      "bytesPerOp": 2692203,
+      "allocsPerOp": 20743
+    }
+  ],
+  "peers": [
+    {
+      "name": "fyne",
+      "surface": "desktop",
+      "bytes": 24008792,
+      "note": "Label + Button \u00b7 darwin/amd64 \u00b7 -ldflags=-s -w \u00b7 fyne.io/fyne/v2 v2.8.0 \u00b7 same machine as lotusui snapshot"
+    },
+    {
+      "name": "egui",
+      "surface": "desktop",
+      "bytes": 4870560,
+      "note": "Label + Button \u00b7 darwin/amd64 \u00b7 cargo release strip=true \u00b7 egui/eframe 0.31 \u00b7 same machine as lotusui snapshot"
+    }
+  ]
+}

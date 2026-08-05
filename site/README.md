@@ -1,31 +1,34 @@
 # site/ — the lotusui documentation website
 
 A nested Go module (excluded from the parent module's zip, so library
-consumers download nothing of it). Static HTML carries the prose and
-SEO; the live demos are the real components compiled ONCE to
-WebAssembly — one gallery app, one bundle, addressed by URL hash;
-each docs Preview is its own gallery iframe (`loading="lazy"`).
+consumers download nothing of it). The docs are a **Gio/lotusui app**
+(`docsapp/`) compiled once to WebAssembly for GitHub Pages — chrome,
+nav, Previews, and Code tabs are real widgets, not an HTML shell with
+gallery iframes.
 
 ```
-gen/      the static site generator: pages as data (pages.go),
-          html/template layouts, the lotusui-palette stylesheet
-gallery/  the ONE Gio demo app — every documented state is reachable
-          by hash (#button, #modal/open, …); natively it doubles as
-          the component test bed: LOTUSUI_GALLERY=modal/open go run ./gallery
-dist/     built output (gitignored — CI builds and deploys)
+docsapp/     the Gio docs app (WASM deploy + native: make run-docsapp)
+docspages/   page model + prose/snippets (shared content)
+live/        addressable component demos (docsapp Previews)
+gallery/     screenshot / golden harness (still used by make media)
+cmd/serve/   tiny static server for dist/
+dist/        built output (gitignored — CI builds and deploys)
 ```
 
 ## Working on it
 
 ```sh
-make serve   # build everything, serve on :3030
-make build   # dist/ only
-make check   # fmt + vet + both build targets (native and js/wasm)
+make serve        # build docsapp WASM → dist/, serve on :3030
+make build        # same as docsapp (Pages artifact)
+make run-docsapp  # native window (PAGE=button by default)
+make check        # fmt + vet + test + native/wasm builds
 ```
 
-Adding a component page: add the demo to `gallery/main.go` (a `demo`
-entry with an addressable slug), the page to `gen/pages.go`, in the
-SAME commit as the component change it documents.
+Adding a component page: add the demo to `live/demos.go` (addressable
+slug), the page to `docspages/pages.go` (or pages2.go), nav entry in
+`docspages/nav.go`, in the SAME commit as the component change.
 
-Deploys from `.github/workflows/site.yml` to GitHub Pages on push to
-main. All links are relative, so it works from any subpath.
+Deploy: `make build` writes a thin `index.html` + `docsapp.wasm` +
+`wasm_exec.js` + `media/` heroes at the site root. CI
+(`.github/workflows/site.yml`) publishes `site/dist` to GitHub Pages.
+WASM is never committed — sources only.

@@ -125,6 +125,18 @@ func TestComponentsSurviveHostileConstraints(t *testing.T) {
 		"Scrollable": func(gtx layout.Context) layout.Dimensions {
 			return Scrollable(th, &list, gtx, Spacer(Space.SM))
 		},
+		"ScrollArea": func(gtx layout.Context) layout.Dimensions {
+			var sa ScrollArea
+			return sa.Layout(th, gtx, Spacer(Space.SM))
+		},
+		"CodeBlock": CodeBlock(th, CodeBlockProps{Lang: "go", Plain: "x := 1"}),
+		"Example": func(gtx layout.Context) layout.Dimensions {
+			var ex Example
+			return ex.Layout(th, gtx, ExampleProps{
+				Preview: LabelBody(th, "preview").Layout,
+				Code:    CodeBlock(th, CodeBlockProps{Nested: true, Plain: "x"}),
+			})
+		},
 		"ListView": func(gtx layout.Context) layout.Dimensions {
 			return ListView(th, &vlist, gtx, 1000, func(gtx layout.Context, i int) layout.Dimensions {
 				return LabelBody(th, "row").Layout(gtx)

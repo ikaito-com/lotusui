@@ -16,7 +16,7 @@ Never audit from memory — read the local checkout, then the page.
 1. WebFetch `https://ui.shadcn.com/docs/components/base/<name>` (or
    `/docs/components/<name>`), asking for the ordered section list and
    what each example demonstrates.
-2. Diff against our page in `site/gen/pages.go`:
+2. Diff against our page in `site/docspages/pages.go` (or pages2.go):
    - Missing FEATURE (a prop/behavior we lack) → implement it in the
      library, per the new-component decision rules.
    - Missing SECTION for an existing capability → add the section +

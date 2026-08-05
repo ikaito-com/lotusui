@@ -43,6 +43,7 @@ var components = []componentSpec{
 	{Name: "badge", Files: []string{"badge.go"}},
 	{Name: "card", Files: []string{"card.go"}},
 	{Name: "checkbox", Files: []string{"checkbox.go"}},
+	{Name: "code-block", Files: []string{"codeblock.go"}},
 	{Name: "switch", Files: []string{"switch.go"}},
 	{Name: "input", Files: []string{"inputs.go"}},
 	{Name: "item", Files: []string{"item.go"}},
@@ -53,6 +54,7 @@ var components = []componentSpec{
 	{Name: "tabs", Files: []string{"tabs.go"}},
 	{Name: "dialog", Files: []string{"dialog.go"}},
 	{Name: "dropdown-menu", Files: []string{"menu.go"}},
+	{Name: "example", Files: []string{"example.go"}},
 	{Name: "accordion", Files: []string{"accordion.go"}},
 	{Name: "alert", Files: []string{"alert.go"}},
 	{Name: "alert-dialog", Files: []string{"alertdialog.go"}},
@@ -76,6 +78,7 @@ var components = []componentSpec{
 	// lotusui extensions — components beyond the shadcn catalog.
 	{Name: "grid", Files: []string{"grid.go"}},
 	{Name: "listview", Files: []string{"listview.go"}},
+	{Name: "scroll-area", Files: []string{"scrollarea.go"}},
 	{Name: "split", Files: []string{"split.go", "split_scroll.go"}},
 	{Name: "stack", Files: []string{"stack.go"}},
 }

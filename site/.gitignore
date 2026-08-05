@@ -1,2 +1,3 @@
 # Built output — CI builds and deploys; the repo holds sources only.
 dist/
+bin/

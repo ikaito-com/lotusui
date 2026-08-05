@@ -4,11 +4,21 @@ package main
 
 import "syscall/js"
 
-// jsRoute is the live docs hash for WASM. location.hash alone is not
-// enough: a failed or deferred hash write lets syncRoute snap the UI
-// back to the previous page on the next frame (reads as “browser back”).
-// Keep an in-memory source of truth, mirror it to the URL for sharing /
-// back-forward, and accept hashchange from the browser.
+// jsRoute is the live docs route for WASM, and the SOURCE OF TRUTH —
+// the URL only mirrors it.
+//
+// Why the URL must not be navigated: Gio owns "popstate" on the
+// window (os_js.go). It turns every history pop into a key.NameBack
+// event and, when the app does not consume that key, answers with
+// history.back(). Writing location.hash pushes a history entry, so
+// the browser lands in Gio's back handler and navigates BACK — the
+// click's target page appears for an instant and is then replaced by
+// the previous one. Natively there is no history, which is why this
+// only ever broke in the browser.
+//
+// replaceState updates the address bar in place: no entry pushed, no
+// popstate, no hashchange — links behave like links, and deep links
+// and reloads still work because boot reads location.hash.
 var jsRoute string
 
 func currentRoute() string {
@@ -35,6 +45,13 @@ func setRoute(slug string) {
 		return
 	}
 	jsRoute = h
+	// Mirror to the address bar WITHOUT navigating (see above): a
+	// pushed entry would come back as Gio's key.NameBack → history.back().
+	hist := js.Global().Get("history")
+	if hist.Truthy() && hist.Get("replaceState").Truthy() {
+		hist.Call("replaceState", js.Null(), "", h)
+		return
+	}
 	js.Global().Get("location").Set("hash", h)
 }
 

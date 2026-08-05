@@ -583,7 +583,8 @@ func renderHTMLBlock(th *lotusui.Theme, b htmlBlock) layout.Widget {
 func homePage(th *lotusui.Theme, ui *docsUI) layout.Widget {
 	tag := siteTag
 	body := "Neutral grays, white cards on a tinted canvas, one accent you choose — a complete UI kit for Go apps that ship to desktop and mobile. One module, one design language; macOS, Windows, Linux, iOS, and Android are compile targets, not ports. The same code reaches the web via WebAssembly when you want it — which is also how every demo on this site is the real component in your browser. Built on Gio."
-	pitch := "This entire website — every page, every control, every live demo — is written in Go with Gio and lotusui, compiled to WebAssembly. You are already looking at what you would ship."
+	ctaTitle := "You're already running it"
+	ctaBody := "Every control and demo on this page is lotusui itself, compiled to WebAssembly — not screenshots, not a sandbox. The same Go code builds native apps for macOS, Windows, Linux, iOS and Android."
 
 	ui.tocHeadings = ui.tocHeadings[:0]
 	for _, g := range ui.groups {
@@ -617,35 +618,46 @@ func homePage(th *lotusui.Theme, ui *docsUI) layout.Widget {
 			l.Color = th.Palette.FgMuted
 			return layout.Inset{Bottom: unit.Dp(10)}.Layout(gtx, l.Layout)
 		}})
-		parts = append(parts, part{toc: -1, w: func(gtx C) D {
-			gtx = constrainCh66(gtx)
-			l := material.Label(th.Material, unit.Sp(14), pitch)
-			l.Font.Weight = 500
-			l.Color = th.Palette.BrandFg
-			return layout.Inset{Bottom: unit.Dp(18)}.Layout(gtx, l.Layout)
-		}})
+		// The CTA: title, copy and the button in ONE brand-tinted card.
+		// Every ink and fill is a palette token, so switching palette
+		// re-colors the card with everything else.
 		parts = append(parts, part{toc: -1, w: func(gtx C) D {
 			if ui.ctaBtn.Clicked(gtx) {
 				ui.navigate("quickstart")
 			}
-			return ui.ctaBtn.Layout(gtx, func(gtx C) D {
-				pointer.CursorPointer.Add(gtx.Ops)
+			gtx = constrainCh66(gtx)
+			gtx.Constraints.Min.X = gtx.Constraints.Max.X
+			return layout.Inset{Top: unit.Dp(6), Bottom: unit.Dp(22)}.Layout(gtx, func(gtx C) D {
 				return layout.Background{}.Layout(gtx,
 					func(gtx C) D {
-						rr := clip.UniformRRect(image.Rectangle{Max: gtx.Constraints.Min}, gtx.Dp(8)).Push(gtx.Ops)
-						paint.Fill(gtx.Ops, th.Palette.BrandSolid)
+						sz := gtx.Constraints.Min
+						r := gtx.Dp(th.Radius.LG)
+						rr := clip.UniformRRect(image.Rectangle{Max: sz}, r).Push(gtx.Ops)
+						paint.Fill(gtx.Ops, th.Palette.BrandSubtle)
 						rr.Pop()
-						return D{Size: gtx.Constraints.Min}
+						return D{Size: sz}
 					},
 					func(gtx C) D {
-						return layout.Inset{
-							Top: unit.Dp(9), Bottom: unit.Dp(9),
-							Left: unit.Dp(18), Right: unit.Dp(18),
-						}.Layout(gtx, func(gtx C) D {
-							l := material.Label(th.Material, unit.Sp(14), "Get started →")
-							l.Font.Weight = 600
-							l.Color = th.Palette.BrandContrast
-							return l.Layout(gtx)
+						return layout.UniformInset(unit.Dp(20)).Layout(gtx, func(gtx C) D {
+							return lotusui.VStack(unit.Dp(8),
+								func(gtx C) D {
+									l := material.Label(th.Material, unit.Sp(17), ctaTitle)
+									l.Font.Weight = 600
+									l.Color = th.Palette.Fg
+									return l.Layout(gtx)
+								},
+								func(gtx C) D {
+									l := material.Label(th.Material, unit.Sp(14), ctaBody)
+									l.Color = th.Palette.FgMuted
+									return layout.Inset{Bottom: unit.Dp(4)}.Layout(gtx, l.Layout)
+								},
+								func(gtx C) D {
+									// Left-aligned: the button hugs its label
+									// instead of stretching to the card width.
+									gtx.Constraints.Min.X = 0
+									return lotusui.Button(th, &ui.ctaBtn, "Get started →", lotusui.ButtonProps{})(gtx)
+								},
+							)(gtx)
 						})
 					},
 				)

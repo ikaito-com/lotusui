@@ -513,7 +513,12 @@ func renderHTMLBlock(th *lotusui.Theme, b htmlBlock) layout.Widget {
 					// synthesize blank headers matching column count
 					headers = make([]string, len(rows[0]))
 				}
-				return lotusui.TableText(th, lotusui.TableProps{}, headers, rows)(gtx)
+				// White panel + rounded corners — matches the old
+				// .proptable card chrome (bg --card, radius-md).
+				return lotusui.Card(th, lotusui.CardProps{
+					Variant: lotusui.CardOutline,
+					Size:    lotusui.Size2XS,
+				}, lotusui.TableText(th, lotusui.TableProps{}, headers, rows))(gtx)
 			})
 		}
 	case "list":

@@ -6,8 +6,18 @@
 <title>lotusui</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
-  html, body { height: 100%; margin: 0; background: #F3F4FA; }
-  #giowindow { position: fixed; inset: 0; }
+  html, body {
+    height: 100%; margin: 0; background: #F3F4FA;
+    /* Keep trackpad/touch horizontal gestures from triggering
+       browser back/forward while the canvas handles UI clicks. */
+    overscroll-behavior-x: none;
+    overflow: hidden;
+  }
+  #giowindow {
+    position: fixed; inset: 0;
+    touch-action: none;
+    overscroll-behavior: none;
+  }
   #loading {
     position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
     color: #6F7288; font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;

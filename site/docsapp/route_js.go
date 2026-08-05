@@ -4,13 +4,22 @@ package main
 
 import "syscall/js"
 
+// jsRoute is the live docs hash for WASM. location.hash alone is not
+// enough: a failed or deferred hash write lets syncRoute snap the UI
+// back to the previous page on the next frame (reads as “browser back”).
+// Keep an in-memory source of truth, mirror it to the URL for sharing /
+// back-forward, and accept hashchange from the browser.
+var jsRoute string
+
 func currentRoute() string {
-	return js.Global().Get("location").Get("hash").String()
+	return jsRoute
 }
 
 func onRouteChange(invalidate func()) {
+	jsRoute = js.Global().Get("location").Get("hash").String()
 	js.Global().Get("window").Call("addEventListener", "hashchange",
 		js.FuncOf(func(this js.Value, args []js.Value) any {
+			jsRoute = js.Global().Get("location").Get("hash").String()
 			invalidate()
 			return nil
 		}))
@@ -21,6 +30,11 @@ func setRoute(slug string) {
 	if slug == "" {
 		h = "#"
 	}
+	if jsRoute == h || (slug == "" && (jsRoute == "" || jsRoute == "#")) {
+		jsRoute = h
+		return
+	}
+	jsRoute = h
 	js.Global().Get("location").Set("hash", h)
 }
 

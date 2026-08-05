@@ -17,6 +17,10 @@ recorded here in full.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.3.1] - 2026-08-05
+
 ### Fixed
 
 | Fix | Notes |

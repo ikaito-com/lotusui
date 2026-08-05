@@ -19,6 +19,16 @@ recorded here in full.
 
 Nothing yet.
 
+## [0.3.4] - 2026-08-06
+
+### Fixed
+
+| Fix | Notes |
+|---|---|
+| **`ScrollArea` could not be scrolled by touch** | it consumed `pointer.Scroll` only — WHEEL events — so a finger drag moved nothing and the docs (and any app using it) were unscrollable on every phone and tablet. It now runs on `gesture.Scroll`, the same primitive `layout.List` uses, which reads wheel, drag and fling; the scroll range is still honoured, so leftover scroll chains to the parent, and a fling keeps frames coming until it settles |
+
+Nothing yet.
+
 ## [0.3.3] - 2026-08-06
 
 ### Fixed

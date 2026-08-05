@@ -1,6 +1,7 @@
 package lotusui
 
 import (
+	"gioui.org/gesture"
 	"image"
 	"image/color"
 	"math"
@@ -48,6 +49,7 @@ type ScrollArea struct {
 	lastMax  int
 	measured bool
 	tag      struct{}
+	drag     gesture.Scroll
 }
 
 // Reset scrolls back to the start (route changes, filters).
@@ -100,12 +102,14 @@ func scrollArea(th *Theme, s *ScrollArea, gtx layout.Context, o ScrollAreaProps,
 
 	event.Op(gtx.Ops, &s.tag)
 	scrolled := false
-	for {
-		// Consume only what is left to scroll. An unbounded range let a
-		// gesture push Offset past the end for one frame — the content
-		// painted overscrolled and snapped back next frame (elastic
-		// glitch) — and swallowed scroll that should chain to a parent.
-		// Before the first layout nothing is known, so nothing is taken.
+
+	// Movement goes through gesture.Scroll — the same primitive
+	// layout.List uses. A raw pointer.Scroll filter only ever sees
+	// WHEEL events, so a touch drag scrolled nothing at all: the docs
+	// were unscrollable on every phone. gesture.Scroll reads wheel,
+	// drag and fling, and still honours the range so leftover scroll
+	// chains to the parent.
+	{
 		rng := pointer.ScrollRange{}
 		if s.measured {
 			rng = pointer.ScrollRange{Min: -s.Offset, Max: s.lastMax - s.Offset}
@@ -116,16 +120,35 @@ func scrollArea(th *Theme, s *ScrollArea, gtx layout.Context, o ScrollAreaProps,
 				rng.Max = 0
 			}
 		}
-		f := pointer.Filter{
-			Target: &s.tag,
-			Kinds:  pointer.Scroll | pointer.Enter | pointer.Leave,
-		}
+		axis := gesture.Vertical
+		var xr, yr pointer.ScrollRange
 		if horiz {
-			f.ScrollX = rng
+			axis, xr = gesture.Horizontal, rng
 		} else {
-			f.ScrollY = rng
+			yr = rng
 		}
-		ev, ok := gtx.Event(f)
+		s.drag.Add(gtx.Ops)
+		if d := s.drag.Update(gtx.Metric, gtx.Source, gtx.Now, axis, xr, yr); d != 0 {
+			s.Offset += d
+			scrolled = true
+		}
+		// A fling keeps moving after the finger lifts; keep frames
+		// coming until it settles.
+		if s.drag.State() == gesture.StateFlinging {
+			gtx.Execute(op.InvalidateCmd{})
+		}
+	}
+
+	for {
+		// Consume only what is left to scroll. An unbounded range let a
+		// gesture push Offset past the end for one frame — the content
+		// painted overscrolled and snapped back next frame (elastic
+		// glitch) — and swallowed scroll that should chain to a parent.
+		// Before the first layout nothing is known, so nothing is taken.
+		ev, ok := gtx.Event(pointer.Filter{
+			Target: &s.tag,
+			Kinds:  pointer.Enter | pointer.Leave,
+		})
 		if !ok {
 			break
 		}
@@ -138,13 +161,6 @@ func scrollArea(th *Theme, s *ScrollArea, gtx layout.Context, o ScrollAreaProps,
 			s.hover = true
 		case pointer.Leave:
 			s.hover = false
-		case pointer.Scroll:
-			if horiz {
-				s.Offset += int(e.Scroll.X)
-			} else {
-				s.Offset += int(e.Scroll.Y)
-			}
-			scrolled = true
 		}
 	}
 	if scrolled {

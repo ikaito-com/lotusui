@@ -1,6 +1,6 @@
 {
   "name": "lotusui",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "goModule": "github.com/ikaito-com/lotusui",
   "components": [
     {
@@ -593,7 +593,7 @@
         "button",
         "listview"
       ],
-      "hash": "7a2397dd11cbd15c"
+      "hash": "2cf9a69708523492"
     },
     {
       "name": "split",

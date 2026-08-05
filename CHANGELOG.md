@@ -19,6 +19,16 @@ recorded here in full.
 
 Nothing yet.
 
+## [0.3.3] - 2026-08-06
+
+### Fixed
+
+| Fix | Notes |
+|---|---|
+| **HoverCard / Tooltip / menu triggers panicked inside a `Card`** (regression in 0.3.2) | 0.3.2 made a throwaway pass report "no site" as `-1`, but these four index their per-site state BY that number (`trigs[idx]`, `over[idx]`, `rows[i]`), so measuring one inside a Card, Grid or ButtonGroup panicked with `index out of range [-1]` — which kills the Gio program, and in wasm shows as an endless "Go program has already exited" as dead callbacks keep firing on hover. A throwaway pass now measures the trigger alone and touches no site state. `Select` and `Popover` were never affected: they only compare the index |
+
+Nothing yet.
+
 ## [0.3.2] - 2026-08-06
 
 `go.mod` now carries `retract [v0.4.0, v0.8.0]`. Those versions are an

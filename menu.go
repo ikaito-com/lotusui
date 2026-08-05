@@ -122,6 +122,9 @@ type DropdownMenuSub struct {
 	sites  layoutSites
 	rows   []*subSite
 	active int
+	// measureRow backs the row during a throwaway pass, which has no
+	// site and must never touch a live site's state.
+	measureRow subSite
 }
 
 type subSite struct {
@@ -140,6 +143,10 @@ func (s *DropdownMenuSub) siteAt(i int) *subSite {
 // submenu floats beside it.
 func (s *DropdownMenuSub) Item(th *Theme, label string, items ...layout.Widget) layout.Widget {
 	return func(gtx layout.Context) layout.Dimensions {
+		// A throwaway pass has no site: draw the row, never the panel.
+		if inMeasurePass() {
+			return menuRow(th, &s.measureRow.btn, label, menuRowCfg{chev: true})(gtx)
+		}
 		idx := s.sites.next(gtx.Now)
 		site := s.siteAt(idx)
 		for {
@@ -295,6 +302,9 @@ type DropdownMenuTrigger struct {
 	trigs   []*menuTrigSite
 	active  int
 	dismiss dismisser
+	// measureBtn backs the trigger during a throwaway pass, which has
+	// no site and must never touch a live site's state.
+	measureBtn widget.Clickable
 }
 
 type menuTrigSite struct {
@@ -309,7 +319,22 @@ func (t *DropdownMenuTrigger) siteAt(i int) *menuTrigSite {
 	return t.trigs[i]
 }
 
+// triggerBtn renders the trigger button; shared so a measure pass
+// reports exactly the size the live pass will paint.
+func (t *DropdownMenuTrigger) triggerBtn(th *Theme, btn *widget.Clickable, label string) layout.Widget {
+	v := t.Variant
+	if v == ButtonDefault {
+		v = ButtonOutline
+	}
+	return Button(th, btn, label, ButtonProps{Variant: v, Size: t.Size, IconStart: t.Icon})
+}
+
 func (t *DropdownMenuTrigger) Layout(th *Theme, gtx layout.Context, label string, items ...layout.Widget) layout.Dimensions {
+	// A throwaway pass has no site: measure the trigger button, never
+	// the floating panel.
+	if inMeasurePass() {
+		return t.triggerBtn(th, &t.measureBtn, label)(gtx)
+	}
 	idx := t.sites.next(gtx.Now)
 	site := t.siteAt(idx)
 
@@ -339,13 +364,7 @@ func (t *DropdownMenuTrigger) Layout(th *Theme, gtx layout.Context, label string
 			t.active = idx
 		}
 	}
-	v := t.Variant
-	if v == ButtonDefault {
-		v = ButtonOutline
-	}
-	dims := Button(th, &site.btn, label, ButtonProps{
-		Variant: v, Size: t.Size, IconStart: t.Icon,
-	})(gtx)
+	dims := t.triggerBtn(th, &site.btn, label)(gtx)
 	if t.Open && t.active == idx {
 		Floating(gtx, func(gtx layout.Context) layout.Dimensions {
 			t.dismiss.Add(gtx)

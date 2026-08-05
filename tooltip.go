@@ -67,6 +67,10 @@ func (t *Tooltip) anyOver() bool {
 }
 
 func (t *Tooltip) Layout(th *Theme, gtx layout.Context, text string, child layout.Widget) layout.Dimensions {
+	// A throwaway pass has no site: measure the child only.
+	if inMeasurePass() {
+		return child(gtx)
+	}
 	idx, tag := t.nextSite(gtx.Now)
 
 	for {

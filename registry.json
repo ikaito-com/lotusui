@@ -1,6 +1,6 @@
 {
   "name": "lotusui",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "goModule": "github.com/ikaito-com/lotusui",
   "components": [
     {
@@ -256,7 +256,7 @@
         "popover",
         "stack"
       ],
-      "hash": "0a779cbeab0cb22a"
+      "hash": "0c7da5f4d697d051"
     },
     {
       "name": "example",
@@ -384,7 +384,7 @@
       "dependsOn": [
         "popover"
       ],
-      "hash": "5c5f988962b9f07c"
+      "hash": "c32dccddd27e114e"
     },
     {
       "name": "annotated-text",
@@ -549,7 +549,7 @@
         "layoutSites",
         "measureDepth"
       ],
-      "hash": "9c5e04f3c05d6ace"
+      "hash": "3040d6ed41bddd77"
     },
     {
       "name": "grid",

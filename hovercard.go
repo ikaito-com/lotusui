@@ -124,6 +124,11 @@ func (h *HoverCard) anyOverTrig() bool {
 // OpenDelay and closes after CloseDelay once the pointer has left
 // both the trigger and the card.
 func (h *HoverCard) Layout(th *Theme, gtx layout.Context, content, trigger layout.Widget) layout.Dimensions {
+	// A THROWAWAY pass has no site: measure the trigger and touch no
+	// state. The card floats, so it never contributes to the size.
+	if inMeasurePass() {
+		return trigger(gtx)
+	}
 	idx, tag := h.nextSite(gtx.Now)
 
 	for {

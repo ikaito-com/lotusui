@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"gioui.org/widget"
+
 	"gioui.org/io/input"
 	"gioui.org/layout"
 	"gioui.org/op"
@@ -89,5 +91,60 @@ func TestSelectInCardLaysOutOpen(t *testing.T) {
 		Card(th, CardProps{}, func(gtx layout.Context) layout.Dimensions {
 			return sel.Layout(th, gtx, "Env")
 		})(gtx)
+	}
+}
+
+// TestFloatingWidgetsInsideCard lays every floating consumer inside a
+// Card — the shape that runs a THROWAWAY pass before the live one.
+// HoverCard, Tooltip and the menu triggers index per-site state by the
+// site number, so a measure pass that reports "no site" must not reach
+// that indexing: doing so panicked the whole Gio program, and in wasm
+// that reads as an endless "Go program has already exited" once the
+// dead callbacks keep firing on hover.
+func TestFloatingWidgetsInsideCard(t *testing.T) {
+	th := NewTheme()
+	var (
+		hc      HoverCard
+		tip     Tooltip
+		sub     DropdownMenuSub
+		trigger DropdownMenuTrigger
+		btn     widget.Clickable
+		sel     = Select{Options: SelectOpts("A", "B")}
+		pop     Popover
+	)
+	body := func(gtx layout.Context) layout.Dimensions { return LabelBody(th, "body").Layout(gtx) }
+
+	cases := map[string]layout.Widget{
+		"HoverCard": func(gtx layout.Context) layout.Dimensions {
+			return hc.Layout(th, gtx, body, LabelBody(th, "trigger").Layout)
+		},
+		"Tooltip": func(gtx layout.Context) layout.Dimensions {
+			return tip.Layout(th, gtx, "tip", LabelBody(th, "trigger").Layout)
+		},
+		"DropdownMenuTrigger": func(gtx layout.Context) layout.Dimensions {
+			return trigger.Layout(th, gtx, "Open", DropdownMenuItem(th, &btn, "One", false))
+		},
+		"DropdownMenuSub": func(gtx layout.Context) layout.Dimensions {
+			return sub.Item(th, "More", DropdownMenuItem(th, &btn, "One", false))(gtx)
+		},
+		"Select": func(gtx layout.Context) layout.Dimensions {
+			return sel.Layout(th, gtx, "Env")
+		},
+		"Popover": func(gtx layout.Context) layout.Dimensions {
+			d := LabelBody(th, "anchor").Layout(gtx)
+			pop.Layout(th, gtx, d.Size, body)
+			return d
+		},
+	}
+	for name, w := range cases {
+		t.Run(name, func(t *testing.T) {
+			var ops op.Ops
+			var r input.Router
+			gtx := testCtx(&ops, &r, layout.Constraints{Max: image.Pt(600, 400)})
+			// Card measures, then paints — two passes, one frame.
+			Card(th, CardProps{}, w)(gtx)
+			// And again inside a Grid, whose scratch pass measures too.
+			Grid{Columns: 2, Gap: Space.SM}.Layout(th, gtx, Cell(w), Cell(w))
+		})
 	}
 }

@@ -46,6 +46,8 @@ func main() {
 		err = cmdUpdate(os.Args[2:])
 	case "skills":
 		err = cmdSkills(os.Args[2:])
+	case "bench-doc":
+		err = cmdBenchDoc(os.Args[2:])
 	case "-h", "--help", "help":
 		usage()
 	default:
@@ -102,6 +104,9 @@ Commands:
   skills      Install lotusui's agent skills into the app
               (.claude/skills/lotusui) so coding agents know the
               registry, the theming system and the changelog contract.
+  bench-doc   Refresh site/bench.json from go test -bench (medians)
+              for the docs Performance page. Optional -wasm PATH
+              records the gallery WASM size.
 
 Use "lotusui <command> -h" for the command's flags.
 `)

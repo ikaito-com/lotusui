@@ -1,9 +1,15 @@
 ICONS_DIR := assets/icons
 
-.PHONY: icons release generate verify test vet fmt tidy check
+.PHONY: icons release generate verify test vet fmt tidy check bench-doc
 
 icons: ## Download the SVG icons per $(ICONS_DIR)/manifest.txt from the Iconify API (see ICONS.md; commit the results — builds never need the network)
 	go run ./cmd/lotusui icons -manifest $(ICONS_DIR)/manifest.txt -out $(ICONS_DIR) -gen icons_gen.go -genpkg lotusui
+
+bench-doc: ## Refresh site/bench.json (Performance page numbers) from local go test -bench; optional WASM size if site/dist/gallery/gallery.wasm exists
+	@wasm=""; \
+	if [ -f site/dist/gallery/gallery.wasm ]; then wasm="-wasm site/dist/gallery/gallery.wasm"; \
+	elif [ -f /tmp/lotusui-gallery.wasm ]; then wasm="-wasm /tmp/lotusui-gallery.wasm"; fi; \
+	go run ./cmd/lotusui bench-doc -o site/bench.json $$wasm
 
 release: ## Cut a release: make release [BUMP=minor|patch|major] — validates, edits changelog/version/docs manifest, prints the git finish
 	go run ./cmd/lotusui release $(if $(BUMP),-bump $(BUMP),)

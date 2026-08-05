@@ -17,10 +17,18 @@ recorded here in full.
 
 ## [Unreleased]
 
+### Changed
+
+- Docs Performance page: driven by `site/bench.json` (layout→ops medians,
+  frame-budget %, ship sizes with raw + gzip for WASM). Desktop peer
+  binaries (Fyne / egui) only — no DOM-toolkit ship-size bakeoff.
+
 ### Added
 
-- `IconGithub` — Simple Icons GitHub mark (`simple-icons:github`), for
-  mono tinting via `SVGIcon` like the other Fluent mono icons.
+- `lotusui bench-doc` / `make bench-doc` — refresh `site/bench.json` from
+  `go test -bench` medians for the Performance docs page; optional
+  `-wasm` records gallery size. Expanded component frame benches in
+  `bench_test.go`.
 - `Input.Attached` / `Select.Attached` (`AttachedEdges`) — square
   neighboring corners and drop the seat shadow so a field/trigger can
   fuse into a `ButtonGroup` (shadcn ButtonGroup + Input / Select).

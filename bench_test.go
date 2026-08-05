@@ -120,3 +120,99 @@ func BenchmarkScrollable10k(b *testing.B) {
 		Scrollable(th, &list, gtx, VStack(0, rows...))
 	}
 }
+
+func BenchmarkLabelFrame(b *testing.B) {
+	th := NewTheme()
+	r := new(input.Router)
+	var ops op.Ops
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		ops.Reset()
+		gtx := benchCtx(&ops, r)
+		LabelBody(th, "Body text for a typical label").Layout(gtx)
+	}
+}
+
+func BenchmarkBadgeFrame(b *testing.B) {
+	th := NewTheme()
+	r := new(input.Router)
+	var ops op.Ops
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		ops.Reset()
+		gtx := benchCtx(&ops, r)
+		Badge(th, "Status", BadgeProps{})(gtx)
+	}
+}
+
+func BenchmarkCardFrame(b *testing.B) {
+	th := NewTheme()
+	r := new(input.Router)
+	var ops op.Ops
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		ops.Reset()
+		gtx := benchCtx(&ops, r)
+		Card(th, CardProps{}, LabelBody(th, "Card body").Layout)(gtx)
+	}
+}
+
+func BenchmarkInputFrame(b *testing.B) {
+	th := NewTheme()
+	var in Input
+	r := new(input.Router)
+	var ops op.Ops
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		ops.Reset()
+		gtx := benchCtx(&ops, r)
+		in.Layout(th, gtx, "Email", "you@example.com")
+	}
+}
+
+func BenchmarkCheckboxFrame(b *testing.B) {
+	th := NewTheme()
+	var cb Checkbox
+	r := new(input.Router)
+	var ops op.Ops
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		ops.Reset()
+		gtx := benchCtx(&ops, r)
+		cb.Layout(th, gtx, "Accept terms")
+	}
+}
+
+func BenchmarkSwitchFrame(b *testing.B) {
+	th := NewTheme()
+	var sw Switch
+	r := new(input.Router)
+	var ops op.Ops
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		ops.Reset()
+		gtx := benchCtx(&ops, r)
+		sw.Layout(th, gtx)
+	}
+}
+
+func BenchmarkTabsFrame(b *testing.B) {
+	th := NewTheme()
+	tabs := Tabs{Options: TabOpts("Account", "Password", "Settings")}
+	r := new(input.Router)
+	var ops op.Ops
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		ops.Reset()
+		gtx := benchCtx(&ops, r)
+		tabs.Update(gtx)
+		tabs.Layout(th, gtx)
+	}
+}
+
+func BenchmarkNewTheme(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_ = NewTheme()
+	}
+}

@@ -307,11 +307,11 @@ func platformsPage() *page {
 		Kicker:    "Desktop and mobile first — same Go module; the web is a compile target too.",
 		Platforms: []string{"Desktop", "Mobile", "Web"},
 		Intro: `<p>One Go codebase, one design language: lotusui embeds its font and paints a
-consistent interface on every target, down to the typography. Desktop and mobile are the
-product focus; the web is the same module compiled to WebAssembly when you want a browser
-build. The platform decides input (pointer or touch) and packaging, nothing else. The few
-places where a platform genuinely differs are called out across this site with badges like
-the ones above.</p>`,
+consistent interface on every target, down to the typography. It sits on
+<a href="https://gioui.org">Gio</a> — so desktop, mobile, and WebAssembly are compile
+targets of the same module, not ports. The platform decides input (pointer or touch) and
+packaging, nothing else. The few places where a platform genuinely differs are called out
+across this site with badges like the ones above.</p>`,
 		Sections: []section{
 			{
 				Heading:   "Desktop",
@@ -334,9 +334,9 @@ so nothing becomes unreachable without a pointer.</p>`,
 			{
 				Heading:   "Web",
 				Platforms: []string{"WASM"},
-				Prose: `<p>The same Go module reaches the browser via WebAssembly — a real shipping
-target, not a separate port, and how this documentation site shows live demos. Build with
-<code>GOOS=js GOARCH=wasm</code>, one gallery bundle for every Preview. The binary embeds its
+				Prose: `<p>The same Go module reaches the browser via WebAssembly — Gio’s first-class
+<code>GOOS=js GOARCH=wasm</code> target, not a separate port, and how this documentation site
+shows live demos. Build once; one gallery bundle for every Preview. The binary embeds its
 fonts (roughly 13&nbsp;MB raw, a fraction over the wire compressed); each docs Preview is a
 gallery iframe addressed by URL hash (<code>loading=&quot;lazy&quot;</code> so off-screen
 examples boot on demand).</p>`,
@@ -386,74 +386,6 @@ layer instead of flagging them after the fact.</p>`,
 				Prose: `<p>Motion is a viewport trick: panes live at natural width on a strip and are only
 ever revealed or hidden by its edges — content never re-flows mid-animation. One shared
 animation clock drives every transition, so everything in an app moves identically.</p>`,
-			},
-		},
-	}
-}
-
-func performancePage() *page {
-	return &page{
-		Slug:   "performance",
-		Title:  "Performance",
-		Kicker: "Measured, benchmarked, and pinned by tests — not promised.",
-		Intro: `<p>lotusui is immediate-mode: the frame loop is the hot path, so the library treats
-it the way low-latency systems treat theirs — no allocations on read-mostly paths, preallocated
-scratch buffers, virtualization for anything that grows with data, and <em>benchmarks in the
-test suite</em> so none of it can regress silently. Idle UI costs zero frames: every animation
-stops requesting invalidation the moment it settles.</p>
-<div class="statgrid">
-  <div class="stat"><div class="statnum">41<span>ns</span></div>
-    <div class="statlabel">icon cache hit</div>
-    <div class="statnote">0 allocs — pinned by a test, not just measured</div></div>
-  <div class="stat"><div class="statnum">61<span>µs</span></div>
-    <div class="statlabel">10,000-row list, one frame</div>
-    <div class="statnote">ListView lays out only visible rows</div></div>
-  <div class="stat"><div class="statnum">15<span>µs</span></div>
-    <div class="statlabel">one button, one frame</div>
-    <div class="statnote">dominated by text shaping, not allocation</div></div>
-  <div class="stat"><div class="statnum">0<span>fps</span></div>
-    <div class="statlabel">idle cost</div>
-    <div class="statnote">settled UI schedules no frames at all</div></div>
-</div>`,
-		Sections: []section{
-			{
-				Heading: "Virtualization: 270× on long lists",
-				Prose: `<p>The one cliff an immediate-mode UI can fall off is laying out everything, every
-frame. <code>ListView</code> exists so collections never do: 10,000 rows cost a screenful of
-layout per frame.</p>
-<div class="perfbars">
-  <div class="perfrow"><span class="perfname">ListView</span>
-    <span class="perfbar" style="width:1.2%"></span><span class="perfval">61 µs</span></div>
-  <div class="perfrow"><span class="perfname">Scrollable</span>
-    <span class="perfbar warn" style="width:88%"></span><span class="perfval">16,534 µs</span></div>
-</div>
-<p class="perfnote">One frame, 10,000 rows each — 105 vs 10,108 allocations.</p>`,
-			},
-			{
-				Heading: "The disciplines",
-				Prose: `<p>Four rules keep every component on budget. <strong>Resolve at construction,
-not per frame</strong>: theming, schemes and scales are plain values fixed in
-<code>NewTheme</code> — a custom look compiles to the same instructions as the default.
-<strong>Cache what's expensive</strong>: SVGs rasterize once per name+size+tint and are then a
-lock-free map read; text shaping warms up in two phases so the first frame never waits on font
-enumeration. <strong>Never re-lay-out what can be replayed</strong>: animations record a frame
-once and translate the recorded ops — moving content can't reflow, and its cost is a copy, not
-a layout. <strong>Stop when settled</strong>: the shared animation clock requests the next
-frame only while a value is still moving.</p>`,
-			},
-			{
-				Heading: "Reproduce it",
-				Prose: `<p>The numbers above are from the library's own benchmark suite (Go 1.26, macOS,
-Intel — expect better on Apple Silicon). <code>TestSVGIconCacheZeroAlloc</code> and the hostile-
-constraints layout test run with the ordinary test suite, so the performance contract is checked
-on every <code>go test</code>.</p>`,
-				Snippet: `go test -bench . -benchmem github.com/ikaito-com/lotusui
-
-BenchmarkSVGIconCacheHit    41.26 ns/op      0 B/op        0 allocs/op
-BenchmarkButtonFrame        15 µs/op     14389 B/op      105 allocs/op
-BenchmarkListView10k        61 µs/op     14302 B/op      105 allocs/op
-BenchmarkScrollable10k   16534 µs/op   2363234 B/op    10108 allocs/op`,
-				Lang: "sh",
 			},
 		},
 	}
@@ -2443,9 +2375,10 @@ position lives in the caller's <code>widget.List</code>.</p>`,
 			installSection("listview"),
 			{
 				Heading: "Usage — virtualization",
-				Prose: `<p>Only visible rows are laid out: in the library's benchmarks a 10,000-row list
-renders about 270× faster than the non-virtualized path (61µs vs 16.5ms a frame). The demo
-below scrolls 10,000 real rows — wheel over it to feel it.</p>`,
+				Prose: `<p>Only visible rows are laid out. In the library's benchmarks a 10,000-row
+<code>ListView</code> is hundreds of times cheaper per frame than laying out every row with
+<code>Scrollable</code> — see <a href="../performance/">Performance</a> for the current
+snapshot. The demo below scrolls 10,000 real rows — wheel over it to feel it.</p>`,
 				Snippet: `var list widget.List
 
 lotusui.ListView(th, &list, gtx, len(items), func(gtx C, i int) D {

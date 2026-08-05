@@ -351,6 +351,14 @@ func build(s *site, out string) error {
 		}
 	}
 
+	// Performance snapshot ships with the site so agents/readers can
+	// re-check the numbers without re-running benches.
+	if bj, err := os.ReadFile("bench.json"); err == nil {
+		if err := os.WriteFile(filepath.Join(out, "bench.json"), bj, 0o644); err != nil {
+			return err
+		}
+	}
+
 	// The favicon ships from the site itself — fetched once from
 	// Iconify (twemoji:lotus) and committed; pages never hotlink.
 	if fav, err := staticFS.ReadFile("static/favicon.svg"); err == nil {

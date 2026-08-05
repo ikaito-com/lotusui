@@ -9,7 +9,7 @@
 {{template "header" .}}
 <div class="shell">
 {{template "sidebar" .}}
-<main class="content">
+<main class="content{{if eq .Page.Slug "performance"}} content-perf{{end}}">
   <nav class="breadcrumb">{{.Group}} <span>/</span> {{.Page.Title}}</nav>
   <h1>{{.Page.Title}}</h1>
   <p class="kicker">{{.Page.Kicker}}</p>

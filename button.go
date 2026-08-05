@@ -343,7 +343,10 @@ func Button(th *Theme, btn *widget.Clickable, label string, o ButtonProps) layou
 					paint.FillShape(gtx.Ops, col, clip.Stroke{Path: rr.Path(gtx.Ops), Width: float32(gtx.Dp(1)) * 2}.Op())
 					return
 				}
-				widget.Border{Color: col, Width: unit.Dp(1), CornerRadius: unit.Dp(8)}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+				// The border follows the SAME radius the fill was clipped
+				// to (r is already clamped), so a Rounded button's outline
+				// is a pill too instead of 8dp corners inside a capsule.
+				widget.Border{Color: col, Width: unit.Dp(1), CornerRadius: unit.Dp(float32(r) / gtx.Metric.PxPerDp)}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 					return layout.Dimensions{Size: dims.Size}
 				})
 			}

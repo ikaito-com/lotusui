@@ -238,14 +238,21 @@ func platformChip(th *lotusui.Theme, name string) layout.Widget {
 		dot := chipDotColor(th, name)
 		return layout.Background{}.Layout(gtx,
 			func(gtx C) D {
-				rr := clip.UniformRRect(image.Rectangle{Max: gtx.Constraints.Min}, gtx.Constraints.Min.Y/2).Push(gtx.Ops)
+				sz := gtx.Constraints.Min
+				// The pill radius is HALF THE HEIGHT, never a large
+				// constant: a rounded rect whose radius exceeds half its
+				// side degenerates, and widget.Border then strokes that
+				// broken path across the whole page. Same trap the
+				// library's ClampCorner exists for.
+				r := lotusui.ClampCorner(sz.Y/2, sz)
+				rr := clip.UniformRRect(image.Rectangle{Max: sz}, r).Push(gtx.Ops)
 				paint.Fill(gtx.Ops, th.Palette.BgSubtle)
 				rr.Pop()
 				widget.Border{
 					Color: th.Palette.BorderSubtle, Width: unit.Dp(1),
-					CornerRadius: unit.Dp(999),
-				}.Layout(gtx, func(gtx C) D { return D{Size: gtx.Constraints.Min} })
-				return D{Size: gtx.Constraints.Min}
+					CornerRadius: unit.Dp(float32(r) / gtx.Metric.PxPerDp),
+				}.Layout(gtx, func(gtx C) D { return D{Size: sz} })
+				return D{Size: sz}
 			},
 			func(gtx C) D {
 				return layout.Inset{
@@ -404,15 +411,33 @@ func (ui *docsUI) renderPrevNext(th *lotusui.Theme, prev, next *docspages.Page) 
 			}
 			right = pnCard(th, &ui.nextBtn, "Next", next.Title, true)
 		}
+		// A lone card keeps its own side: Next hugs the right edge,
+		// Previous the left. Only a PAIR splits the row in half — an
+		// empty flexed slot would otherwise park the single card in the
+		// middle of the column.
+		//
+		// The row must claim the FULL width first: layout.E aligns
+		// within Constraints.Min, so with Min.X 0 it has nothing to
+		// align inside and the card just sits at the left edge.
+		gtx.Constraints.Min.X = gtx.Constraints.Max.X
+		half := func(gtx C) C {
+			gtx.Constraints.Min.X = 0
+			if m := gtx.Constraints.Max.X * 48 / 100; m > 0 {
+				gtx.Constraints.Max.X = m
+			}
+			return gtx
+		}
+		if prev == nil && next != nil {
+			return layout.E.Layout(gtx, func(gtx C) D { return right(half(gtx)) })
+		}
+		if next == nil && prev != nil {
+			return layout.W.Layout(gtx, func(gtx C) D { return left(half(gtx)) })
+		}
+		if prev == nil && next == nil {
+			return D{}
+		}
 		return layout.Flex{Spacing: layout.SpaceBetween}.Layout(gtx,
-			layout.Flexed(1, func(gtx C) D {
-				max := gtx.Constraints.Max.X * 48 / 100
-				if gtx.Constraints.Max.X > max && max > 0 {
-					// keep card ≤48% like .pn
-				}
-				_ = max
-				return left(gtx)
-			}),
+			layout.Flexed(1, func(gtx C) D { return left(gtx) }),
 			layout.Rigid(layout.Spacer{Width: unit.Dp(14)}.Layout),
 			layout.Flexed(1, func(gtx C) D {
 				return layout.E.Layout(gtx, right)
@@ -618,23 +643,26 @@ func homePage(th *lotusui.Theme, ui *docsUI) layout.Widget {
 			l.Color = th.Palette.FgMuted
 			return layout.Inset{Bottom: unit.Dp(10)}.Layout(gtx, l.Layout)
 		}})
-		// The CTA: title, copy and the button in ONE brand-tinted card.
-		// Every ink and fill is a palette token, so switching palette
-		// re-colors the card with everything else.
+		// The CTA: title, copy and the button in ONE card, wearing the
+		// same chrome as every other box on the site (BgPanel over the
+		// tinted canvas, 1dp border, MD radius) — palette tokens, so it
+		// follows the palette and dark mode without being tinted itself.
+		// Full parent width: the prose measure does not apply to a box.
 		parts = append(parts, part{toc: -1, w: func(gtx C) D {
 			if ui.ctaBtn.Clicked(gtx) {
 				ui.navigate("quickstart")
 			}
-			gtx = constrainCh66(gtx)
 			gtx.Constraints.Min.X = gtx.Constraints.Max.X
 			return layout.Inset{Top: unit.Dp(6), Bottom: unit.Dp(22)}.Layout(gtx, func(gtx C) D {
 				return layout.Background{}.Layout(gtx,
 					func(gtx C) D {
 						sz := gtx.Constraints.Min
-						r := gtx.Dp(th.Radius.LG)
-						rr := clip.UniformRRect(image.Rectangle{Max: sz}, r).Push(gtx.Ops)
-						paint.Fill(gtx.Ops, th.Palette.BrandSubtle)
+						rr := clip.UniformRRect(image.Rectangle{Max: sz}, gtx.Dp(th.Radius.MD)).Push(gtx.Ops)
+						paint.Fill(gtx.Ops, th.Palette.BgPanel)
 						rr.Pop()
+						widget.Border{
+							Color: th.Palette.Border, Width: unit.Dp(1), CornerRadius: th.Radius.MD,
+						}.Layout(gtx, func(gtx C) D { return D{Size: sz} })
 						return D{Size: sz}
 					},
 					func(gtx C) D {
@@ -652,10 +680,13 @@ func homePage(th *lotusui.Theme, ui *docsUI) layout.Widget {
 									return layout.Inset{Bottom: unit.Dp(4)}.Layout(gtx, l.Layout)
 								},
 								func(gtx C) D {
-									// Left-aligned: the button hugs its label
-									// instead of stretching to the card width.
-									gtx.Constraints.Min.X = 0
-									return lotusui.Button(th, &ui.ctaBtn, "Get started →", lotusui.ButtonProps{})(gtx)
+									// End-aligned, hugging its label: RightAligned
+									// keeps the row full width and pushes the
+									// button — which measures at Min.X 0 — to it.
+									return lotusui.RightAligned(func(gtx C) D {
+										gtx.Constraints.Min.X = 0
+										return lotusui.Button(th, &ui.ctaBtn, "Get started →", lotusui.ButtonProps{})(gtx)
+									})(gtx)
 								},
 							)(gtx)
 						})

@@ -17,7 +17,18 @@ recorded here in full.
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+
+| Fix | Notes |
+|---|---|
+| `Button` outline radius on pills | the fill was clipped to the computed radius (a capsule when `Rounded`) while the border always stroked 8dp corners, so an outline pill showed square corners inside a round fill. The border now follows the same clamped radius |
+
+A note for consumers painting their own chrome: a rounded rect whose
+CORNER RADIUS EXCEEDS HALF its shorter side is degenerate — Gio's
+`widget.Border` will stroke that broken path across the whole window,
+not just the widget. Use `ClampCorner(r, size)` (added in 0.2.0) for
+clip radii, and never pass a "very large" constant like 999 as a
+`CornerRadius` to get a pill: pass half the height.
 
 ## [0.3.0] - 2026-08-05
 

@@ -358,6 +358,14 @@ func build(s *site, out string) error {
 			return err
 		}
 	}
+	// Topbar GitHub mark — same Iconify SVG the library embeds
+	// (simple-icons:github via assets/icons/). Copied at gen time so
+	// the static site and SVGIcon stay one source of truth.
+	if gh, err := os.ReadFile("../assets/icons/github.svg"); err == nil {
+		if err := os.WriteFile(filepath.Join(out, "github.svg"), gh, 0o644); err != nil {
+			return err
+		}
+	}
 	// Optional in-page bootstrap (unused by Preview iframes; kept for
 	// experiments / standalone tooling).
 	if emb, err := staticFS.ReadFile("static/gallery-embed.js"); err == nil {

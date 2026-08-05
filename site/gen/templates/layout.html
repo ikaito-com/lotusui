@@ -22,6 +22,9 @@
 <header class="topbar">
   <div class="topbar-brand">
     <a class="wordmark" href="{{.Root}}">lotusui</a>
+  </div>
+  <span class="tag">{{.Site.Tag}}</span>
+  <div class="topbar-actions">
     {{if .Site.Version}}
     <div class="palpick verpick">
       <button class="palbtn verbtn" id="verbtn" type="button" title="Documentation version">{{.Site.Version}}</button>
@@ -35,9 +38,6 @@
       </div>
     </div>
     {{end}}
-  </div>
-  <span class="tag">{{.Site.Tag}}</span>
-  <div class="topbar-actions">
     <div class="palpick lookpick">
       <button class="palbtn lookbtn" id="lookbtn" type="button" title="Choose a look &amp; feel — font, spacing, radii; combined with the palette it IS the theme">Aa</button>
       <div class="palmenu" id="lookmenu">
@@ -63,7 +63,7 @@
         {{end}}
       </div>
     </div>
-    <a class="repo" href="{{.Site.Repo}}">GitHub</a>
+    <a class="repo" href="{{.Site.Repo}}" aria-label="GitHub" title="GitHub"><span class="repo-icon" aria-hidden="true"></span></a>
     <button class="navbtn" id="navbtn" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidenav">
       <span class="navbtn-bar" aria-hidden="true"></span>
       <span class="navbtn-bar" aria-hidden="true"></span>

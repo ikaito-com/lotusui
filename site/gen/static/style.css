@@ -83,7 +83,25 @@ code {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.repo { font-size: 13px; flex-shrink: 0; }
+.repo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: var(--text-sec);
+  border-radius: 6px;
+}
+.repo:hover { color: var(--brand-ink); text-decoration: none; }
+.repo-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  -webkit-mask: url(github.svg) center / contain no-repeat;
+  mask: url(github.svg) center / contain no-repeat;
+}
 
 /* Burger — visible only below the desktop breakpoint. */
 .navbtn {
@@ -712,7 +730,6 @@ h2 .chip { margin-left: 4px; }
 }
 
 @media (max-width: 480px) {
-  .repo { display: none; }
   h1 { font-size: 24px; }
   .kicker { font-size: 15px; }
   .codeblock pre { font-size: 12px; padding: 12px 14px; }

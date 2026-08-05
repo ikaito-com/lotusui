@@ -22,6 +22,7 @@ const (
 	IconEye            = "eye"
 	IconEyeOff         = "eye-off"
 	IconFile           = "file"
+	IconGithub         = "github"
 	IconInfo           = "info"
 	IconLock           = "lock"
 	IconMail           = "mail"

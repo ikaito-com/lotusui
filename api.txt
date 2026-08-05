@@ -35,6 +35,7 @@ const IconExpand
 const IconEye
 const IconEyeOff
 const IconFile
+const IconGithub
 const IconInfo
 const IconLock
 const IconMail

@@ -34,3 +34,4 @@ fluent:arrow-left-24-regular arrow-left.svg
 fluent:archive-24-regular archive.svg
 fluent:clock-24-regular clock.svg
 fluent:lock-closed-24-regular lock.svg
+simple-icons:github github.svg

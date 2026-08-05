@@ -17,7 +17,10 @@ recorded here in full.
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- `IconGithub` — Simple Icons GitHub mark (`simple-icons:github`), for
+  mono tinting via `SVGIcon` like the other Fluent mono icons.
 
 ## [0.1.0] - 2026-08-05
 

@@ -220,35 +220,6 @@ func RenderSection(th *lotusui.Theme, gtx C, demo string) D {
 // interaction is not reset every frame.
 var embedApplied = map[string]string{}
 
-// measureStates lays each spec out at its box width (unbounded height)
-// on a scratch Ops and returns natural heights in device px.
-//
-// MUST NOT deliver input or call applyState: this runs in the same
-// frame as the live region, and walking every demobox with the real
-// event queue made every section's widgets fight over the same
-// pointer (the "examples flash / leak into each other" bug). Heights
-// are chrome size only — DemoH already floors the box.
-func MeasureStates(th *lotusui.Theme, gtx C, specs []string, widths []int) []int {
-	scratch := new(op.Ops)
-	heights := make([]int, len(specs))
-	savedState := DemoState
-	gtx = gtx.Disabled()
-	for i, spec := range specs {
-		slug, state, _, _ := ParseRoute(spec)
-		d := Lookup(slug)
-		DemoState = state
-		scratch.Reset()
-		m := gtx
-		m.Ops = scratch
-		m.Constraints = layout.Constraints{Max: image.Pt(widths[i], 1<<20)}
-		heights[i] = layout.UniformInset(lotusui.Space.LG).Layout(m, func(gtx C) D {
-			return d.render(th, gtx)
-		}).Size.Y
-	}
-	DemoState = savedState
-	return heights
-}
-
 // renderOverlay paints every region at its rect: panel fill, the
 // demo's section, and its overlay (clipped to the region — a modal
 // scrim covers its box, not the article).

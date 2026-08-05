@@ -267,6 +267,7 @@ func LabelTitle(th *Theme, txt string) material.LabelStyle
 func LayoutPage(th *Theme, gtx layout.Context, content layout.Widget) layout.Dimensions
 func ListView(th *Theme, list *widget.List, gtx layout.Context, count int, row func(gtx layout.Context, i int) layout.Dimensions) layout.Dimensions
 func MakeSeamlessWindow(view uintptr)
+func MeasurePass(gtx layout.Context, w layout.Widget) layout.Dimensions
 func MustBreakpoints(steps []Breakpoint) Breakpoints
 func NewTheme(opts ...ThemeOption) *Theme
 func OpenURL(u string) error

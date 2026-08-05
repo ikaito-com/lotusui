@@ -21,12 +21,14 @@ recorded here in full.
 
 | Symbol | Notes |
 |---|---|
+| `MeasurePass(gtx, w) Dimensions` | the supported way to size something before painting it: lays `w` out into a throwaway buffer, consumes no events, and claims no floating site — so a `Select`, `Popover` or menu inside `w` still opens in the live pass. `Card`, `CodeBlock`, `Example`, `Grid`, `SimpleGrid` and `ButtonGroup` all route their measuring through it |
 | `IconNavigation` | mono `mdi:menu` ("navigation") — the hamburger, for folding a nav column into a drawer below a breakpoint |
 
 ### Fixed
 
 | Fix | Notes |
 |---|---|
+| **Floating panels never opened inside a `Card`** | a `Select` (or `Popover`, or `DropdownMenuTrigger`) inside a `Card` toggled but painted nothing, while the same widget outside a card worked. Consumers paint only at floating "site 0" so one shared widget cannot stack N panels; `Card` lays its content out twice per frame (measure, then paint) with the same `gtx.Now`, and the DISCARDED pass was claiming site 0, leaving the live pass looking like a duplicate. Throwaway passes now announce themselves and claim no site. Same class fixed in `Grid`, `SimpleGrid` (whose scratch passes also drained the frame's events) and `ButtonGroup`'s superseded passes |
 | `CodeBlock` painted tofu boxes for indentation | Go source is tab-indented and the embedded font has no glyph for U+0009, so every indent level rendered as ▯. Tabs now expand to four spaces FOR DISPLAY in both the highlighted (`Lines`) and `Plain` paths; the Copy button still writes the original tabs, which is what belongs in a .go file |
 
 ## [0.3.1] - 2026-08-05

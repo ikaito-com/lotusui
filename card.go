@@ -91,13 +91,7 @@ func CardFooter(th *Theme, content layout.Widget) layout.Widget {
 var measureOps = sync.Pool{New: func() any { return new(op.Ops) }}
 
 func measureContent(gtx layout.Context, w layout.Widget) layout.Dimensions {
-	ops := measureOps.Get().(*op.Ops)
-	ops.Reset()
-	defer measureOps.Put(ops)
-	mgtx := gtx
-	mgtx = mgtx.Disabled()
-	mgtx.Ops = ops
-	return w(mgtx)
+	return MeasurePass(gtx, w)
 }
 
 // Card is the grouping surface: a rounded panel around arbitrary

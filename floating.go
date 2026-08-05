@@ -21,6 +21,15 @@ type layoutSites struct {
 }
 
 func (s *layoutSites) next(now time.Time) int {
+	// A THROWAWAY pass must not claim a site. Card, CodeBlock, Example,
+	// Grid and ButtonGroup all lay their content out once to measure it
+	// and again to paint it, with the same gtx.Now. If the discarded
+	// pass took site 0, the live pass would look like a second site and
+	// every floating panel inside — Select's options, a Popover, a menu
+	// — would be suppressed as a duplicate and never paint.
+	if inMeasurePass() {
+		return -1
+	}
 	if s.epoch != now {
 		s.epoch = now
 		s.seq = 0
@@ -28,6 +37,38 @@ func (s *layoutSites) next(now time.Time) int {
 	i := s.seq
 	s.seq++
 	return i
+}
+
+// measureDepth is non-zero while a throwaway layout pass is running.
+// Gio lays a window out on one goroutine, so a plain counter is
+// enough; it nests because a measured widget may measure its own
+// children.
+var measureDepth int
+
+func inMeasurePass() bool { return measureDepth > 0 }
+
+// beginMeasurePass / endMeasurePass bracket a pass whose ops are
+// discarded. Pair them with defer. Prefer MeasurePass, which also
+// supplies the scratch buffer and disables input; use these directly
+// only when the caller already owns the recording (ButtonGroup keeps
+// the last of several passes).
+func beginMeasurePass() { measureDepth++ }
+func endMeasurePass()   { measureDepth-- }
+
+// MeasurePass lays w out into a THROWAWAY buffer and returns the size
+// it wants — the supported way to size something before painting it.
+// The pass consumes no events and claims no floating site, so a
+// Select, Popover or menu inside w still opens in the live pass.
+func MeasurePass(gtx layout.Context, w layout.Widget) layout.Dimensions {
+	ops := measureOps.Get().(*op.Ops)
+	ops.Reset()
+	defer measureOps.Put(ops)
+	beginMeasurePass()
+	defer endMeasurePass()
+	mgtx := gtx
+	mgtx = mgtx.Disabled()
+	mgtx.Ops = ops
+	return w(mgtx)
 }
 
 // The floating layer — the shared portal primitive behind Select's

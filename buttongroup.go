@@ -142,11 +142,15 @@ func ButtonGroup(th *Theme, o ButtonGroupProps, items ...ButtonGroupItem) layout
 				totalFlex += flexes[i]
 				continue
 			}
+			// Natural size only — every slot is laid out again at exact
+			// size further down, so this recording is discarded.
+			beginMeasurePass()
 			m := op.Record(gtx.Ops)
 			cgtx := gtx
 			cgtx.Constraints.Min = image.Point{}
 			d := w(cgtx)
 			slots[i] = slot{dims: d, call: m.Stop()}
+			endMeasurePass()
 			if o.Vertical {
 				slots[i].main = d.Size.Y
 				rigidSum += d.Size.Y
@@ -178,6 +182,7 @@ func ButtonGroup(th *Theme, o ButtonGroupProps, items ...ButtonGroupItem) layout
 				continue
 			}
 			if flexes[i] > 0 {
+				beginMeasurePass()
 				m := op.Record(gtx.Ops)
 				cgtx := gtx
 				if o.Vertical {
@@ -193,6 +198,7 @@ func ButtonGroup(th *Theme, o ButtonGroupProps, items ...ButtonGroupItem) layout
 				}
 				d := w(cgtx)
 				slots[i] = slot{dims: d, call: m.Stop(), main: slots[i].main}
+				endMeasurePass()
 			}
 			c := slots[i].dims.Size.Y
 			if o.Vertical {

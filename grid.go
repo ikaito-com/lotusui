@@ -153,11 +153,15 @@ func (g Grid) Layout(th *Theme, gtx layout.Context, items ...GridItem) layout.Di
 		mark(r, c, cs, rs)
 		w := cs*cellW + (cs-1)*cg
 		// Measure at span width, unbounded height — never into the frame.
+		// Disabled + bracketed: a throwaway pass must neither eat the
+		// frame's events nor claim a floating site (see MeasurePass).
 		scratch.Reset()
-		m := gtx
+		beginMeasurePass()
+		m := gtx.Disabled()
 		m.Ops = scratch
 		m.Constraints = layout.Constraints{Min: image.Pt(w, 0), Max: image.Pt(w, 1<<20)}
 		nat := it.W(m).Size.Y
+		endMeasurePass()
 		cells = append(cells, placed{item: it, row: r, col: c, cs: cs, rs: rs, w: w, natural: nat})
 	}
 
@@ -279,13 +283,15 @@ func layoutSimpleRow[T any](gtx layout.Context, cols int, gap unit.Dp, items []T
 	maxH := 0
 	for _, it := range items {
 		scratch.Reset()
-		m := gtx
+		beginMeasurePass()
+		m := gtx.Disabled()
 		m.Ops = scratch // measure only — never added to the frame
 		m.Constraints.Min = image.Pt(cellW, 0)
 		m.Constraints.Max.X = cellW
 		if d := cell(m, it); d.Size.Y > maxH {
 			maxH = d.Size.Y
 		}
+		endMeasurePass()
 	}
 
 	var children []layout.FlexChild

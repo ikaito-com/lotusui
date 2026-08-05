@@ -28,12 +28,17 @@
       "files": [
         "buttongroup.go"
       ],
+      "carried": [
+        "beginMeasurePass",
+        "endMeasurePass",
+        "measureDepth"
+      ],
       "dependsOn": [
         "button",
         "input",
         "select"
       ],
-      "hash": "3186bdc7952ffbf8"
+      "hash": "f75d24f789bf20b8"
     },
     {
       "name": "badge",
@@ -62,7 +67,7 @@
         "button",
         "stack"
       ],
-      "hash": "17cb16cc25cd66b5"
+      "hash": "1554e465f7ffa2ce"
     },
     {
       "name": "checkbox",
@@ -84,8 +89,7 @@
         "codeblock.go"
       ],
       "carried": [
-        "measureContent",
-        "measureOps"
+        "measureContent"
       ],
       "dependsOn": [
         "card",
@@ -184,9 +188,11 @@
         "cardShadow",
         "dismisser",
         "fillRect",
+        "inMeasurePass",
         "inputFrame",
         "inputMetrics",
         "layoutSites",
+        "measureDepth",
         "seatShadow"
       ],
       "dependsOn": [
@@ -241,7 +247,9 @@
       "carried": [
         "cardShadow",
         "dismisser",
-        "layoutSites"
+        "inMeasurePass",
+        "layoutSites",
+        "measureDepth"
       ],
       "dependsOn": [
         "button",
@@ -258,8 +266,7 @@
         "example.go"
       ],
       "carried": [
-        "measureContent",
-        "measureOps"
+        "measureContent"
       ],
       "dependsOn": [
         "card"
@@ -355,7 +362,9 @@
       "carried": [
         "cardShadow",
         "dismisser",
-        "layoutSites"
+        "inMeasurePass",
+        "layoutSites",
+        "measureDepth"
       ],
       "hash": "ccafb6286ce8975b"
     },
@@ -368,7 +377,9 @@
       ],
       "carried": [
         "cardShadow",
-        "layoutSites"
+        "inMeasurePass",
+        "layoutSites",
+        "measureDepth"
       ],
       "dependsOn": [
         "popover"
@@ -534,7 +545,9 @@
         "tooltip.go"
       ],
       "carried": [
-        "layoutSites"
+        "inMeasurePass",
+        "layoutSites",
+        "measureDepth"
       ],
       "hash": "9c5e04f3c05d6ace"
     },
@@ -545,7 +558,12 @@
       "files": [
         "grid.go"
       ],
-      "hash": "f29229e5ddeda023"
+      "carried": [
+        "beginMeasurePass",
+        "endMeasurePass",
+        "measureDepth"
+      ],
+      "hash": "55bcc149c424b3f3"
     },
     {
       "name": "listview",

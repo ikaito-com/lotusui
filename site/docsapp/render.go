@@ -583,6 +583,7 @@ func renderHTMLBlock(th *lotusui.Theme, b htmlBlock) layout.Widget {
 func homePage(th *lotusui.Theme, ui *docsUI) layout.Widget {
 	tag := siteTag
 	body := "Neutral grays, white cards on a tinted canvas, one accent you choose — a complete UI kit for Go apps that ship to desktop and mobile. One module, one design language; macOS, Windows, Linux, iOS, and Android are compile targets, not ports. The same code reaches the web via WebAssembly when you want it — which is also how every demo on this site is the real component in your browser. Built on Gio."
+	pitch := "This entire website — every page, every control, every live demo — is written in Go with Gio and lotusui, compiled to WebAssembly. You are already looking at what you would ship."
 
 	ui.tocHeadings = ui.tocHeadings[:0]
 	for _, g := range ui.groups {
@@ -614,7 +615,14 @@ func homePage(th *lotusui.Theme, ui *docsUI) layout.Widget {
 			gtx = constrainCh66(gtx)
 			l := material.Label(th.Material, unit.Sp(15), body)
 			l.Color = th.Palette.FgMuted
-			return layout.Inset{Bottom: unit.Dp(16)}.Layout(gtx, l.Layout)
+			return layout.Inset{Bottom: unit.Dp(10)}.Layout(gtx, l.Layout)
+		}})
+		parts = append(parts, part{toc: -1, w: func(gtx C) D {
+			gtx = constrainCh66(gtx)
+			l := material.Label(th.Material, unit.Sp(14), pitch)
+			l.Font.Weight = 500
+			l.Color = th.Palette.BrandFg
+			return layout.Inset{Bottom: unit.Dp(18)}.Layout(gtx, l.Layout)
 		}})
 		parts = append(parts, part{toc: -1, w: func(gtx C) D {
 			if ui.ctaBtn.Clicked(gtx) {

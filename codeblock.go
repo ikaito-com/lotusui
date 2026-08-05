@@ -110,7 +110,7 @@ func CodeBlock(th *Theme, o CodeBlockProps) layout.Widget {
 						if len(o.Lines) > 0 {
 							return layoutCodeLines(th, gtx, o.Lines)
 						}
-						l := material.Label(th.Material, unit.Sp(13), o.Plain)
+						l := material.Label(th.Material, unit.Sp(13), expandTabs(o.Plain))
 						l.Color = th.Palette.Fg
 						return l.Layout(gtx)
 					})
@@ -166,6 +166,19 @@ func codeCopyBtn(th *Theme, btn *widget.Clickable) layout.Widget {
 	}
 }
 
+// codeTabWidth is what one tab expands to FOR DISPLAY. Go source is
+// tab-indented and the embedded font has no glyph for U+0009, so a raw
+// tab paints as a tofu box (▯) at every indent level. The clipboard
+// keeps the original tabs — that is what belongs in a .go file.
+const codeTabWidth = 4
+
+func expandTabs(s string) string {
+	if !strings.Contains(s, "\t") {
+		return s
+	}
+	return strings.ReplaceAll(s, "\t", strings.Repeat(" ", codeTabWidth))
+}
+
 func layoutCodeLines(th *Theme, gtx layout.Context, lines [][]CodeSpan) layout.Dimensions {
 	lineH := gtx.Sp(unit.Sp(21)) // ~13sp × 1.6
 	var rows []layout.Widget
@@ -180,7 +193,7 @@ func layoutCodeLines(th *Theme, gtx layout.Context, lines [][]CodeSpan) layout.D
 			for _, s := range line {
 				s := s
 				children = append(children, layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-					l := material.Label(th.Material, unit.Sp(13), s.Text)
+					l := material.Label(th.Material, unit.Sp(13), expandTabs(s.Text))
 					l.Color = s.Color
 					l.MaxLines = 1
 					if s.Bold {

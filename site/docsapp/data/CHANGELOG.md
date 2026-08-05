@@ -17,7 +17,11 @@ recorded here in full.
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+
+| Fix | Notes |
+|---|---|
+| `CodeBlock` painted tofu boxes for indentation | Go source is tab-indented and the embedded font has no glyph for U+0009, so every indent level rendered as ▯. Tabs now expand to four spaces FOR DISPLAY in both the highlighted (`Lines`) and `Plain` paths; the Copy button still writes the original tabs, which is what belongs in a .go file |
 
 ## [0.3.1] - 2026-08-05
 

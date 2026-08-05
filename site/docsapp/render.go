@@ -542,7 +542,8 @@ func renderHTMLBlock(th *lotusui.Theme, b htmlBlock) layout.Widget {
 			for i, st := range b.Stats {
 				st := st
 				cells[i] = lotusui.Cell(func(gtx C) D {
-					return lotusui.Card(th, lotusui.CardProps{Variant: lotusui.CardSubtle, Size: lotusui.SizeSM},
+					// White bordered tile — matches old .stat (card fill + border).
+					return lotusui.Card(th, lotusui.CardProps{Variant: lotusui.CardOutline, Size: lotusui.SizeSM},
 						lotusui.VStack(unit.Dp(4),
 							func(gtx C) D {
 								l := material.Label(th.Material, unit.Sp(22), st.Num)
@@ -582,28 +583,40 @@ func renderHTMLBlock(th *lotusui.Theme, b htmlBlock) layout.Widget {
 func homePage(th *lotusui.Theme, ui *docsUI) layout.Widget {
 	tag := siteTag
 	body := "Neutral grays, white cards on a tinted canvas, one accent you choose — a complete UI kit for Go apps that ship to desktop and mobile. One module, one design language; macOS, Windows, Linux, iOS, and Android are compile targets, not ports. The same code reaches the web via WebAssembly when you want it — which is also how every demo on this site is the real component in your browser. Built on Gio."
+
+	ui.tocHeadings = ui.tocHeadings[:0]
+	for _, g := range ui.groups {
+		ui.tocHeadings = append(ui.tocHeadings, g.Title)
+	}
+	ui.tocYs = make([]int, len(ui.tocHeadings))
+
+	type part struct {
+		w   layout.Widget
+		toc int
+	}
+
 	return func(gtx C) D {
-		var parts []layout.Widget
-		parts = append(parts, func(gtx C) D {
+		var parts []part
+		parts = append(parts, part{toc: -1, w: func(gtx C) D {
 			return layout.Inset{Bottom: unit.Dp(2)}.Layout(gtx, func(gtx C) D {
 				l := material.Label(th.Material, unit.Sp(34), "lotusui")
 				l.Font.Weight = 700
 				l.Color = th.Palette.Fg
 				return l.Layout(gtx)
 			})
-		})
-		parts = append(parts, func(gtx C) D {
+		}})
+		parts = append(parts, part{toc: -1, w: func(gtx C) D {
 			l := material.Label(th.Material, unit.Sp(16), tag)
 			l.Color = th.Palette.FgSubtle
 			return layout.Inset{Bottom: unit.Dp(12)}.Layout(gtx, l.Layout)
-		})
-		parts = append(parts, func(gtx C) D {
+		}})
+		parts = append(parts, part{toc: -1, w: func(gtx C) D {
 			gtx = constrainCh66(gtx)
 			l := material.Label(th.Material, unit.Sp(15), body)
 			l.Color = th.Palette.FgMuted
 			return layout.Inset{Bottom: unit.Dp(16)}.Layout(gtx, l.Layout)
-		})
-		parts = append(parts, func(gtx C) D {
+		}})
+		parts = append(parts, part{toc: -1, w: func(gtx C) D {
 			if ui.ctaBtn.Clicked(gtx) {
 				ui.navigate("quickstart")
 			}
@@ -629,11 +642,11 @@ func homePage(th *lotusui.Theme, ui *docsUI) layout.Widget {
 					},
 				)
 			})
-		})
+		}})
 		// .heroshots — CPU-scaled to Max.X (never op.Affine under
 		// ScrollArea: that collapsed the macOS window to 0×0).
 		startHeroFetch(ui.invalidate)
-		parts = append(parts, func(gtx C) D {
+		parts = append(parts, part{toc: -1, w: func(gtx C) D {
 			ops := heroOpsFor(gtx.Constraints.Max.X)
 			if len(ops) == 0 {
 				return D{}
@@ -647,20 +660,34 @@ func homePage(th *lotusui.Theme, ui *docsUI) layout.Widget {
 				}
 				return lotusui.VStack(unit.Dp(18), shots...)(gtx)
 			})
-		})
-		for _, g := range ui.groups {
-			g := g
-			parts = append(parts, func(gtx C) D {
+		}})
+		for gi, g := range ui.groups {
+			gi, g := gi, g
+			parts = append(parts, part{toc: gi, w: func(gtx C) D {
 				return layout.Inset{Top: unit.Dp(44), Bottom: unit.Dp(12)}.Layout(gtx, func(gtx C) D {
 					l := material.Label(th.Material, unit.Sp(20), g.Title)
 					l.Font.Weight = 700
 					l.Color = th.Palette.Fg
 					return l.Layout(gtx)
 				})
-			})
-			parts = append(parts, homeCardsGrid(th, ui, g.Pages))
+			}})
+			parts = append(parts, part{toc: -1, w: homeCardsGrid(th, ui, g.Pages)})
 		}
-		return lotusui.VStack(unit.Dp(0), parts...)(gtx)
+
+		var widgets []layout.Widget
+		y := 0
+		for _, it := range parts {
+			it := it
+			widgets = append(widgets, func(gtx C) D {
+				if it.toc >= 0 && it.toc < len(ui.tocYs) {
+					ui.tocYs[it.toc] = y
+				}
+				d := it.w(gtx)
+				y += d.Size.Y
+				return d
+			})
+		}
+		return lotusui.VStack(unit.Dp(0), widgets...)(gtx)
 	}
 }
 

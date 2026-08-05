@@ -33,6 +33,14 @@ recorded here in full.
 - `ScrollArea` shows a draggable overlay scrollbar (hover/scroll wake,
   fade-out) instead of a bare wheel-only viewport.
 
+### Fixed
+
+- `ScrollArea` no longer overscrolls: wheel/trackpad deltas are bounded
+  to the remaining scrollable distance when consumed, instead of being
+  added raw and clamped only after the content painted (one frame past
+  the end, then a snap back — an elastic glitch). Leftover scroll at
+  either end now chains to the parent scroller. No API change.
+
 ## [0.2.0] - 2026-08-05
 
 ### Changed

@@ -275,12 +275,8 @@ func (ui *docsUI) shell(th *lotusui.Theme, gtx C) D {
 				layout.Rigid(func(gtx C) D { return ui.sidebar(th, gtx) }),
 				layout.Rigid(layout.Spacer{Width: unit.Dp(40)}.Layout),
 				layout.Flexed(1, func(gtx C) D { return ui.bodyPane(th, gtx) }),
-			}
-			if ui.page != "" && ui.page != "home" {
-				children = append(children,
-					layout.Rigid(layout.Spacer{Width: unit.Dp(40)}.Layout),
-					layout.Rigid(func(gtx C) D { return ui.toc(th, gtx) }),
-				)
+				layout.Rigid(layout.Spacer{Width: unit.Dp(40)}.Layout),
+				layout.Rigid(func(gtx C) D { return ui.toc(th, gtx) }),
 			}
 			return layout.Flex{Axis: layout.Horizontal}.Layout(gtx, children...)
 		})

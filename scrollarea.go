@@ -42,7 +42,12 @@ type ScrollArea struct {
 
 	bar   Scrollbar
 	hover bool
-	tag   struct{}
+	// lastMax is the previous frame's scrollable distance, used to
+	// bound what a gesture may consume THIS frame (content size is
+	// only known after layout).
+	lastMax  int
+	measured bool
+	tag      struct{}
 }
 
 // Reset scrolls back to the start (route changes, filters).
@@ -96,14 +101,29 @@ func scrollArea(th *Theme, s *ScrollArea, gtx layout.Context, o ScrollAreaProps,
 	event.Op(gtx.Ops, &s.tag)
 	scrolled := false
 	for {
+		// Consume only what is left to scroll. An unbounded range let a
+		// gesture push Offset past the end for one frame — the content
+		// painted overscrolled and snapped back next frame (elastic
+		// glitch) — and swallowed scroll that should chain to a parent.
+		// Before the first layout nothing is known, so nothing is taken.
+		rng := pointer.ScrollRange{}
+		if s.measured {
+			rng = pointer.ScrollRange{Min: -s.Offset, Max: s.lastMax - s.Offset}
+			if rng.Min > 0 {
+				rng.Min = 0
+			}
+			if rng.Max < 0 {
+				rng.Max = 0
+			}
+		}
 		f := pointer.Filter{
 			Target: &s.tag,
 			Kinds:  pointer.Scroll | pointer.Enter | pointer.Leave,
 		}
 		if horiz {
-			f.ScrollX = pointer.ScrollRange{Min: -1e6, Max: 1e6}
+			f.ScrollX = rng
 		} else {
-			f.ScrollY = pointer.ScrollRange{Min: -1e6, Max: 1e6}
+			f.ScrollY = rng
 		}
 		ev, ok := gtx.Event(f)
 		if !ok {
@@ -177,6 +197,7 @@ func scrollArea(th *Theme, s *ScrollArea, gtx layout.Context, o ScrollAreaProps,
 	if s.Offset > max {
 		s.Offset = max
 	}
+	s.lastMax, s.measured = max, true
 
 	if !o.NoScrollbar && max > 0 && contentLen > 0 {
 		start := float32(s.Offset) / float32(contentLen)

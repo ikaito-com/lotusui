@@ -29,6 +29,7 @@ const (
 	IconMessage        = "message"
 	IconMinus          = "minus"
 	IconMoreHorizontal = "more-horizontal"
+	IconNavigation     = "navigation"
 	IconPerson         = "person"
 	IconPlus           = "plus"
 	IconRefuse         = "refuse"

@@ -42,6 +42,7 @@ const IconMail
 const IconMessage
 const IconMinus
 const IconMoreHorizontal
+const IconNavigation
 const IconPerson
 const IconPlus
 const IconRefuse

@@ -35,3 +35,4 @@ fluent:archive-24-regular archive.svg
 fluent:clock-24-regular clock.svg
 fluent:lock-closed-24-regular lock.svg
 simple-icons:github github.svg
+mdi:menu navigation.svg

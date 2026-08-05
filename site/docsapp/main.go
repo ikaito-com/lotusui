@@ -112,6 +112,17 @@ type docsUI struct {
 	tocYs       []int // content Y of each TOC target (scroll coords)
 	tocBtns     []*widget.Clickable
 
+	// Responsive chrome. The sidebar and the TOC are COLUMNS on wide
+	// windows; below their breakpoints they fold into one drawer
+	// behind the topbar's burger, so phones get the whole navigation
+	// without a 200dp column eating the screen.
+	showSidebar bool // >= lg (992dp)
+	showTOC     bool // >= xl (1280dp)
+	burgerBtn   widget.Clickable
+	navDlg      lotusui.Dialog
+	navOpen     bool
+	navDrawer   lotusui.ScrollArea
+
 	invalidate func()
 }
 
@@ -196,6 +207,21 @@ func (ui *docsUI) Layout(th *lotusui.Theme, gtx C) D {
 		cl.Pop()
 	}
 
+	// Resolve responsive chrome HERE, at the window width: the shell
+	// caps its own constraints at 1240dp, so a breakpoint resolved
+	// inside it could never reach xl.
+	ui.showSidebar = lotusui.Bools(false).At("lg", true).Resolve(th, gtx)
+	ui.showTOC = lotusui.Bools(false).At("xl", true).Resolve(th, gtx)
+	if ui.showSidebar {
+		ui.navOpen = false // the drawer's contents are on screen again
+	}
+	if ui.burgerBtn.Clicked(gtx) {
+		ui.navOpen = !ui.navOpen
+		if ui.navOpen {
+			ui.navDlg.Appear()
+		}
+	}
+
 	for i, b := range ui.navBtns {
 		if b.Clicked(gtx) {
 			ui.navigate(ui.navKeys[i])
@@ -247,10 +273,13 @@ func (ui *docsUI) Layout(th *lotusui.Theme, gtx C) D {
 		layout.Flexed(1, func(gtx C) D { return ui.shell(th, gtx) }),
 	)
 	live.PaintOverlay(th, gtx)
+	// The folded navigation sits above everything, at window size.
+	ui.navDrawerOverlay(th, gtx)
 	return dims
 }
 
 func (ui *docsUI) navigate(slug string) {
+	ui.navOpen = false // picking a destination closes the drawer
 	ui.page = slug
 	ui.body.Reset()
 	ui.secUI = nil
@@ -266,17 +295,30 @@ func (ui *docsUI) shell(th *lotusui.Theme, gtx C) D {
 			gtx.Constraints.Max.X = max
 		}
 		gtx.Constraints.Min.X = gtx.Constraints.Max.X
+		side := unit.Dp(24)
+		if !ui.showSidebar {
+			side = unit.Dp(16) // phones: give the prose the width back
+		}
 		return layout.Inset{
 			Top: unit.Dp(28), Bottom: unit.Dp(64),
-			Left: unit.Dp(24), Right: unit.Dp(24),
+			Left: side, Right: side,
 		}.Layout(gtx, func(gtx C) D {
 			// .shell gap: 40px between all columns. TOC only on article pages.
-			children := []layout.FlexChild{
-				layout.Rigid(func(gtx C) D { return ui.sidebar(th, gtx) }),
-				layout.Rigid(layout.Spacer{Width: unit.Dp(40)}.Layout),
+			var children []layout.FlexChild
+			if ui.showSidebar {
+				children = append(children,
+					layout.Rigid(func(gtx C) D { return ui.sidebar(th, gtx) }),
+					layout.Rigid(layout.Spacer{Width: unit.Dp(40)}.Layout),
+				)
+			}
+			children = append(children,
 				layout.Flexed(1, func(gtx C) D { return ui.bodyPane(th, gtx) }),
-				layout.Rigid(layout.Spacer{Width: unit.Dp(40)}.Layout),
-				layout.Rigid(func(gtx C) D { return ui.toc(th, gtx) }),
+			)
+			if ui.showTOC {
+				children = append(children,
+					layout.Rigid(layout.Spacer{Width: unit.Dp(40)}.Layout),
+					layout.Rigid(func(gtx C) D { return ui.toc(th, gtx) }),
+				)
 			}
 			return layout.Flex{Axis: layout.Horizontal}.Layout(gtx, children...)
 		})
@@ -317,10 +359,14 @@ func (ui *docsUI) topbar(th *lotusui.Theme, gtx C) D {
 							}),
 							layout.Rigid(layout.Spacer{Width: unit.Dp(12)}.Layout),
 							layout.Flexed(1, func(gtx C) D {
-								l := material.Label(th.Material, unit.Sp(13), siteTag)
-								l.Color = th.Palette.FgSubtle // --text-sec
-								l.MaxLines = 1
-								return l.Layout(gtx)
+								// The tagline is the first thing to overflow a
+								// phone topbar — it is prose, not navigation.
+								return lotusui.Show(th, gtx, lotusui.Bools(false).At("md", true), func(gtx C) D {
+									l := material.Label(th.Material, unit.Sp(13), siteTag)
+									l.Color = th.Palette.FgSubtle // --text-sec
+									l.MaxLines = 1
+									return l.Layout(gtx)
+								})
 							}),
 							// .topbar-actions gap: 10
 							layout.Rigid(func(gtx C) D {
@@ -332,6 +378,15 @@ func (ui *docsUI) topbar(th *lotusui.Theme, gtx C) D {
 							layout.Rigid(func(gtx C) D { return ui.paletteBtn(th, gtx) }),
 							layout.Rigid(layout.Spacer{Width: unit.Dp(10)}.Layout),
 							layout.Rigid(func(gtx C) D { return ui.githubBtn(th, gtx) }),
+							layout.Rigid(func(gtx C) D {
+								if ui.showSidebar {
+									return D{}
+								}
+								return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
+									layout.Rigid(layout.Spacer{Width: unit.Dp(10)}.Layout),
+									layout.Rigid(func(gtx C) D { return ui.burger(th, gtx) }),
+								)
+							}),
 						)
 					})
 				},
@@ -723,4 +778,102 @@ func (ui *docsUI) bodyPane(th *lotusui.Theme, gtx C) D {
 		gtx.Constraints.Min.X = gtx.Constraints.Max.X
 	}
 	return ui.body.Layout(th, gtx, ui.pageContent(th))
+}
+
+// burger is the topbar's navigation trigger, shown only while the
+// sidebar is folded away. Same chrome as the other topbar chips.
+func (ui *docsUI) burger(th *lotusui.Theme, gtx C) D {
+	return ui.burgerBtn.Layout(gtx, func(gtx C) D {
+		pointer.CursorPointer.Add(gtx.Ops)
+		border, ink := th.Palette.Border, th.Palette.FgSubtle
+		if ui.burgerBtn.Hovered() || ui.navOpen {
+			border, ink = th.Palette.BrandFg, th.Palette.BrandFg
+		}
+		return layout.Background{}.Layout(gtx,
+			func(gtx C) D {
+				sz := gtx.Constraints.Min
+				rr := clip.UniformRRect(image.Rectangle{Max: sz}, gtx.Dp(unit.Dp(6))).Push(gtx.Ops)
+				paint.Fill(gtx.Ops, th.Palette.BgPanel)
+				rr.Pop()
+				widget.Border{Color: border, Width: unit.Dp(1), CornerRadius: unit.Dp(6)}.Layout(gtx,
+					func(gtx C) D { return D{Size: sz} })
+				return D{Size: sz}
+			},
+			func(gtx C) D {
+				return layout.UniformInset(unit.Dp(5)).Layout(gtx,
+					lotusui.SVGIcon(lotusui.IconNavigation, 18, ink))
+			},
+		)
+	})
+}
+
+// navDrawerOverlay paints the folded navigation: the current page's
+// "On this page" (when that column is hidden too) above the full site
+// nav, in one Dialog at window constraints. The sidebar and TOC are
+// never laid out at the same time as this drawer — they are mutually
+// exclusive by breakpoint — so both can share their clickables.
+func (ui *docsUI) navDrawerOverlay(th *lotusui.Theme, gtx C) D {
+	if !ui.navOpen {
+		return D{}
+	}
+	ui.navDlg.Size = lotusui.SizeSM
+	return ui.navDlg.Layout(th, gtx, func() { ui.navOpen = false }, func(gtx C) D {
+		// Cap the panel so a 40-entry nav scrolls instead of running
+		// off a phone screen.
+		maxH := gtx.Constraints.Max.Y
+		if h := gtx.Dp(unit.Dp(460)); maxH > h {
+			maxH = h
+		}
+		gtx.Constraints.Max.Y = maxH
+		gtx.Constraints.Min.X = gtx.Constraints.Max.X
+		return ui.navDrawer.Layout(th, gtx, func(gtx C) D {
+			var rows []layout.Widget
+			if !ui.showTOC && len(ui.tocHeadings) > 0 {
+				rows = append(rows, func(gtx C) D {
+					l := material.Label(th.Material, unit.Sp(11), "ON THIS PAGE")
+					l.Font.Weight = 700
+					l.Color = th.Palette.FgSubtle
+					return layout.Inset{Bottom: unit.Dp(6)}.Layout(gtx, l.Layout)
+				})
+				for len(ui.tocBtns) < len(ui.tocHeadings) {
+					ui.tocBtns = append(ui.tocBtns, new(widget.Clickable))
+				}
+				for i, h := range ui.tocHeadings {
+					i, h := i, h
+					btn := ui.tocBtns[i]
+					if btn.Clicked(gtx) {
+						y := 0
+						if i < len(ui.tocYs) {
+							y = ui.tocYs[i]
+						}
+						ui.body.ScrollTo(y - gtx.Dp(unit.Dp(12)))
+						ui.navOpen = false
+					}
+					rows = append(rows, navLink(th, btn, h, false))
+				}
+				rows = append(rows, layout.Spacer{Height: unit.Dp(18)}.Layout)
+			}
+			bi := 0
+			for gi, g := range ui.groups {
+				title, top := strings.ToUpper(g.Title), unit.Dp(0)
+				if gi > 0 {
+					top = unit.Dp(18)
+				}
+				rows = append(rows, func(gtx C) D {
+					return layout.Inset{Top: top, Bottom: unit.Dp(6)}.Layout(gtx, func(gtx C) D {
+						l := material.Label(th.Material, unit.Sp(11), title)
+						l.Font.Weight = 700
+						l.Color = th.Palette.Fg
+						return l.Layout(gtx)
+					})
+				})
+				for _, it := range g.Pages {
+					btn := ui.navBtns[bi]
+					bi++
+					rows = append(rows, navLink(th, btn, it.Title, ui.page == it.Slug))
+				}
+			}
+			return lotusui.VStack(unit.Dp(0), rows...)(gtx)
+		})
+	})
 }

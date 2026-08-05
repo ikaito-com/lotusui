@@ -17,6 +17,12 @@ recorded here in full.
 
 ## [Unreleased]
 
+### Added
+
+| Symbol | Notes |
+|---|---|
+| `IconNavigation` | mono `mdi:menu` ("navigation") — the hamburger, for folding a nav column into a drawer below a breakpoint |
+
 ### Fixed
 
 | Fix | Notes |

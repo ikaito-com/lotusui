@@ -7,6 +7,46 @@ together with rtl via a `replace` directive while both sides are in
 active development. `make check` (fmt + vet + test) must pass before
 committing.
 
+## Git authorship — NON-NEGOTIABLE (never violate)
+
+Human maintainers own every git identity on this repository. AI
+systems (Claude, Cursor Agent, Cursor Bot, Copilot, ChatGPT, or any
+other automated assistant) MUST NEVER appear in git history or on
+GitHub as an author, committer, tagger, releaser, co-author, or
+contributor.
+
+When an agent is instructed to run git actions (commit, tag, release,
+push, deploy, amend, merge, cherry-pick, or anything that writes git
+objects or GitHub release metadata):
+
+1. **Author / committer / tagger** MUST be the human maintainer's
+   configured identity only (`git config user.name` /
+   `user.email` — today: aquiseb). Do NOT set or override identity to
+   an AI name, bot email, or `noreply` AI account. Do NOT invent a
+   second identity.
+2. **Forbidden trailers and metadata:** never add `Co-authored-by:`,
+   `Signed-off-by:`, or similar lines naming Claude, Cursor, an
+   agent, a model, or any AI product. Never use GitHub's
+   "committed via" / bot association for these actions.
+3. **Commits, tags, releases, deploys:** every commit message, annotated
+   tag, GitHub Release, and deploy trigger must attribute solely to
+   the human. If a tool would inject AI attribution, refuse that path
+   and use a plain human-authored commit/tag instead.
+4. **Verify before push:** `git log -1 --format='%an <%ae>%n%cn <%ce>'`
+   and the full message (`git log -1 --format=%B`) MUST show only the
+   human — no `Co-authored-by` (or similar) naming Cursor, Claude, or
+   any AI. For tags: `git show -s --format=fuller <tag>`. If anything
+   AI-shaped appears, do not push — fix or redo the object first.
+5. **Cursor injection:** the IDE may append
+   `Co-authored-by: Cursor <cursoragent@cursor.com>` even when not
+   requested. Strip it by rebuilding with `git commit-tree` (or
+   equivalent) before push.
+6. **This rule outranks convenience.** Prefer failing the git step
+   over shipping history that lists an AI. History rewrites after the
+   fact are worse than stopping.
+
+Also mirrored in `.cursor/rules/git-authorship.mdc` (alwaysApply).
+
 ## The boundary (do not drift)
 
 lotusui NEVER imports an app package: no Backend, no store, no tf —
@@ -167,7 +207,9 @@ EVERY API change lands in the same commit with its CHANGELOG entry
 and both consumer apps updated. There is deliberately NO migrate
 command: agents read the changelog and do the work.
 
-THE COMMIT RITUAL (api.txt is the tripwire — make check enforces it):
+THE COMMIT RITUAL (api.txt is the tripwire — make check enforces it).
+Authorship: see § "Git authorship — NON-NEGOTIABLE" above — human
+identity only; no AI co-authors, committers, or taggers.
 1. Make the change. `make check` now FAILS on API drift, listing the
    exact added/removed symbols.
 2. Record every one of them in CHANGELOG.md [Unreleased] under the

@@ -760,7 +760,7 @@ func separatorDemo(th *lotusui.Theme, gtx C) D {
 	return card(th, gtx,
 		section(th, "Separator — horizontal and vertical", func(gtx C) D {
 			return lotusui.VStack(th.Space.MD,
-				lotusui.LabelBody(th, "An open-source design system for Gio.").Layout,
+				lotusui.LabelBody(th, "An open-source Go design system — desktop, mobile, and the web.").Layout,
 				lotusui.Separator(th),
 				func(gtx C) D {
 					return layout.Flex{Alignment: layout.Middle}.Layout(gtx,

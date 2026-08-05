@@ -1,0 +1,43 @@
+---
+description: Non-negotiable — never attribute git history to AI agents
+alwaysApply: true
+---
+
+# Git authorship — NON-NEGOTIABLE
+
+Human maintainers own every git identity in this repository. **Claude,
+Cursor Agent, Cursor Bot, Copilot, ChatGPT, or any other AI/automation
+MUST NEVER appear** as git author, committer, tagger, GitHub
+contributor, releaser, or co-author.
+
+## When running git or GitHub write actions
+
+Applies to: commit, amend, tag, release, push, deploy, merge,
+cherry-pick, rebase that creates commits, `gh release`, and any
+command that writes git objects or GitHub release/contributor
+metadata.
+
+1. Use only the human's existing `user.name` / `user.email` from git
+   config (aquiseb). Do not change git config to an AI identity. Do
+   not pass `--author` (or tagger overrides) that name an AI.
+2. Never add `Co-authored-by:`, `Signed-off-by:`, or other trailers
+   naming an AI, model, or agent product. Never rely on tooling that
+   injects those trailers.
+3. Commit messages, annotated tags, and GitHub Releases must attribute
+   solely to the human.
+4. Before every push of new commits/tags, verify:
+   - `git log -1 --format='%an <%ae>%n%cn <%ce>'`
+   - for tags: `git show -s --format=fuller <tag>`
+   Both must show only the human. If not, stop — do not push.
+5. If the only way to complete the task would create AI-attributed
+   history, **refuse that path** and tell the human. Prefer failure
+   over polluted contributors.
+6. **Cursor may inject** `Co-authored-by: Cursor <cursoragent@cursor.com>`
+   into commit messages even when the agent did not add it. After
+   every commit, check the message body. If that trailer (or any AI
+   co-author) is present, **do not push** — rebuild the commit with
+   `git commit-tree` (or equivalent) so the stored message has no AI
+   trailer, then verify again.
+
+This rule outranks convenience and default agent commit helpers.
+See also `CLAUDE.md` § "Git authorship — NON-NEGOTIABLE".

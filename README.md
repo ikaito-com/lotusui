@@ -4,9 +4,8 @@
 
 <h1 align="center">lotusui</h1>
 
-<p align="center"><b>A complete, themeable design system for
-<a href="https://gioui.org">Gio</a> — desktop, mobile and web from one
-Go codebase.</b></p>
+<p align="center"><b>A Go design system for desktop and mobile —
+one codebase, native apps. Web when you want it.</b></p>
 
 <p align="center">
   <a href="https://lotusui.com/">Documentation</a> ·
@@ -18,12 +17,13 @@ Go codebase.</b></p>
 
 <img src="site/media/hero-light.png" alt="lotusui — the login card, switches, toggles, badges, slider, progress and avatars, light theme" width="100%">
 
-Thirty-plus components with the vocabulary the web settled on —
+Thirty-plus components with the vocabulary developers already know —
 Button, Input, Select, Dialog, DropdownMenu, Tabs, Card, Toast,
-Tooltip — implemented natively for immediate mode. No webview, no
-bindings: one Go binary per platform, and the same code compiles to
-WebAssembly, which is how every demo in the documentation is the real
-component running in your browser.
+Tooltip — implemented natively in Go. No webview, no bindings: one
+binary per platform for desktop and mobile. The same module also
+compiles to WebAssembly when you want a browser build — which is how
+every demo in the documentation is the real component in your browser.
+Built on [Gio](https://gioui.org).
 
 ```go
 import "github.com/ikaito-com/lotusui"

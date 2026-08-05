@@ -3,15 +3,15 @@
 <head>
 {{template "head" .}}
 <title>{{.Site.Name}} — {{.Site.Tag}}</title>
-<meta name="description" content="lotusui is the ikaito design language for Gio desktop apps: components, theme, motion, and box-grammar primitives, documented with live WebAssembly demos.">
+<meta name="description" content="lotusui is a themeable Go UI library for native desktop and mobile apps. Ship macOS, Windows, Linux, iOS, and Android from one module — and the web via WebAssembly when you want it.">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareSourceCode",
   "name": "lotusui",
-  "description": "A complete, themeable design system for Gio — desktop, mobile and web from one Go codebase.",
+  "description": "A themeable Go design system for native desktop and mobile apps — one codebase; the web is a compile target too.",
   "programmingLanguage": "Go",
-  "runtimePlatform": "Gio (gioui.org)",
+  "runtimePlatform": "Desktop, mobile, and WebAssembly (Gio)",
   "codeRepository": "https://github.com/ikaito-com/lotusui",
   "url": "{{.Site.BaseURL}}",
   "license": "https://github.com/ikaito-com/lotusui"
@@ -26,10 +26,7 @@
   <div class="hero">
     <h1>{{.Site.Name}}</h1>
     <p class="herotag">{{.Site.Tag}}</p>
-    <p>Neutral grays, white cards floating on a tinted page, one accent you choose, and
-    full-color icons embedded in the binary — one codebase that ships to desktop, mobile and
-    the web as compile targets, not ports. Built on <a href="https://gioui.org">Gio</a>;
-    every demo below is the real component running in your browser.</p>
+    <p>Neutral grays, white cards on a tinted canvas, one accent you choose — a complete UI kit for Go apps that ship to <strong>desktop and mobile</strong>. One module, one design language; macOS, Windows, Linux, iOS, and Android are compile targets, not ports. The same code reaches the <strong>web</strong> via WebAssembly when you want it — which is also how every demo on this site is the real component in your browser. Built on <a href="https://gioui.org">Gio</a>.</p>
     <p><a class="cta" href="components/quickstart/">Get started →</a></p>
   </div>
   <div class="heroshots">

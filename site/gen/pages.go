@@ -41,7 +41,7 @@ func theSite() *site {
 		Name:     "lotusui",
 		BaseURL:  "https://lotusui.com/",
 		Looks:    lks,
-		Tag:      "the ikaito design language for Gio — desktop, mobile, web",
+		Tag:      "A Go design system for desktop and mobile — one codebase, native apps. Web when you want it.",
 		Repo:     "https://github.com/ikaito-com/lotusui",
 		Palettes: pals,
 		Groups: []group{
@@ -166,18 +166,18 @@ func installationPage() *page {
 	return &page{
 		Slug:   "installation",
 		Title:  "Installation",
-		Kicker: "Add lotusui to a Go module and check the Gio prerequisites.",
-		Intro: `<p>lotusui is a single Go package on top of <a href="https://gioui.org">Gio</a>:
-a semantic token palette, an embedded font, and the card/hairline/badge primitives that make
-an app read as one product. Every demo on this site is the real component, compiled to
-WebAssembly.</p>`,
+		Kicker: "Add lotusui to a Go module and start a native desktop or mobile app.",
+		Intro: `<p>lotusui is a themeable Go UI library for native desktop and mobile apps — a
+semantic token palette, an embedded font, and the components that make an app read as one
+product. Built on <a href="https://gioui.org">Gio</a>. Every demo on this site is the real
+component running in your browser.</p>`,
 		Sections: []section{
 			{
 				Heading: "Install",
-				Prose: `<p>lotusui is a normal Go module. Gio brings its own platform requirements (see
-the <a href="https://gioui.org/doc/install">Gio install docs</a>); on macOS, Windows and
-js/wasm it works out of the box, Linux needs a few dev packages. When a component must
-diverge from stock, you can also own its source — <code>lotusui add</code> vendors it into
+				Prose: `<p>lotusui is a normal Go module. The runtime stack brings its own platform
+requirements (see the <a href="https://gioui.org/doc/install">Gio install docs</a>); on macOS,
+Windows and js/wasm it works out of the box, Linux needs a few dev packages. When a component
+must diverge from stock, you can also own its source — <code>lotusui add</code> vendors it into
 your app and keeps it mergeable (see <a href="../registry/">Registry</a>).</p>`,
 				Snippet: `go get github.com/ikaito-com/lotusui`,
 				Lang:    "sh",
@@ -230,10 +230,11 @@ go build ./...   # the compiler catches anything missed`,
 				Lang: "sh",
 			},
 			{
-				Heading: "Gio moves deliberately",
+				Heading: "Runtime versions move deliberately",
 				Prose: `<p>Go's minimal version selection takes the <em>maximum</em> gioui.org requirement
-across lotusui and your app, so a casual <code>go mod tidy</code> can silently upgrade Gio.
-Treat Gio bumps as deliberate changes, verified in lotusui and its consumers together.</p>`,
+across lotusui and your app, so a casual <code>go mod tidy</code> can silently upgrade the
+UI runtime. Treat those bumps as deliberate changes, verified in lotusui and its consumers
+together.</p>`,
 			},
 		},
 	}
@@ -243,10 +244,10 @@ func quickstartPage() *page {
 	return &page{
 		Slug:   "quickstart",
 		Title:  "Quickstart",
-		Kicker: "A themed window with a button, in one file.",
+		Kicker: "A themed native window with a button, in one Go file.",
 		Intro: `<p><code>NewTheme</code> builds the one Theme instance — palette plus the embedded
-DM Sans font. Pass it to every component. The event loop is plain Gio: paint the canvas,
-lay out content in the readable column, hand the frame back.</p>`,
+DM Sans font. Pass it to every component. The event loop is a standard Go app loop (Gio):
+paint the canvas, lay out content in the readable column, hand the frame back.</p>`,
 		Sections: []section{
 			{
 				Heading: "A minimal app",
@@ -303,26 +304,27 @@ func platformsPage() *page {
 	return &page{
 		Slug:      "platforms",
 		Title:     "Platforms",
-		Kicker:    "Desktop, mobile and web are compile targets, not ports.",
+		Kicker:    "Desktop and mobile first — same Go module; the web is a compile target too.",
 		Platforms: []string{"Desktop", "Mobile", "Web"},
-		Intro: `<p>Gio renders every pixel itself, and lotusui embeds its font — so the same code
-produces the same interface on every target, down to the typography. There is one codebase and
-one design language; the platform decides input (pointer or touch) and packaging, nothing else.
-The few places where a platform genuinely differs are called out across this site with badges
-like the ones above.</p>`,
+		Intro: `<p>One Go codebase, one design language: lotusui embeds its font and paints a
+consistent interface on every target, down to the typography. Desktop and mobile are the
+product focus; the web is the same module compiled to WebAssembly when you want a browser
+build. The platform decides input (pointer or touch) and packaging, nothing else. The few
+places where a platform genuinely differs are called out across this site with badges like
+the ones above.</p>`,
 		Sections: []section{
 			{
 				Heading:   "Desktop",
 				Platforms: []string{"macOS", "Windows", "Linux"},
-				Prose: `<p>The first-class home. Hover affordances (row pills, button shades, pointer
-cursors) do their best work here, and on macOS the
+				Prose: `<p>A first-class home for lotusui apps. Hover affordances (row pills, button shades,
+pointer cursors) do their best work here, and on macOS the
 <a href="../seamless-window/">seamless window</a> gives native edge-to-edge chrome — no title
 bar, traffic lights kept. Windows and Linux run with standard decorations.</p>`,
 			},
 			{
 				Heading:   "Mobile",
 				Platforms: []string{"Android", "iOS"},
-				Prose: `<p>Touch-ready by construction: the theme's tap targets default to Gio's 44dp
+				Prose: `<p>Touch-ready by construction: the theme's tap targets default to a 44dp
 finger size, scrolling (Scrollable, ListView) is native touch scrolling, and text input goes
 through the platform IME. Hover states simply never fire — and that's safe by design, because
 in lotusui hover is always an <em>affordance</em>, never the only signal: selection and
@@ -332,22 +334,23 @@ so nothing becomes unreachable without a pointer.</p>`,
 			{
 				Heading:   "Web",
 				Platforms: []string{"WASM"},
-				Prose: `<p>WebAssembly is a first-class Gio target — every live demo on this site is
-lotusui compiled with <code>GOOS=js GOARCH=wasm</code>, one bundle for the whole gallery. The
-binary embeds its fonts (roughly 13&nbsp;MB raw, a fraction over the wire compressed), so ship
-ONE app bundle; each docs Preview is a gallery iframe addressed by URL hash
-(<code>loading=&quot;lazy&quot;</code> so off-screen examples boot on demand).</p>`,
+				Prose: `<p>The same Go module reaches the browser via WebAssembly — a real shipping
+target, not a separate port, and how this documentation site shows live demos. Build with
+<code>GOOS=js GOARCH=wasm</code>, one gallery bundle for every Preview. The binary embeds its
+fonts (roughly 13&nbsp;MB raw, a fraction over the wire compressed); each docs Preview is a
+gallery iframe addressed by URL hash (<code>loading=&quot;lazy&quot;</code> so off-screen
+examples boot on demand).</p>`,
 				Snippet: `GOOS=js GOARCH=wasm go build -ldflags="-s -w" -o app.wasm .
 # serve with wasm_exec.js from $(go env GOROOT)/lib/wasm/
-# and a <div id="giowindow"> for Gio to attach to`,
+# and a <div id="giowindow"> for the canvas host`,
 				Lang: "sh",
 			},
 			{
 				Heading: "What's platform-specific in the API",
 				Prose: `<p>Almost nothing. The one platform-gated symbol is
-<code>MakeSeamlessWindow</code>, which exists only on macOS (behind a build tag, like Gio's own
-<code>AppKitViewEvent</code>) — call it from a small <code>main_darwin.go</code> and every other
-target compiles cleanly without it. Everything else in the library builds on every target.</p>`,
+<code>MakeSeamlessWindow</code>, which exists only on macOS (behind a build tag) — call it from
+a small <code>main_darwin.go</code> and every other target compiles cleanly without it.
+Everything else in the library builds on every target.</p>`,
 			},
 		},
 	}

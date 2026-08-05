@@ -8,11 +8,11 @@
 <meta property="og:url" content="{{.Canonical}}">{{end}}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="lotusui">
-<meta property="og:title" content="{{if .Page}}{{.Page.Title}} — lotusui{{else}}lotusui — Go design system for Gio{{end}}">
+<meta property="og:title" content="{{if .Page}}{{.Page.Title}} — lotusui{{else}}lotusui — Go design system for desktop and mobile{{end}}">
 <meta property="og:description" content="{{if .Page}}{{.Page.Kicker}}{{else}}{{.Site.Tag}}{{end}}">
 <meta property="og:image" content="{{.Site.BaseURL}}media/hero-light.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{if .Page}}{{.Page.Title}} — lotusui{{else}}lotusui — Go design system for Gio{{end}}">
+<meta name="twitter:title" content="{{if .Page}}{{.Page.Title}} — lotusui{{else}}lotusui — Go design system for desktop and mobile{{end}}">
 <meta name="twitter:description" content="{{if .Page}}{{.Page.Kicker}}{{else}}{{.Site.Tag}}{{end}}">
 <meta name="twitter:image" content="{{.Site.BaseURL}}media/hero-light.png">
 <script>try{var p=localStorage.getItem("lotusui-palette");if(p)document.documentElement.dataset.palette=p;var l=localStorage.getItem("lotusui-look");if(l)document.documentElement.dataset.style=l}catch(e){}</script>
@@ -174,6 +174,6 @@
 
 {{define "footer"}}
 <footer class="footer">
-  <p>Every demo on this site is the real Go component compiled to WebAssembly — one gallery app, one bundle, each Preview an iframe addressed by URL hash.</p>
+  <p>lotusui is a Go design system for native desktop and mobile — and the web when you want it. Docs demos are the real components (WebAssembly) — one gallery app, each Preview an iframe addressed by URL hash.</p>
 </footer>
 {{end}}

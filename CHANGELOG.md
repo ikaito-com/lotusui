@@ -17,14 +17,20 @@ recorded here in full.
 
 ## [Unreleased]
 
-VERSION NUMBERING NOTE for the next release: it must be **v0.9.0**,
-not v0.4.0. The abandoned pre-rewrite lineage published v0.4.0–v0.8.0
-and the module proxy + checksum DB cache those version strings
-FOREVER — a new tag reusing one would serve the ghost zip (or fail
-sum verification), and anything inside the range is born retracted by
-our own `retract [v0.4.0, v0.8.0]`. Jumping above v0.8.0 also finally
-activates that retraction, so `go get @latest` resolves correctly
-again from v0.9.0 on. Do not "correct" the jump.
+Nothing yet.
+
+## [0.3.5] - 2026-08-10
+
+VERSION NUMBERING NOTE: this ships new API on a 0.3.x PATCH number,
+by the maintainer's choice. The honest minor would be v0.4.0, but the
+abandoned pre-rewrite lineage published v0.4.0–v0.8.0 and the module
+proxy + checksum DB cache those version strings FOREVER — a new tag
+reusing one would serve the ghost zip (or fail sum verification), and
+anything inside the range is born retracted by our own
+`retract [v0.4.0, v0.8.0]`. Rather than jump to v0.9.0, releases stay
+in 0.3.x for now. Consequence: the retraction stays inert and
+`go get @latest` still resolves to the ghost v0.8.0 — **keep
+upgrading by explicit tag only** until a release above v0.8.0 exists.
 
 ### Added
 

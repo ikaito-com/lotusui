@@ -26,6 +26,7 @@ because it is auditable.
 | **ButtonGroup** | demo ✓ · orientation ✓ · size ✓ · separator ✓ · split ✓ · input ✓ · select ✓(ButtonGroupSelect) · nested 🧩(flex Widget slot) · input-group ⏳ · popover ⏳ · dropdown 🧩(trigger beside group) |
 | **Card** | demo ✓ · small ✓ · spacing ✓ · image ✓ · edge-to-edge ✓ · rtl ➖ |
 | **Checkbox** | demo ✓ · basic ✓ · description ✓ · disabled ✓ · group ✓ · invalid ✓ · table ✓ · rtl ➖ |
+| **Context Menu** | demo ✓ · basic ✓ · submenu ✓ · shortcuts ✓ · groups ✓ · icons ✓ · checkboxes ✓ · radio ✓ · destructive ✓ · disabled-rows ⏳ · touch long-press ⏳ · sides ➖ · rtl ➖ — opens at the pointer via `ContextMenuPress` (secondary press everywhere + Ctrl+primary on macOS); rows are the shared menu grammar under family names |
 | **Dialog** | demo ✓ · close-button ✓ · no-close-button ✓ · scrollable-content ✓ · sticky-footer ✓ · **responsive width** ✓ · rtl ➖ |
 | **DropdownMenu** | demo ✓ · basic ✓ · icons ✓ · shortcuts ✓ · checkboxes ✓ · radio-group ✓ · destructive ✓ · complex ✓ · checkboxes-icons ✓ · radio-icons ✓ · submenu ✓ · avatar ⏳ · rtl ➖ |
 | **Field** | demo ✓ · input ✓ · select ✓ · textarea ✓ · group 🧩 · checkbox ⏳ · radio ⏳ · switch ⏳ · slider ⏳ · fieldset ⏳ · choice-card ⏳ · responsive ⏳ · rtl ➖ |
@@ -53,7 +54,7 @@ because it is auditable.
 | **Tooltip** | demo ✓ · sides ✓ · keyboard ⏳ · disabled ⏳ · rtl ➖ |
 | **Scroll Area** | demo ✓ · composition (Scrollbar) ✓ · horizontal ✓ · **always** ✓ · **sizes** ✓ · **thumb color** ✓ · **show track** ✓ · floating-inside ✓ · rtl ➖ |
 | **Extensions** (no counterpart) | Grid (spans, auto-flow, row contract, **Cols responsive**) ✓ · SimpleGrid (continuous minChildWidth + **stepped Columns**) ✓ · Theme breakpoints (ParseBreakpointsJSON / WithBreakpoints) ✓ · Show / ResponsiveInt|Dp|Bool ✓ · Stack (VStack / HStack) ✓ · Wrap ✓ · Split + VSlide ✓ · Split scroll helpers (ColumnScroll / BoxScroll / FillScroll) ✓ · TitleWithIcons ✓ · AnnotatedText / SplitGlossary ✓ · ListView (virtualized) ✓ · Floating (portal) ✓ · **CodeBlock** / CodeSpan (highlighter stays in the app) ✓ · **Example** (Preview\|Code chrome) ✓ · **ScrollArea** / **Scrollbar** (macOS overlay; Floating-safe; List-backed Scrollable remains) ✓ |
-| **Missing families** | Empty, Combobox, Command, Menubar, Navigation Menu, Sheet/Drawer, Calendar, Context Menu ⏳ · Item ✓ |
+| **Missing families** | Empty, Combobox, Command, Menubar, Navigation Menu, Sheet/Drawer, Calendar ⏳ · Context Menu ✓ · Item ✓ |
 
 ## Working order
 

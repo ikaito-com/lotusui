@@ -1406,3 +1406,135 @@ and the platform's text direction. Dropdown-on-item is composition with
 		},
 	}
 }
+
+func contextMenuPage() *Page {
+	return &Page{
+		Slug:   "context-menu",
+		Title:  "ContextMenu",
+		Kicker: "The menu at the pointer — right-click content and act where you are.",
+		Intro: `<p><code>ContextMenu</code> wraps any content in a pass-through pointer area — the child
+keeps every primary-button interaction — and the platform's context gesture opens the menu panel
+AT THE POINTER on the floating layer. <code>ContextMenuPress</code> is the one place that gesture
+is answered: a secondary-button press on every OS, plus Ctrl+primary on macOS. Escape, a press
+anywhere else, or picking an item closes it (checkbox and radio menus set <code>KeepOpen</code>,
+because picking is not leaving). Rows are the shared menu grammar under this family's own names —
+<code>ContextMenuItem</code>, <code>ContextMenuCheckboxItem</code>, <code>ContextMenuRadioItem</code>,
+<code>ContextMenuLabel</code>, <code>ContextMenuSeparator</code>, <code>ContextMenuSub</code>.
+Web composition (<code>ContextMenuTrigger</code>/<code>ContextMenuContent</code>) is "from the
+web": Go's <code>Layout(th, gtx, content, items…)</code> wraps both. Touch long-press and RTL
+are not yet supported by the underlying toolkit.</p>`,
+		Sections: []Section{
+			InstallSection("context-menu"),
+			{
+				Heading: "Usage",
+				Prose: `<p>Right-click (Ctrl+click on macOS) the area to open the menu. The panel opens
+down-right of the pointer and flips at a known edge — the native menu move.</p>`,
+				Snippet: `var cm lotusui.ContextMenu
+
+cm.Layout(th, gtx, dropZone,
+	lotusui.ContextMenuShortcutItem(th, &back, "Back", "⌘[", false),
+	lotusui.ContextMenuShortcutItem(th, &fwd, "Forward", "⌘]", false),
+	lotusui.ContextMenuShortcutItem(th, &reload, "Reload", "⌘R", false),
+	sub.Item(th, "More Tools",
+		lotusui.ContextMenuItem(th, &save, "Save Page...", false),
+		lotusui.ContextMenuItem(th, &dev, "Developer Tools", false),
+	),
+	lotusui.ContextMenuSeparator(th),
+	lotusui.ContextMenuCheckboxItem(th, &bk, "Show Bookmarks", showBookmarks),
+)`,
+				Demo:  "context-menu/0",
+				DemoH: 300,
+			},
+			{
+				Heading: "Basic",
+				Snippet: `cm.Layout(th, gtx, area,
+	lotusui.ContextMenuItem(th, &back, "Back", false),
+	lotusui.ContextMenuItem(th, &fwd, "Forward", false),
+	lotusui.ContextMenuItem(th, &reload, "Reload", false),
+)`,
+				Demo:  "context-menu/1",
+				DemoH: 280,
+			},
+			{
+				Heading: "Submenu",
+				Prose: `<p><code>ContextMenuSub</code> nests a side panel that opens while the pointer
+rests on the row or the panel.</p>`,
+				Snippet: `var sub lotusui.ContextMenuSub
+
+cm.Layout(th, gtx, area,
+	lotusui.ContextMenuShortcutItem(th, &copyB, "Copy", "⌘C", false),
+	sub.Item(th, "More Tools",
+		lotusui.ContextMenuItem(th, &save, "Save Page...", false),
+		lotusui.ContextMenuItem(th, &del, "Delete", true),
+	),
+)`,
+				Demo:  "context-menu/2",
+				DemoH: 300,
+			},
+			{
+				Heading: "Shortcuts",
+				Prose: `<p>Right-aligned keyboard hints in muted ink — display only; binding the key is
+yours. <code>ShortcutHint("C")</code> spells the platform modifier ("⌘C" on macOS, "Ctrl+C"
+elsewhere).</p>`,
+				Snippet: `lotusui.ContextMenuShortcutItem(th, &save, "Save", lotusui.ShortcutHint("S"), false)`,
+				Demo:    "context-menu/3",
+				DemoH:   300,
+			},
+			{
+				Heading: "Groups",
+				Prose:   `<p>Labels head groups, separators divide them.</p>`,
+				Snippet: `lotusui.ContextMenuLabel(th, "File"),
+lotusui.ContextMenuShortcutItem(th, &newF, "New File", "⌘N", false),
+lotusui.ContextMenuSeparator(th),
+lotusui.ContextMenuLabel(th, "Edit"),
+lotusui.ContextMenuShortcutItem(th, &undo, "Undo", "⌘Z", false),`,
+				Demo:  "context-menu/4",
+				DemoH: 300,
+			},
+			{
+				Heading: "Icons",
+				Snippet: `lotusui.ContextMenuItemIcon(th, &copyB, lotusui.IconCopy, "Copy", false),
+lotusui.ContextMenuItemIcon(th, &cutB, lotusui.IconCut, "Cut", false),
+lotusui.ContextMenuItemIcon(th, &pasteB, lotusui.IconClipboardPaste, "Paste", false),`,
+				Demo:  "context-menu/5",
+				DemoH: 300,
+			},
+			{
+				Heading: "Checkboxes",
+				Prose:   `<p>Toggleable rows with a check-mark gutter; flip your bool on <code>Clicked</code>.</p>`,
+				Snippet: `if bk.Clicked(gtx) { showBookmarks = !showBookmarks }
+lotusui.ContextMenuCheckboxItem(th, &bk, "Show Bookmarks Bar", showBookmarks)
+cm.KeepOpen = true // picking is not leaving`,
+				Demo:  "context-menu/6",
+				DemoH: 300,
+			},
+			{
+				Heading: "Radio",
+				Prose:   `<p>Exclusive rows with a dot gutter; the group is your int.</p>`,
+				Snippet: `lotusui.ContextMenuLabel(th, "People"),
+lotusui.ContextMenuRadioItem(th, &pedro, "Pedro Duarte", user == 0),
+lotusui.ContextMenuRadioItem(th, &colm, "Colm Tuite", user == 1),`,
+				Demo:  "context-menu/7",
+				DemoH: 320,
+			},
+			{
+				Heading: "Destructive",
+				Prose:   `<p><code>danger</code> renders danger ink on a danger-tinted hover — never a saturated fill.</p>`,
+				Snippet: `lotusui.ContextMenuItemIcon(th, &del, lotusui.IconTrash, "Delete", true)`,
+				Demo:    "context-menu/8",
+				DemoH:   300,
+			},
+		},
+		Props: []Prop{
+			{"ContextMenu", "struct", "One per right-clickable area; Layout(th, gtx, content, items…) wraps content and opens the panel at the pointer."},
+			{"KeepOpen", "bool", "Suppress close-on-selection — for checkbox / radio menus."},
+			{"Width", "unit.Dp", "Panel max width; zero = min 224dp and grow with content."},
+			{"ContextMenuPress", "func(pointer.Event) bool", "The platform's context gesture: secondary press everywhere, plus Ctrl+primary on macOS."},
+			{"ShortcutHint", "func(string) string", "Platform spelling of the shortcut modifier: \"⌘C\" on macOS, \"Ctrl+C\" elsewhere. Display only."},
+			{"ContextMenuItem / …Icon / …ShortcutItem", "ctors", "Action rows — the shared menu grammar under this family's names."},
+			{"ContextMenuCheckboxItem / ContextMenuRadioItem (+Icon)", "ctors", "Toggleable and exclusive rows; state lives with the caller."},
+			{"ContextMenuLabel / ContextMenuSeparator", "ctors", "Group heading and hairline."},
+			{"ContextMenuSub", "struct", "Nested submenu (= DropdownMenuSub); its Item goes in the items list."},
+		},
+	}
+}

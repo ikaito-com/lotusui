@@ -21,7 +21,7 @@ func Groups(changelogHTML string, performance *Page) []Group {
 		{Title: "Components", Pages: []*Page{
 			accordionPage(), alertPage(), alertDialogPage(), annotatedTextPage(), avatarPage(),
 			badgePage(), breadcrumbPage(), buttonPage(), buttonGroupPage(), cardPage(),
-			checkboxPage(), codeBlockPage(), dialogPage(), menuPage(), examplePage(), fieldPage(), gridPage(),
+			checkboxPage(), codeBlockPage(), contextMenuPage(), dialogPage(), menuPage(), examplePage(), fieldPage(), gridPage(),
 			hoverCardPage(),
 			inputPage(), inputOTPPage(), itemPage(), listViewPage(), paginationPage(), popoverPage(),
 			progressPage(), radioGroupPage(), scrollAreaPage(), selectPage(), separatorPage(),

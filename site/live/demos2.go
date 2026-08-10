@@ -6,12 +6,15 @@ package live
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"strconv"
 	"time"
 
 	"gioui.org/font"
 	"gioui.org/layout"
+	"gioui.org/op"
 	"gioui.org/op/clip"
+	"gioui.org/op/paint"
 	"gioui.org/unit"
 	"gioui.org/widget"
 
@@ -1438,5 +1441,218 @@ func itemDemo(th *lotusui.Theme, gtx C) D {
 				}),
 			)(gtx)
 		}),
+	)
+}
+
+// ---- context-menu ----
+
+var ctxMenus struct {
+	menus [9]lotusui.ContextMenu
+	sub   [3]lotusui.ContextMenuSub
+
+	// A handful of shared row clickables, menuDemo-style: rows across
+	// different menus never show at once.
+	a, b, c, d, e, f, g, h widget.Clickable
+
+	chkBookmarks, chkURLs, chkDev widget.Clickable
+	showBookmarks, showURLs       bool
+	showDev                       bool
+
+	radioPedro, radioColm           widget.Clickable
+	radioLight, radioDark, radioSys widget.Clickable
+	user                            int
+	theme                           int
+
+	seeded bool
+}
+
+// dashedRRect strokes a dashed 1dp border around sz, dashes skipping
+// the rounded corners — the shadcn "border-dashed" drop-target look.
+func dashedRRect(gtx C, sz image.Point, r int, col color.NRGBA) {
+	w := gtx.Dp(1)
+	dash, gap := gtx.Dp(4), gtx.Dp(3)
+	step := dash + gap
+	if step <= 0 || sz.X <= 0 || sz.Y <= 0 {
+		return
+	}
+	seg := func(x, y int, vertical bool, length int) {
+		for p := 0; p < length; p += step {
+			l := dash
+			if p+l > length {
+				l = length - p
+			}
+			var rect image.Rectangle
+			if vertical {
+				rect = image.Rect(x, y+p, x+w, y+p+l)
+			} else {
+				rect = image.Rect(x+p, y, x+p+l, y+w)
+			}
+			cl := clip.Rect(rect).Push(gtx.Ops)
+			paint.Fill(gtx.Ops, col)
+			cl.Pop()
+		}
+	}
+	if run := sz.X - 2*r; run > 0 {
+		seg(r, 0, false, run)
+		seg(r, sz.Y-w, false, run)
+	}
+	if run := sz.Y - 2*r; run > 0 {
+		seg(0, r, true, run)
+		seg(sz.X-w, r, true, run)
+	}
+}
+
+// ctxBox is the shadcn trigger area: a dashed rounded box, 16:9 up to
+// 320dp wide, with a centered caption.
+func ctxBox(th *lotusui.Theme, gtx C, caption string) D {
+	maxW := gtx.Dp(320)
+	if gtx.Constraints.Max.X < maxW {
+		maxW = gtx.Constraints.Max.X
+	}
+	sz := gtx.Constraints.Constrain(image.Pt(maxW, maxW*9/16))
+	dashedRRect(gtx, sz, gtx.Dp(th.Radius.LG), th.Palette.Border)
+	l := lotusui.LabelBody(th, caption)
+	l.Color = th.Palette.FgMuted
+	lgtx := gtx
+	lgtx.Constraints = layout.Constraints{Max: sz}
+	m := op.Record(gtx.Ops)
+	d := l.Layout(lgtx)
+	call := m.Stop()
+	off := op.Offset(image.Pt((sz.X-d.Size.X)/2, (sz.Y-d.Size.Y)/2)).Push(gtx.Ops)
+	call.Add(gtx.Ops)
+	off.Pop()
+	return D{Size: sz}
+}
+
+func ctxArea(th *lotusui.Theme, cm *lotusui.ContextMenu, items ...layout.Widget) layout.Widget {
+	return func(gtx C) D {
+		return cm.Layout(th, gtx, func(gtx C) D {
+			return ctxBox(th, gtx, "Right click here")
+		}, items...)
+	}
+}
+
+func contextMenuDemo(th *lotusui.Theme, gtx C) D {
+	s := &ctxMenus
+	if !s.seeded {
+		s.seeded = true
+		s.showBookmarks = true // shadcn: Show Bookmarks Bar defaultChecked
+		s.showDev = true       // shadcn: Show Developer Tools defaultChecked
+	}
+	if s.chkBookmarks.Clicked(gtx) {
+		s.showBookmarks = !s.showBookmarks
+	}
+	if s.chkURLs.Clicked(gtx) {
+		s.showURLs = !s.showURLs
+	}
+	if s.chkDev.Clicked(gtx) {
+		s.showDev = !s.showDev
+	}
+	for i, b := range []*widget.Clickable{&s.radioPedro, &s.radioColm} {
+		if b.Clicked(gtx) {
+			s.user = i
+		}
+	}
+	for i, b := range []*widget.Clickable{&s.radioLight, &s.radioDark, &s.radioSys} {
+		if b.Clicked(gtx) {
+			s.theme = i
+		}
+	}
+	s.menus[0].KeepOpen = true // hero menu holds checkboxes and radios
+	s.menus[6].KeepOpen = true
+	s.menus[7].KeepOpen = true
+
+	return card(th, gtx,
+		section(th, "Usage — the menu opens at the pointer", ctxArea(th, &s.menus[0],
+			lotusui.ContextMenuShortcutItem(th, &s.a, "Back", "⌘[", false),
+			lotusui.ContextMenuShortcutItem(th, &s.b, "Forward", "⌘]", false),
+			lotusui.ContextMenuShortcutItem(th, &s.c, "Reload", "⌘R", false),
+			s.sub[0].Item(th, "More Tools",
+				lotusui.ContextMenuItem(th, &s.d, "Save Page...", false),
+				lotusui.ContextMenuItem(th, &s.e, "Create Shortcut...", false),
+				lotusui.ContextMenuItem(th, &s.f, "Name Window...", false),
+				lotusui.ContextMenuSeparator(th),
+				lotusui.ContextMenuItem(th, &s.g, "Developer Tools", false),
+				lotusui.ContextMenuSeparator(th),
+				lotusui.ContextMenuItem(th, &s.h, "Delete", true),
+			),
+			lotusui.ContextMenuSeparator(th),
+			lotusui.ContextMenuCheckboxItem(th, &s.chkBookmarks, "Show Bookmarks", s.showBookmarks),
+			lotusui.ContextMenuCheckboxItem(th, &s.chkURLs, "Show Full URLs", s.showURLs),
+			lotusui.ContextMenuSeparator(th),
+			lotusui.ContextMenuLabel(th, "People"),
+			lotusui.ContextMenuRadioItem(th, &s.radioPedro, "Pedro Duarte", s.user == 0),
+			lotusui.ContextMenuRadioItem(th, &s.radioColm, "Colm Tuite", s.user == 1),
+		)),
+		section(th, "Basic", ctxArea(th, &s.menus[1],
+			lotusui.ContextMenuItem(th, &s.a, "Back", false),
+			lotusui.ContextMenuItem(th, &s.b, "Forward", false),
+			lotusui.ContextMenuItem(th, &s.c, "Reload", false),
+		)),
+		section(th, "Submenu", ctxArea(th, &s.menus[2],
+			lotusui.ContextMenuShortcutItem(th, &s.a, "Copy", "⌘C", false),
+			lotusui.ContextMenuShortcutItem(th, &s.b, "Cut", "⌘X", false),
+			s.sub[1].Item(th, "More Tools",
+				lotusui.ContextMenuItem(th, &s.c, "Save Page...", false),
+				lotusui.ContextMenuItem(th, &s.d, "Create Shortcut...", false),
+				lotusui.ContextMenuItem(th, &s.e, "Name Window...", false),
+				lotusui.ContextMenuSeparator(th),
+				lotusui.ContextMenuItem(th, &s.f, "Developer Tools", false),
+				lotusui.ContextMenuSeparator(th),
+				lotusui.ContextMenuItem(th, &s.g, "Delete", true),
+			),
+		)),
+		section(th, "Shortcuts", ctxArea(th, &s.menus[3],
+			lotusui.ContextMenuShortcutItem(th, &s.a, "Back", "⌘[", false),
+			lotusui.ContextMenuShortcutItem(th, &s.b, "Forward", "⌘]", false),
+			lotusui.ContextMenuShortcutItem(th, &s.c, "Reload", "⌘R", false),
+			lotusui.ContextMenuSeparator(th),
+			lotusui.ContextMenuShortcutItem(th, &s.d, "Save", "⌘S", false),
+			lotusui.ContextMenuShortcutItem(th, &s.e, "Save As...", "⇧⌘S", false),
+		)),
+		section(th, "Groups", ctxArea(th, &s.menus[4],
+			lotusui.ContextMenuLabel(th, "File"),
+			lotusui.ContextMenuShortcutItem(th, &s.a, "New File", "⌘N", false),
+			lotusui.ContextMenuShortcutItem(th, &s.b, "Open File", "⌘O", false),
+			lotusui.ContextMenuShortcutItem(th, &s.c, "Save", "⌘S", false),
+			lotusui.ContextMenuSeparator(th),
+			lotusui.ContextMenuLabel(th, "Edit"),
+			lotusui.ContextMenuShortcutItem(th, &s.d, "Undo", "⌘Z", false),
+			lotusui.ContextMenuShortcutItem(th, &s.e, "Redo", "⇧⌘Z", false),
+			lotusui.ContextMenuSeparator(th),
+			lotusui.ContextMenuShortcutItem(th, &s.f, "Cut", "⌘X", false),
+			lotusui.ContextMenuShortcutItem(th, &s.g, "Copy", "⌘C", false),
+			lotusui.ContextMenuShortcutItem(th, &s.h, "Paste", "⌘V", false),
+			lotusui.ContextMenuSeparator(th),
+			lotusui.ContextMenuShortcutItem(th, &s.chkDev, "Delete", "⌫", true),
+		)),
+		section(th, "Icons", ctxArea(th, &s.menus[5],
+			lotusui.ContextMenuItemIcon(th, &s.a, lotusui.IconCopy, "Copy", false),
+			lotusui.ContextMenuItemIcon(th, &s.b, lotusui.IconCut, "Cut", false),
+			lotusui.ContextMenuItemIcon(th, &s.c, lotusui.IconClipboardPaste, "Paste", false),
+			lotusui.ContextMenuSeparator(th),
+			lotusui.ContextMenuItemIcon(th, &s.d, lotusui.IconTrash, "Delete", true),
+		)),
+		section(th, "Checkboxes — the menu stays open while picking", ctxArea(th, &s.menus[6],
+			lotusui.ContextMenuCheckboxItem(th, &s.chkBookmarks, "Show Bookmarks Bar", s.showBookmarks),
+			lotusui.ContextMenuCheckboxItem(th, &s.chkURLs, "Show Full URLs", s.showURLs),
+			lotusui.ContextMenuCheckboxItem(th, &s.chkDev, "Show Developer Tools", s.showDev),
+		)),
+		section(th, "Radio", ctxArea(th, &s.menus[7],
+			lotusui.ContextMenuLabel(th, "People"),
+			lotusui.ContextMenuRadioItem(th, &s.radioPedro, "Pedro Duarte", s.user == 0),
+			lotusui.ContextMenuRadioItem(th, &s.radioColm, "Colm Tuite", s.user == 1),
+			lotusui.ContextMenuSeparator(th),
+			lotusui.ContextMenuLabel(th, "Theme"),
+			lotusui.ContextMenuRadioItem(th, &s.radioLight, "Light", s.theme == 0),
+			lotusui.ContextMenuRadioItem(th, &s.radioDark, "Dark", s.theme == 1),
+			lotusui.ContextMenuRadioItem(th, &s.radioSys, "System", s.theme == 2),
+		)),
+		section(th, "Destructive", ctxArea(th, &s.menus[8],
+			lotusui.ContextMenuItemIcon(th, &s.a, lotusui.IconEdit, "Edit", false),
+			lotusui.ContextMenuItemIcon(th, &s.b, lotusui.IconShare, "Share", false),
+			lotusui.ContextMenuSeparator(th),
+			lotusui.ContextMenuItemIcon(th, &s.c, lotusui.IconTrash, "Delete", true),
+		)),
 	)
 }

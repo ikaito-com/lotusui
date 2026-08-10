@@ -259,6 +259,26 @@
       "hash": "0c7da5f4d697d051"
     },
     {
+      "name": "context-menu",
+      "type": "component",
+      "description": "The ContextMenu family: the menu that opens AT THE POINTER — right-click any content (Ctrl+click on macOS; ContextMenuPress is the one place that convention is answered) and the panel appears where you pressed, on the shared floating layer.",
+      "files": [
+        "contextmenu.go",
+        "platform.go"
+      ],
+      "carried": [
+        "cardShadow",
+        "dismisser",
+        "inMeasurePass",
+        "layoutSites",
+        "measureDepth"
+      ],
+      "dependsOn": [
+        "dropdown-menu"
+      ],
+      "hash": "c3737d147e64d329"
+    },
+    {
       "name": "example",
       "type": "component",
       "description": "Example is Preview|Code chrome: one bordered rounded card whose tab strip is the top of the card (surface2), not a free-floating Tabs well.",

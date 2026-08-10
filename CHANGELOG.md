@@ -17,7 +17,25 @@ recorded here in full.
 
 ## [Unreleased]
 
-Nothing yet.
+VERSION NUMBERING NOTE for the next release: it must be **v0.9.0**,
+not v0.4.0. The abandoned pre-rewrite lineage published v0.4.0–v0.8.0
+and the module proxy + checksum DB cache those version strings
+FOREVER — a new tag reusing one would serve the ghost zip (or fail
+sum verification), and anything inside the range is born retracted by
+our own `retract [v0.4.0, v0.8.0]`. Jumping above v0.8.0 also finally
+activates that retraction, so `go get @latest` resolves correctly
+again from v0.9.0 on. Do not "correct" the jump.
+
+### Added
+
+| Symbol | Notes |
+|---|---|
+| `ContextMenu` | the shadcn Context Menu family: wraps any content in a PASS-THROUGH pointer area (the child keeps every primary-button interaction) and the platform's context gesture opens the menu panel AT THE POINTER on the floating layer. Fields: `KeepOpen bool` (suppress close-on-selection, for checkbox/radio menus), `Width unit.Dp` (panel max width; zero = min 224dp, grow with content). `Layout(th, gtx, content layout.Widget, items ...layout.Widget) layout.Dimensions`. Escape / outside press / selection closes; multi-`Layout` per frame is site-safe; a measure pass lays out the content alone. The panel opens down-right of the pointer and flips up/left at a known constraint edge (unbounded axes — scrollers — never flip) |
+| `ContextMenuItem`, `ContextMenuItemIcon`, `ContextMenuShortcutItem`, `ContextMenuCheckboxItem`, `ContextMenuRadioItem`, `ContextMenuCheckboxItemIcon`, `ContextMenuRadioItemIcon`, `ContextMenuLabel`, `ContextMenuSeparator` | the menu row grammar under this family's names — same signatures and rendering as the `DropdownMenu*` rows of the same shape (they delegate); use either vocabulary, rows are interchangeable |
+| `ContextMenuSub` | `= DropdownMenuSub` (type alias) — nested submenu; its `Item` goes in the items list |
+| `ContextMenuPress(ev pointer.Event) bool` | THE platform answer for "is this a context-menu gesture": secondary-button press on every OS, plus Ctrl+primary on macOS (neither macOS nor Gio translates the one-button convention). Use it instead of testing buttons yourself |
+| `ShortcutHint(k string) string` | platform spelling of the shortcut modifier for DISPLAY: `ShortcutHint("C")` → "⌘C" on macOS, "Ctrl+C" elsewhere (including wasm, where the host OS is unknowable at build time). Pair with Gio's `key.ModShortcut` when binding |
+| `IconCopy`, `IconCut`, `IconClipboardPaste` | Fluent `copy` / `cut` / `clipboard-paste` (24 regular) — the standard edit-menu row icons |
 
 ## [0.3.4] - 2026-08-06
 

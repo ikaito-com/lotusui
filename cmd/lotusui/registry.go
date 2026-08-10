@@ -54,6 +54,7 @@ var components = []componentSpec{
 	{Name: "tabs", Files: []string{"tabs.go"}},
 	{Name: "dialog", Files: []string{"dialog.go"}},
 	{Name: "dropdown-menu", Files: []string{"menu.go"}},
+	{Name: "context-menu", Files: []string{"contextmenu.go", "platform.go"}},
 	{Name: "example", Files: []string{"example.go"}},
 	{Name: "accordion", Files: []string{"accordion.go"}},
 	{Name: "alert", Files: []string{"alert.go"}},

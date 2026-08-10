@@ -56,6 +56,7 @@ func TestComponentsSurviveHostileConstraints(t *testing.T) {
 		confirmB widget.Clickable
 		tip      Tooltip
 		hc       HoverCard
+		cmenu    ContextMenu
 	)
 
 	components := map[string]func(gtx layout.Context) layout.Dimensions{
@@ -109,6 +110,11 @@ func TestComponentsSurviveHostileConstraints(t *testing.T) {
 		"DropdownMenu": DropdownMenu(th,
 			DropdownMenuItem(th, &cancelB, "Duplicate", false),
 			DropdownMenuItem(th, &confirmB, "Delete", true)),
+		"ContextMenu": func(gtx layout.Context) layout.Dimensions {
+			return cmenu.Layout(th, gtx, LabelBody(th, "area").Layout,
+				ContextMenuItem(th, &cancelB, "Back", false),
+				ContextMenuShortcutItem(th, &confirmB, "Reload", "⌘R", false))
+		},
 		"Tooltip": func(gtx layout.Context) layout.Dimensions {
 			return tip.Layout(th, gtx, "hint", Button(th, &btn, "Go", ButtonProps{}))
 		},

@@ -27,8 +27,11 @@ const IconBuilding
 const IconChanges
 const IconChevronDown
 const IconChevronRight
+const IconClipboardPaste
 const IconClock
+const IconCopy
 const IconCreditCard
+const IconCut
 const IconDot
 const IconEdit
 const IconExpand
@@ -101,6 +104,7 @@ func (b Breakpoints) Min(i int) unit.Dp
 func (b Breakpoints) Name(i int) string
 func (c *Checkbox) Clicked(gtx layout.Context) bool
 func (c *Checkbox) Layout(th *Theme, gtx layout.Context, label string) layout.Dimensions
+func (c *ContextMenu) Layout(th *Theme, gtx layout.Context, content layout.Widget, items ...layout.Widget) layout.Dimensions
 func (d *Select) Chosen() bool
 func (d *Select) Clear()
 func (d *Select) Layout(th *Theme, gtx layout.Context, label string) layout.Dimensions
@@ -223,6 +227,16 @@ func Cell(w layout.Widget) GridItem
 func ClampCorner(r int, sz image.Point) int
 func CodeBlock(th *Theme, o CodeBlockProps) layout.Widget
 func Cols(base int) ResponsiveInt
+func ContextMenuCheckboxItem(th *Theme, btn *widget.Clickable, label string, checked bool) layout.Widget
+func ContextMenuCheckboxItemIcon(th *Theme, btn *widget.Clickable, icon, label string, checked bool) layout.Widget
+func ContextMenuItem(th *Theme, btn *widget.Clickable, label string, danger bool) layout.Widget
+func ContextMenuItemIcon(th *Theme, btn *widget.Clickable, icon, label string, danger bool) layout.Widget
+func ContextMenuLabel(th *Theme, text string) layout.Widget
+func ContextMenuPress(ev pointer.Event) bool
+func ContextMenuRadioItem(th *Theme, btn *widget.Clickable, label string, selected bool) layout.Widget
+func ContextMenuRadioItemIcon(th *Theme, btn *widget.Clickable, icon, label string, selected bool) layout.Widget
+func ContextMenuSeparator(th *Theme) layout.Widget
+func ContextMenuShortcutItem(th *Theme, btn *widget.Clickable, label, shortcut string, danger bool) layout.Widget
 func Disabled(gtx layout.Context, when bool) layout.Context
 func Dps(base unit.Dp) ResponsiveDp
 func DropdownMenu(th *Theme, items ...layout.Widget) layout.Widget
@@ -294,6 +308,7 @@ func SelectItems(items ...SelectOption) []SelectOption
 func SelectOpts(labels ...string) []SelectOption
 func Separator(th *Theme) layout.Widget
 func SeparatorVertical(th *Theme) layout.Widget
+func ShortcutHint(k string) string
 func Show(th *Theme, gtx layout.Context, when ResponsiveBool, w layout.Widget) layout.Dimensions
 func SimpleGrid[T any](th *Theme, gtx layout.Context, items []T, p SimpleGridProps, cell func(layout.Context, T) layout.Dimensions) layout.Dimensions
 func Sizes(base Size) ResponsiveSize
@@ -359,6 +374,8 @@ type Checkbox struct { Value bool Indeterminate bool Invalid bool Disabled bool 
 type CodeBlockProps struct { Lang string Lines [][]CodeSpan Plain string Copy *widget.Clickable Nested bool }
 type CodeSpan struct { Text string Color color.NRGBA Bold bool }
 type ColorScale struct { C50, C100, C200, C300, C400, C500, C600, C700, C800, C900 color.NRGBA }
+type ContextMenu struct { KeepOpen bool Width unit.Dp }
+type ContextMenuSub = DropdownMenuSub
 type Dialog struct { Size Size Sizes ResponsiveSize Width unit.Dp Widths ResponsiveDp HideClose bool }
 type DropdownMenuSub struct { Width unit.Dp }
 type DropdownMenuTrigger struct { Open bool KeepOpen bool Width unit.Dp Variant ButtonVariant Icon string Size Size Align PopoverAlign }

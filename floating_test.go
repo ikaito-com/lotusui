@@ -108,6 +108,7 @@ func TestFloatingWidgetsInsideCard(t *testing.T) {
 		tip     Tooltip
 		sub     DropdownMenuSub
 		trigger DropdownMenuTrigger
+		cm      ContextMenu
 		btn     widget.Clickable
 		sel     = Select{Options: SelectOpts("A", "B")}
 		pop     Popover
@@ -126,6 +127,10 @@ func TestFloatingWidgetsInsideCard(t *testing.T) {
 		},
 		"DropdownMenuSub": func(gtx layout.Context) layout.Dimensions {
 			return sub.Item(th, "More", DropdownMenuItem(th, &btn, "One", false))(gtx)
+		},
+		"ContextMenu": func(gtx layout.Context) layout.Dimensions {
+			return cm.Layout(th, gtx, LabelBody(th, "area").Layout,
+				ContextMenuItem(th, &btn, "One", false))
 		},
 		"Select": func(gtx layout.Context) layout.Dimensions {
 			return sel.Layout(th, gtx, "Env")

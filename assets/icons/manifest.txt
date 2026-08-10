@@ -25,6 +25,9 @@ fluent:wallet-24-regular wallet.svg
 fluent:building-24-regular building.svg
 fluent:share-24-regular share.svg
 fluent:delete-24-regular trash.svg
+fluent:copy-24-regular copy.svg
+fluent:cut-24-regular cut.svg
+fluent:clipboard-paste-24-regular clipboard-paste.svg
 fluent:more-horizontal-24-regular more-horizontal.svg
 fluent:circle-small-24-filled dot.svg
 fluent:add-24-regular plus.svg

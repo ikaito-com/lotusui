@@ -1524,6 +1524,22 @@ lotusui.ContextMenuRadioItem(th, &colm, "Colm Tuite", user == 1),`,
 				Demo:    "context-menu/8",
 				DemoH:   300,
 			},
+			{
+				Heading: "Read-only editors — a lotusui extension",
+				Prose: `<p><code>EditorContextMenu</code> wraps a read-only <code>widget.Editor</code> (a log
+pane, a diff view): the context gesture opens Copy — shown while a selection exists, with the
+platform hint — Copy all, and Select all. Gio already binds the copy SHORTCUT itself (⌘C /
+Ctrl+C works in a focused read-only editor); this adds the discoverable mouse path. On macOS a
+Ctrl+click would collapse the selection in the same frame — the wrapper snapshots and restores
+it, so Copy acts on the text you right-clicked.</p>`,
+				Snippet: `var logMenu lotusui.EditorContextMenu // beside your widget.Editor
+
+logMenu.Layout(th, gtx, &logEd, func(gtx layout.Context) layout.Dimensions {
+	return material.Editor(th.Material, &logEd, "").Layout(gtx)
+})`,
+				Demo:  "context-menu/9",
+				DemoH: 340,
+			},
 		},
 		Props: []Prop{
 			{"ContextMenu", "struct", "One per right-clickable area; Layout(th, gtx, content, items…) wraps content and opens the panel at the pointer."},
@@ -1535,6 +1551,7 @@ lotusui.ContextMenuRadioItem(th, &colm, "Colm Tuite", user == 1),`,
 			{"ContextMenuCheckboxItem / ContextMenuRadioItem (+Icon)", "ctors", "Toggleable and exclusive rows; state lives with the caller."},
 			{"ContextMenuLabel / ContextMenuSeparator", "ctors", "Group heading and hairline."},
 			{"ContextMenuSub", "struct", "Nested submenu (= DropdownMenuSub); its Item goes in the items list."},
+			{"EditorContextMenu", "struct", "Extension: Layout(th, gtx, *widget.Editor, content) adds Copy / Copy all / Select all to a read-only editor; snapshots the selection across the macOS Ctrl+click."},
 		},
 	}
 }

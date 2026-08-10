@@ -8,6 +8,7 @@ import (
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/widget"
+	"gioui.org/widget/material"
 )
 
 // TestContextMenuPlace pins the placement rules: down-right of the
@@ -63,5 +64,35 @@ func TestContextMenuOpenLaysOut(t *testing.T) {
 				ContextMenuItem(th, &btn, "Delete", true),
 			)
 		})(gtx)
+	}
+}
+
+// TestEditorContextMenuInsideCard is the vaultalia lesson applied
+// up-front: a widget that appears only with real data needs a
+// headless layout test inside a real Card — the measure+live double
+// pass. It also pins the selection contract: laying the open menu out
+// must leave the editor's selection intact, because Copy acts on it.
+func TestEditorContextMenuInsideCard(t *testing.T) {
+	th := NewTheme()
+	var ecm EditorContextMenu
+	var ed widget.Editor
+	ed.ReadOnly = true
+	ed.SetText("alpha\nbeta\ngamma")
+	ed.SetCaret(0, 5)
+	ecm.Menu.open = true
+	ecm.Menu.at = image.Pt(12, 10)
+	for i := 0; i < 2; i++ {
+		var ops op.Ops
+		var r input.Router
+		gtx := testCtx(&ops, &r, layout.Constraints{Max: image.Pt(600, 400)})
+		Card(th, CardProps{}, func(gtx layout.Context) layout.Dimensions {
+			return ecm.Layout(th, gtx, &ed, func(gtx layout.Context) layout.Dimensions {
+				return material.Editor(th.Material, &ed, "").Layout(gtx)
+			})
+		})(gtx)
+		r.Frame(&ops)
+	}
+	if got := ed.SelectedText(); got != "alpha" {
+		t.Errorf("selection after layout = %q, want %q — Copy would copy the wrong text", got, "alpha")
 	}
 }

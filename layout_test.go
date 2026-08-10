@@ -10,6 +10,7 @@ import (
 	"gioui.org/op"
 	"gioui.org/unit"
 	"gioui.org/widget"
+	"gioui.org/widget/material"
 )
 
 // testCtx builds a real layout context: live input router, 1:1 metric,
@@ -57,6 +58,8 @@ func TestComponentsSurviveHostileConstraints(t *testing.T) {
 		tip      Tooltip
 		hc       HoverCard
 		cmenu    ContextMenu
+		edMenu   EditorContextMenu
+		logEd    = widget.Editor{ReadOnly: true}
 	)
 
 	components := map[string]func(gtx layout.Context) layout.Dimensions{
@@ -114,6 +117,11 @@ func TestComponentsSurviveHostileConstraints(t *testing.T) {
 			return cmenu.Layout(th, gtx, LabelBody(th, "area").Layout,
 				ContextMenuItem(th, &cancelB, "Back", false),
 				ContextMenuShortcutItem(th, &confirmB, "Reload", "⌘R", false))
+		},
+		"EditorContextMenu": func(gtx layout.Context) layout.Dimensions {
+			return edMenu.Layout(th, gtx, &logEd, func(gtx layout.Context) layout.Dimensions {
+				return material.Editor(th.Material, &logEd, "").Layout(gtx)
+			})
 		},
 		"Tooltip": func(gtx layout.Context) layout.Dimensions {
 			return tip.Layout(th, gtx, "hint", Button(th, &btn, "Go", ButtonProps{}))

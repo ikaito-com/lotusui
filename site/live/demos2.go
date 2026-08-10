@@ -17,6 +17,7 @@ import (
 	"gioui.org/op/paint"
 	"gioui.org/unit"
 	"gioui.org/widget"
+	"gioui.org/widget/material"
 
 	lotusui "github.com/ikaito-com/lotusui"
 )
@@ -1654,5 +1655,27 @@ func contextMenuDemo(th *lotusui.Theme, gtx C) D {
 			lotusui.ContextMenuSeparator(th),
 			lotusui.ContextMenuItemIcon(th, &s.c, lotusui.IconTrash, "Delete", true),
 		)),
+		section(th, "Read-only editors — Copy, Copy all, Select all", func(gtx C) D {
+			if !ctxEd.seeded {
+				ctxEd.seeded = true
+				ctxEd.ed.ReadOnly = true
+				ctxEd.ed.SetText("$ make build\ncompiling core… ok (1.2s)\ncompiling ui… ok (0.8s)\nlinking… ok\nbuild finished in 2.4s")
+			}
+			return ctxEd.menu.Layout(th, gtx, &ctxEd.ed, func(gtx C) D {
+				return lotusui.SurfaceCard(th, gtx, func(gtx C) D {
+					gtx.Constraints.Min.X = gtx.Constraints.Max.X
+					e := material.Editor(th.Material, &ctxEd.ed, "")
+					e.Color = th.Palette.FgMuted
+					e.TextSize = unit.Sp(13)
+					return e.Layout(gtx)
+				})
+			})
+		}),
 	)
+}
+
+var ctxEd struct {
+	menu   lotusui.EditorContextMenu
+	ed     widget.Editor
+	seeded bool
 }

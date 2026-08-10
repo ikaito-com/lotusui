@@ -2,7 +2,10 @@ package lotusui
 
 import (
 	"image"
+	"io"
+	"strings"
 
+	"gioui.org/io/clipboard"
 	"gioui.org/io/event"
 	"gioui.org/io/pointer"
 	"gioui.org/layout"
@@ -216,3 +219,69 @@ func ContextMenuSeparator(th *Theme) layout.Widget {
 // panel opens on hover. One struct per submenu; use its Item method
 // inside the items list.
 type ContextMenuSub = DropdownMenuSub
+
+// writeClipboard puts s on the system clipboard (the CodeBlock Copy
+// pattern).
+func writeClipboard(gtx layout.Context, s string) {
+	gtx.Execute(clipboard.WriteCmd{
+		Type: "application/text",
+		Data: io.NopCloser(strings.NewReader(s)),
+	})
+}
+
+// EditorContextMenu is the read-only-editor convenience — a lotusui
+// extension (no shadcn counterpart). Wrap a laid-out widget.Editor (a
+// log pane, a diff view) and the context gesture opens Copy / Copy
+// all / Select all at the pointer: the discoverable mouse path to the
+// clipboard. Gio already binds the copy SHORTCUT itself — ⌘C / Ctrl+C
+// works in a focused read-only editor — so this adds only the menu.
+// Copy shows while a selection exists and carries the platform hint.
+//
+//	var logMenu lotusui.EditorContextMenu // beside your widget.Editor
+//	logMenu.Layout(th, gtx, &logEd, laidOutEditor)
+type EditorContextMenu struct {
+	// Menu is the underlying ContextMenu — reach in for Width.
+	Menu ContextMenu
+
+	copyBtn, copyAllBtn, selectAllBtn widget.Clickable
+}
+
+// Layout wraps content — the widget that renders ed — in the
+// context-menu area.
+func (m *EditorContextMenu) Layout(th *Theme, gtx layout.Context, ed *widget.Editor, content layout.Widget) layout.Dimensions {
+	// A throwaway pass has no site and must touch no state.
+	if inMeasurePass() {
+		return content(gtx)
+	}
+	if m.copyBtn.Clicked(gtx) {
+		writeClipboard(gtx, ed.SelectedText())
+	}
+	if m.copyAllBtn.Clicked(gtx) {
+		writeClipboard(gtx, ed.Text())
+	}
+	if m.selectAllBtn.Clicked(gtx) {
+		ed.SetCaret(0, ed.Len())
+	}
+
+	// Snapshot the selection BEFORE the editor lays out: on macOS the
+	// Ctrl+primary context press is ALSO a primary click to the
+	// editor, which collapses the selection in this same frame. When
+	// this frame's press opened the menu, restore the snapshot after —
+	// Copy must act on the text the user right-clicked.
+	selStart, selEnd := ed.Selection()
+	wasOpen := m.Menu.open
+
+	items := make([]layout.Widget, 0, 3)
+	if selStart != selEnd {
+		items = append(items, ContextMenuShortcutItem(th, &m.copyBtn, "Copy", ShortcutHint("C"), false))
+	}
+	items = append(items,
+		ContextMenuItem(th, &m.copyAllBtn, "Copy all", false),
+		ContextMenuShortcutItem(th, &m.selectAllBtn, "Select all", ShortcutHint("A"), false),
+	)
+	dims := m.Menu.Layout(th, gtx, content, items...)
+	if !wasOpen && m.Menu.open && selStart != selEnd {
+		ed.SetCaret(selStart, selEnd)
+	}
+	return dims
+}

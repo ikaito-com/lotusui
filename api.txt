@@ -126,6 +126,7 @@ func (g Grid) Layout(th *Theme, gtx layout.Context, items ...GridItem) layout.Di
 func (h *HoverCard) Layout(th *Theme, gtx layout.Context, content, trigger layout.Widget) layout.Dimensions
 func (m *Dialog) Appear()
 func (m *Dialog) Layout(th *Theme, gtx layout.Context, onClose func(), content layout.Widget) layout.Dimensions
+func (m *EditorContextMenu) Layout(th *Theme, gtx layout.Context, ed *widget.Editor, content layout.Widget) layout.Dimensions
 func (n *BreadcrumbNav) Layout(th *Theme, gtx layout.Context, segs ...BreadcrumbSeg) layout.Dimensions
 func (o *InputOTP) Layout(th *Theme, gtx layout.Context) layout.Dimensions
 func (o *InputOTP) SetValue(s string)
@@ -380,6 +381,7 @@ type Dialog struct { Size Size Sizes ResponsiveSize Width unit.Dp Widths Respons
 type DropdownMenuSub struct { Width unit.Dp }
 type DropdownMenuTrigger struct { Open bool KeepOpen bool Width unit.Dp Variant ButtonVariant Icon string Size Size Align PopoverAlign }
 type DurationScale struct { Fast time.Duration Normal time.Duration Slow time.Duration }
+type EditorContextMenu struct { Menu ContextMenu }
 type Example struct { }
 type ExampleProps struct { Preview layout.Widget Code layout.Widget }
 type FieldProps struct { Label string Helper string Error string Required bool }

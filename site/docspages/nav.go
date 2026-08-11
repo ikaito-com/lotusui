@@ -12,7 +12,7 @@ func Groups(changelogHTML string, performance *Page) []Group {
 	}
 	return []Group{
 		{Title: "Get started", Pages: []*Page{
-			installationPage(), quickstartPage(), registryPage(), platformsPage(), ChangelogPage(changelogHTML),
+			installationPage(), quickstartPage(), registryPage(), platformsPage(), desktopPage(), ChangelogPage(changelogHTML),
 		}},
 		{Title: "Theming", Pages: []*Page{
 			themePage(), darkModePage(), typographyPage(),

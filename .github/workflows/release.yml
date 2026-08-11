@@ -1,0 +1,102 @@
+name: release
+
+# Builds the installable docsapp (the desktop demo of the design
+# language) and attaches it to the GitHub Release for the tag.
+# The Release object itself is created by the human maintainer
+# (`gh release create vX.Y.Z`) — CI only uploads asset files, so the
+# release stays attributed solely to them. Installables are never
+# committed; the repo holds sources only.
+#
+# Assets (stable names — the docs site links
+# releases/latest/download/<asset>, so renaming breaks those links):
+#   lotusui-docsapp-macos-universal.zip   (.app, arm64+amd64 lipo)
+#   lotusui-docsapp-windows-amd64.zip
+#   lotusui-docsapp-linux-amd64.tar.gz
+# plus a .sha256 beside each.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to build assets for (e.g. v0.3.6)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  # Pinned; verified against gioui.org v0.10.1 (the version both
+  # go.mod files require). Bump deliberately, with a local
+  # `gogio -target macos/windows` test — see CLAUDE.md on gio moves.
+  GOGIO: gioui.org/cmd/gogio@v0.10.0
+  TAG: ${{ github.event.release.tag_name || inputs.tag }}
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: site/go.mod
+      - run: go install $GOGIO
+      - name: Build universal .app
+        working-directory: site
+        run: |
+          mkdir -p build/arm64 build/amd64 build/out
+          gogio -target macos -arch arm64 -appid com.ikaito.lotusui.docs -o build/arm64/lotusui-docs.app ./docsapp
+          gogio -target macos -arch amd64 -appid com.ikaito.lotusui.docs -o build/amd64/lotusui-docs.app ./docsapp
+          cp -R build/arm64/lotusui-docs.app build/out/lotusui-docs.app
+          lipo -create \
+            build/arm64/lotusui-docs.app/Contents/MacOS/lotusui-docs \
+            build/amd64/lotusui-docs.app/Contents/MacOS/lotusui-docs \
+            -output build/out/lotusui-docs.app/Contents/MacOS/lotusui-docs
+          lipo -info build/out/lotusui-docs.app/Contents/MacOS/lotusui-docs
+          # ditto preserves bundle structure and extended attributes.
+          ditto -c -k --keepParent build/out/lotusui-docs.app lotusui-docsapp-macos-universal.zip
+          shasum -a 256 lotusui-docsapp-macos-universal.zip > lotusui-docsapp-macos-universal.zip.sha256
+      - name: Upload assets
+        working-directory: site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" lotusui-docsapp-macos-universal.zip lotusui-docsapp-macos-universal.zip.sha256 --clobber
+
+  linux-windows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: site/go.mod
+      - name: Gio Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc pkg-config libwayland-dev libx11-dev \
+            libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev \
+            libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev
+      - run: go install $GOGIO
+      - name: Build Linux binary
+        working-directory: site
+        run: |
+          CGO_ENABLED=1 go build -ldflags="-s -w" -o lotusui-docs ./docsapp
+          tar -czf lotusui-docsapp-linux-amd64.tar.gz lotusui-docs
+          sha256sum lotusui-docsapp-linux-amd64.tar.gz > lotusui-docsapp-linux-amd64.tar.gz.sha256
+      - name: Build Windows exe (pure-Go cross-compile)
+        working-directory: site
+        run: |
+          gogio -target windows -arch amd64 -appid com.ikaito.lotusui.docs -o lotusui-docs.exe ./docsapp
+          zip lotusui-docsapp-windows-amd64.zip lotusui-docs.exe
+          sha256sum lotusui-docsapp-windows-amd64.zip > lotusui-docsapp-windows-amd64.zip.sha256
+      - name: Upload assets
+        working-directory: site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$TAG" \
+            lotusui-docsapp-linux-amd64.tar.gz lotusui-docsapp-linux-amd64.tar.gz.sha256 \
+            lotusui-docsapp-windows-amd64.zip lotusui-docsapp-windows-amd64.zip.sha256 --clobber

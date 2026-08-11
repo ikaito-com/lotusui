@@ -104,7 +104,7 @@ type docsUI struct {
 
 	secUI            []sectionUI
 	prevBtn, nextBtn widget.Clickable
-	ctaBtn           widget.Clickable
+	ctaBtn, dlBtn    widget.Clickable
 	homeCards        map[string]*widget.Clickable
 	heroOps          []paint.ImageOp
 

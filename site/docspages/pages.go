@@ -282,6 +282,62 @@ Everything else in the library builds on every target.</p>`,
 	}
 }
 
+func desktopPage() *Page {
+	return &Page{
+		Slug:      "desktop",
+		Title:     "Desktop app",
+		Kicker:    "Install this documentation as a real desktop app — the design language at native fidelity.",
+		Platforms: []string{"macOS", "Windows", "Linux"},
+		Intro: `<p>Every demo on this site is the real component compiled to WebAssembly — but the
+browser can only show so much. The same program installs as a native desktop app: real window
+chrome, platform text rendering and scrolling, OS context-menu conventions, no browser between
+you and the pixels. If you are evaluating lotusui for a desktop product, this is the honest
+demo. Installables are built by CI from each release tag and attached to the
+<a href="https://github.com/ikaito-com/lotusui/releases">GitHub Release</a> — the links below
+always fetch the latest.</p>`,
+		Sections: []Section{
+			{
+				Heading: "Download",
+				Prose: `<p>The macOS build is a universal <code>.app</code> (Apple Silicon and Intel, one
+bundle). Windows ships a single x64 <code>.exe</code> — unzip and run. Linux ships an x64
+binary — untar, <code>chmod +x</code> if needed, and run; it uses your session's Wayland or
+X11 like any Gio app.</p>`,
+				Demo:  "desktop-download",
+				DemoH: 340,
+			},
+			{
+				Heading:   "macOS: first launch",
+				Platforms: []string{"macOS"},
+				Prose: `<p class="note">The app is not code-signed or notarized (it is a free demo, not a
+distribution product), so Gatekeeper will warn on double-click. First launch: right-click the
+app → <em>Open</em> → <em>Open</em> — once. After that it opens normally. If macOS reports the
+app as "damaged", clear the quarantine flag instead:
+<code>xattr -dr com.apple.quarantine "lotusui-docs.app"</code>.</p>`,
+			},
+			{
+				Heading: "Verify a download",
+				Prose: `<p>Every asset has a <code>.sha256</code> sibling on the release. Verify with the
+platform's checksum tool:</p>`,
+				Snippet: `curl -LO https://github.com/ikaito-com/lotusui/releases/latest/download/lotusui-docsapp-macos-universal.zip
+curl -LO https://github.com/ikaito-com/lotusui/releases/latest/download/lotusui-docsapp-macos-universal.zip.sha256
+shasum -a 256 -c lotusui-docsapp-macos-universal.zip.sha256   # sha256sum -c on Linux`,
+				Lang: "sh",
+			},
+			{
+				Heading: "Build from source",
+				Prose: `<p>The docs app is ordinary Go — <code>site/docsapp</code> in the repository. Run it
+natively in one command, or package a bundle yourself with
+<a href="https://gioui.org/doc/install">Gio</a>'s <code>gogio</code>.</p>`,
+				Snippet: `git clone https://github.com/ikaito-com/lotusui && cd lotusui
+make run-docsapp                # native window, no packaging
+go install gioui.org/cmd/gogio@v0.10.0
+cd site && gogio -target macos -o lotusui-docs.app ./docsapp`,
+				Lang: "sh",
+			},
+		},
+	}
+}
+
 func principlesPage() *Page {
 	return &Page{
 		Slug:   "design-principles",

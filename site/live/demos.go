@@ -58,6 +58,7 @@ var Demos = []Demo{
 	{slug: "badge", render: badgeDemo},
 	{slug: "dropdown-menu", render: menuDemo},
 	{slug: "context-menu", render: contextMenuDemo},
+	{slug: "desktop-download", render: desktopDownloadDemo},
 	{slug: "accordion", render: accordionDemo},
 	{slug: "alert", render: alertDemo},
 	{slug: "alert-dialog", render: alertDialogDemo, overlay: alertDialogOverlay},

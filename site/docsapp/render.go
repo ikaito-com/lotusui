@@ -680,12 +680,26 @@ func homePage(th *lotusui.Theme, ui *docsUI) layout.Widget {
 									return layout.Inset{Bottom: unit.Dp(4)}.Layout(gtx, l.Layout)
 								},
 								func(gtx C) D {
+									if ui.dlBtn.Clicked(gtx) {
+										_ = lotusui.OpenURL(live.DownloadURL(visitorOS()))
+									}
 									// End-aligned, hugging its label: RightAligned
 									// keeps the row full width and pushes the
-									// button — which measures at Min.X 0 — to it.
+									// buttons — which measure at Min.X 0 — to it.
 									return lotusui.RightAligned(func(gtx C) D {
 										gtx.Constraints.Min.X = 0
-										return lotusui.Button(th, &ui.ctaBtn, "Get started →", lotusui.ButtonProps{})(gtx)
+										get := lotusui.Button(th, &ui.ctaBtn, "Get started →", lotusui.ButtonProps{})
+										// The wasm docs know the visitor's OS at
+										// runtime; natively you already run the
+										// desktop app, so visitorOS is "" and the
+										// download button never renders.
+										if os := visitorOS(); os != "" {
+											return lotusui.HStack(lotusui.Space.SM,
+												lotusui.Button(th, &ui.dlBtn, live.DownloadLabel(os), lotusui.ButtonProps{Variant: lotusui.ButtonOutline}),
+												get,
+											)(gtx)
+										}
+										return get(gtx)
 									})(gtx)
 								},
 							)(gtx)

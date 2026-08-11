@@ -35,6 +35,15 @@ env:
 jobs:
   macos:
     runs-on: macos-latest
+    env:
+      # Without a pinned deployment target, clang stamps the binary's
+      # minos with the RUNNER's macOS (26.0 the first time this shipped)
+      # and the app refuses to launch anywhere older. 12.0 is the
+      # oldest floor verified on real hardware; Go's own darwin support
+      # is the true lower bound if it ever rises above this.
+      MACOSX_DEPLOYMENT_TARGET: "12.0"
+      CGO_CFLAGS: -mmacosx-version-min=12.0
+      CGO_LDFLAGS: -mmacosx-version-min=12.0
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,6 +64,11 @@ jobs:
             build/amd64/lotusui-docs.app/Contents/MacOS/lotusui-docs \
             -output build/out/lotusui-docs.app/Contents/MacOS/lotusui-docs
           lipo -info build/out/lotusui-docs.app/Contents/MacOS/lotusui-docs
+          # Fail if the version floor regresses — a wrong minos ships
+          # an app most Macs cannot open (26.0 shipped once).
+          minos=$(otool -l build/out/lotusui-docs.app/Contents/MacOS/lotusui-docs | awk '/minos/ {print $2; exit}')
+          echo "minos: $minos"
+          case "$minos" in 11.*|12.*) ;; *) echo "version floor regressed to $minos (want 12.x)"; exit 1;; esac
           # ditto preserves bundle structure and extended attributes.
           ditto -c -k --keepParent build/out/lotusui-docs.app lotusui-docsapp-macos-universal.zip
           shasum -a 256 lotusui-docsapp-macos-universal.zip > lotusui-docsapp-macos-universal.zip.sha256
@@ -65,7 +79,11 @@ jobs:
         run: gh release upload "$TAG" lotusui-docsapp-macos-universal.zip lotusui-docsapp-macos-universal.zip.sha256 --clobber
 
   linux-windows:
-    runs-on: ubuntu-latest
+    # Pinned to the OLDEST maintained runner image, not -latest: the
+    # Linux binary links the build host's glibc, so the image's age IS
+    # the compatibility floor (24.04 = glibc 2.39). The Windows exe is
+    # a pure-Go cross-compile and does not care which image builds it.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:

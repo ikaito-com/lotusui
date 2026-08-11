@@ -17,6 +17,10 @@ recorded here in full.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.3.6] - 2026-08-11
+
 ### Added
 
 | Symbol | Notes |

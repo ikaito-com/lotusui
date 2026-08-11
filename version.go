@@ -7,4 +7,4 @@ package lotusui
 
 // Version is the lotusui release this build comes from — the same
 // version the changelog and the docs site are organized by.
-const Version = "0.3.5"
+const Version = "0.3.6"

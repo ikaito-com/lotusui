@@ -403,7 +403,7 @@ type Popover struct { Open bool Width unit.Dp Align PopoverAlign }
 type PopoverAlign int
 type RadioGroup struct { Options []RadioOption Size Size Invalid bool }
 type RadioOption struct { Label string Value string Description string Disabled bool }
-type RadiusScale struct { SM unit.Dp MD unit.Dp LG unit.Dp }
+type RadiusScale struct { XS unit.Dp SM unit.Dp MD unit.Dp LG unit.Dp }
 type ResponsiveBool struct { }
 type ResponsiveDp struct { }
 type ResponsiveInt struct { }

@@ -74,7 +74,7 @@ func (t *Toggle) Layout(th *Theme, gtx layout.Context, o ToggleProps) layout.Dim
 			return layout.Flex{Alignment: layout.Middle}.Layout(gtx, row...)
 		})
 		call := m.Stop()
-		r := gtx.Dp(th.Radius.SM + 2)
+		r := gtx.Dp(th.Radius.MD)
 		defer clip.UniformRRect(image.Rectangle{Max: dims.Size}, r).Push(gtx.Ops).Pop()
 		if !o.Disabled {
 			pointer.CursorPointer.Add(gtx.Ops)
@@ -86,7 +86,7 @@ func (t *Toggle) Layout(th *Theme, gtx layout.Context, o ToggleProps) layout.Dim
 			paint.Fill(gtx.Ops, th.Palette.BgSubtle)
 		}
 		if o.Outline && !t.On {
-			widget.Border{Color: th.Palette.Border, Width: unit.Dp(1), CornerRadius: th.Radius.SM + 2}.Layout(gtx,
+			widget.Border{Color: th.Palette.Border, Width: unit.Dp(1), CornerRadius: th.Radius.MD}.Layout(gtx,
 				func(gtx layout.Context) layout.Dimensions { return layout.Dimensions{Size: dims.Size} })
 		}
 		call.Add(gtx.Ops)

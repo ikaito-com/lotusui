@@ -17,7 +17,65 @@ recorded here in full.
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+| Symbol | Notes |
+|---|---|
+| `RadiusScale.XS` | new smallest step on the theme corner-radius scale (default **4dp**); `var Radius` is now `RadiusScale{XS: 4, SM: 6, MD: 10, LG: 12}`. Additive — `RadiusScale` literals using field names keep compiling, but a literal WITHOUT `XS` now yields `XS: 0` (sharp checkbox corners): set `XS` when passing `WithRadius`. `cmd/lotusui theme` emits it (`theme.json` key `"xs"`, default 4) |
+
+### Changed
+
+**Token honesty: every control corner now draws from `th.Radius`** —
+several components hardcoded radii or derived them arithmetically, so
+`WithRadius(...)` could not reach them and they sat visibly "more
+square" next to token-driven chrome (menus, tabs, Select's panel, all
+`Radius.MD`). This is a VISUAL change at the default theme where noted.
+Consumers wanting any old value back set it via
+`NewTheme(WithRadius(RadiusScale{…}))` — that choice is now yours.
+
+| Symbol | Old → new | Visual at defaults |
+|---|---|---|
+| `Button` (non-`Rounded`, non-`Attached` corners) | hardcoded `8dp` → `th.Radius.MD` | 8 → 10dp |
+| `Button` keyboard focus ring | hardcoded `8dp` → follows the control's own clamped radius; on `Attached` buttons it strokes the clipped shape, so square corners stay square | ring now hugs pills (`Rounded: true`) and attached edges |
+| `Input` / `Textarea` / closed `Select` field chrome (`InputOutline`, `InputSubtle`, suffix segment, invalid borders) | `th.Radius.SM + 2` → `th.Radius.MD` | 8 → 10dp — the closed Select field now matches its open panel |
+| `Toggle` | `th.Radius.SM + 2` → `th.Radius.MD` | 8 → 10dp (matches Button, shadcn's rounded-md) |
+| `SVGIconButtonTint` hover/active fill | `th.Radius.SM + 2` → `th.Radius.MD` | 8 → 10dp |
+| `InputOTP` slot corners + focus ring | `th.Radius.SM + 2` → `th.Radius.MD` | 8 → 10dp on the group's outer corners |
+| `Badge` | hardcoded `6dp` → `th.Radius.SM`; the border now follows the clamped fill radius instead of a second constant | none (SM = 6) |
+| `Checkbox` box | hardcoded `4dp` → `th.Radius.XS` | none (XS = 4) |
+| `FloatingPanel` | hardcoded `14dp` → `th.Radius.LG` | 14 → 12dp |
+| `CodeBlock` copy button | hardcoded `6dp` → `th.Radius.SM` | none (SM = 6) |
+| `Example` tab chips | hardcoded `7dp` → `th.Radius.SM` | 7 → 6dp |
+
+Unchanged by design: pill/circle geometry (`Rounded` buttons,
+`Switch`, `Slider`, `Progress`, `Avatar`, scrollbars — half the short
+side), and concentric derivations (the enclosed `Tabs` well at
+`MD + 2` wrapping MD tabs).
+
+## [0.3.5] - 2026-08-10
+
+VERSION NUMBERING NOTE: this ships new API on a 0.3.x PATCH number,
+by the maintainer's choice. The honest minor would be v0.4.0, but the
+abandoned pre-rewrite lineage published v0.4.0–v0.8.0 and the module
+proxy + checksum DB cache those version strings FOREVER — a new tag
+reusing one would serve the ghost zip (or fail sum verification), and
+anything inside the range is born retracted by our own
+`retract [v0.4.0, v0.8.0]`. Rather than jump to v0.9.0, releases stay
+in 0.3.x for now. Consequence: the retraction stays inert and
+`go get @latest` still resolves to the ghost v0.8.0 — **keep
+upgrading by explicit tag only** until a release above v0.8.0 exists.
+
+### Added
+
+| Symbol | Notes |
+|---|---|
+| `ContextMenu` | the shadcn Context Menu family: wraps any content in a PASS-THROUGH pointer area (the child keeps every primary-button interaction) and the platform's context gesture opens the menu panel AT THE POINTER on the floating layer. Fields: `KeepOpen bool` (suppress close-on-selection, for checkbox/radio menus), `Width unit.Dp` (panel max width; zero = min 224dp, grow with content). `Layout(th, gtx, content layout.Widget, items ...layout.Widget) layout.Dimensions`. Escape / outside press / selection closes; multi-`Layout` per frame is site-safe; a measure pass lays out the content alone. The panel opens down-right of the pointer and flips up/left at a known constraint edge (unbounded axes — scrollers — never flip) |
+| `ContextMenuItem`, `ContextMenuItemIcon`, `ContextMenuShortcutItem`, `ContextMenuCheckboxItem`, `ContextMenuRadioItem`, `ContextMenuCheckboxItemIcon`, `ContextMenuRadioItemIcon`, `ContextMenuLabel`, `ContextMenuSeparator` | the menu row grammar under this family's names — same signatures and rendering as the `DropdownMenu*` rows of the same shape (they delegate); use either vocabulary, rows are interchangeable |
+| `ContextMenuSub` | `= DropdownMenuSub` (type alias) — nested submenu; its `Item` goes in the items list |
+| `ContextMenuPress(ev pointer.Event) bool` | THE platform answer for "is this a context-menu gesture": secondary-button press on every OS, plus Ctrl+primary on macOS (neither macOS nor Gio translates the one-button convention). Use it instead of testing buttons yourself |
+| `ShortcutHint(k string) string` | platform spelling of the shortcut modifier for DISPLAY: `ShortcutHint("C")` → "⌘C" on macOS, "Ctrl+C" elsewhere (including wasm, where the host OS is unknowable at build time). Pair with Gio's `key.ModShortcut` when binding |
+| `IconCopy`, `IconCut`, `IconClipboardPaste` | Fluent `copy` / `cut` / `clipboard-paste` (24 regular) — the standard edit-menu row icons |
+| `EditorContextMenu` | lotusui extension (no shadcn counterpart): the read-only-editor context menu. `Layout(th, gtx, ed *widget.Editor, content layout.Widget) layout.Dimensions` wraps the widget that renders `ed` and the context gesture opens **Copy** (shown while a selection exists, with the platform hint) / **Copy all** / **Select all** at the pointer; clipboard via `clipboard.WriteCmd`. Gio already binds the copy SHORTCUT in read-only editors — this adds only the discoverable mouse path. On macOS the Ctrl+primary press is also a primary click to the editor and collapses the selection; the wrapper snapshots and restores it so Copy acts on the right-clicked text. Field: `Menu ContextMenu` (reach in for `Width`). Consumer recipe — wrap an existing log pane: `var logMenu lotusui.EditorContextMenu` next to your `widget.Editor`, then `logMenu.Layout(th, gtx, &logEd, laidOutEditorWidget)` where the editor was previously laid out directly |
 
 ## [0.3.4] - 2026-08-06
 

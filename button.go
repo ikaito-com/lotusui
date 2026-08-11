@@ -319,7 +319,7 @@ func Button(th *Theme, btn *widget.Clickable, label string, o ButtonProps) layou
 			ox, oy := (sz.X-content.Size.X)/2, (sz.Y-content.Size.Y)/2
 			dims := layout.Dimensions{Size: sz, Baseline: content.Baseline + oy}
 
-			r := gtx.Dp(unit.Dp(8))
+			r := gtx.Dp(th.Radius.MD)
 			if o.Rounded {
 				r = dims.Size.Y / 2
 			}
@@ -345,7 +345,7 @@ func Button(th *Theme, btn *widget.Clickable, label string, o ButtonProps) layou
 				}
 				// The border follows the SAME radius the fill was clipped
 				// to (r is already clamped), so a Rounded button's outline
-				// is a pill too instead of 8dp corners inside a capsule.
+				// is a pill too instead of MD corners inside a capsule.
 				widget.Border{Color: col, Width: unit.Dp(1), CornerRadius: unit.Dp(float32(r) / gtx.Metric.PxPerDp)}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 					return layout.Dimensions{Size: dims.Size}
 				})
@@ -383,10 +383,17 @@ func Button(th *Theme, btn *widget.Clickable, label string, o ButtonProps) layou
 			}
 			if gtx.Focused(btn) {
 				// Keyboard focus: a visible ring in the theme's
-				// FocusRing token — never color alone.
-				widget.Border{Color: th.Palette.FocusRing, Width: unit.Dp(2), CornerRadius: unit.Dp(8)}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-					return layout.Dimensions{Size: dims.Size}
-				})
+				// FocusRing token — never color alone. The ring follows
+				// the SAME clamped radius (and attached corners) the
+				// fill was clipped to, so pills get a pill ring and
+				// attached edges stay square.
+				if attached {
+					paint.FillShape(gtx.Ops, th.Palette.FocusRing, clip.Stroke{Path: rr.Path(gtx.Ops), Width: float32(gtx.Dp(2)) * 2}.Op())
+				} else {
+					widget.Border{Color: th.Palette.FocusRing, Width: unit.Dp(2), CornerRadius: unit.Dp(float32(r) / gtx.Metric.PxPerDp)}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+						return layout.Dimensions{Size: dims.Size}
+					})
+				}
 			}
 			off := op.Offset(image.Pt(ox, oy)).Push(gtx.Ops)
 			call.Add(gtx.Ops)

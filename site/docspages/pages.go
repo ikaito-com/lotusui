@@ -467,7 +467,7 @@ brand.BrandFg = color.NRGBA{R: 0x11, G: 0x7A, B: 0x3D, A: 0xFF}
 
 th := lotusui.NewTheme(
 	lotusui.WithPalette(brand),
-	lotusui.WithRadius(lotusui.RadiusScale{SM: 4, MD: 8, LG: 12}),
+	lotusui.WithRadius(lotusui.RadiusScale{XS: 2, SM: 4, MD: 8, LG: 12}),
 	lotusui.WithDuration(lotusui.DurationScale{
 		Fast: 120 * time.Millisecond, Normal: 180 * time.Millisecond, Slow: 280 * time.Millisecond,
 	}),

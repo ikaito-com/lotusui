@@ -140,11 +140,11 @@ func codeCopyBtn(th *Theme, btn *widget.Clickable) layout.Widget {
 			}
 			return layout.Background{}.Layout(gtx,
 				func(gtx layout.Context) layout.Dimensions {
-					rr := clip.UniformRRect(image.Rectangle{Max: gtx.Constraints.Min}, gtx.Dp(6)).Push(gtx.Ops)
+					rr := clip.UniformRRect(image.Rectangle{Max: gtx.Constraints.Min}, gtx.Dp(th.Radius.SM)).Push(gtx.Ops)
 					paint.Fill(gtx.Ops, th.Palette.BgPanel)
 					rr.Pop()
 					widget.Border{
-						Color: border, Width: unit.Dp(1), CornerRadius: unit.Dp(6),
+						Color: border, Width: unit.Dp(1), CornerRadius: th.Radius.SM,
 					}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 						return layout.Dimensions{Size: gtx.Constraints.Min}
 					})

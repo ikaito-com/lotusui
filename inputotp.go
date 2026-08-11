@@ -139,7 +139,7 @@ func (o *InputOTP) Layout(th *Theme, gtx layout.Context) layout.Dimensions {
 
 	// The slots: attached boxes, outer corners rounded per group.
 	danger := th.Palette.DangerScheme().Solid
-	r := gtx.Dp(th.Radius.SM + 2)
+	r := gtx.Dp(th.Radius.MD)
 	// The focus ring is remembered here and drawn AFTER the loop:
 	// neighbors overlap by 1dp to collapse the shared border, so a
 	// ring painted in-loop loses a sliver to the NEXT slot's fill and

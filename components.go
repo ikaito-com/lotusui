@@ -92,12 +92,12 @@ func SurfaceCard(th *Theme, gtx layout.Context, content layout.Widget) layout.Di
 // FloatingPanel is the floating full-height rounded panel the sidebar
 // uses — white on the tinted page, soft radius, shadow elevation.
 func FloatingPanel(th *Theme, gtx layout.Context, content layout.Widget) layout.Dimensions {
-	r := gtx.Dp(unit.Dp(14))
+	r := gtx.Dp(th.Radius.LG)
 	sz := gtx.Constraints.Max
 	cardShadow(gtx, sz, r)
 	defer clip.UniformRRect(image.Rectangle{Max: sz}, r).Push(gtx.Ops).Pop()
 	paint.Fill(gtx.Ops, th.Palette.BgPanel)
-	widget.Border{Color: th.Palette.Border, Width: unit.Dp(1), CornerRadius: unit.Dp(14)}.Layout(gtx,
+	widget.Border{Color: th.Palette.Border, Width: unit.Dp(1), CornerRadius: th.Radius.LG}.Layout(gtx,
 		func(gtx layout.Context) layout.Dimensions { return layout.Dimensions{Size: sz} })
 	return content(gtx)
 }
@@ -197,7 +197,7 @@ func SVGIconButtonTint(th *Theme, btn *widget.Clickable, icon string, size unit.
 				if active {
 					fill = th.Palette.Border
 				}
-				defer clip.UniformRRect(image.Rectangle{Max: dims.Size}, gtx.Dp(th.Radius.SM+2)).Push(gtx.Ops).Pop()
+				defer clip.UniformRRect(image.Rectangle{Max: dims.Size}, gtx.Dp(th.Radius.MD)).Push(gtx.Ops).Pop()
 				paint.Fill(gtx.Ops, fill)
 			}
 			call.Add(gtx.Ops)

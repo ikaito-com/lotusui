@@ -17,7 +17,40 @@ recorded here in full.
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+| Symbol | Notes |
+|---|---|
+| `RadiusScale.XS` | new smallest step on the theme corner-radius scale (default **4dp**); `var Radius` is now `RadiusScale{XS: 4, SM: 6, MD: 10, LG: 12}`. Additive — `RadiusScale` literals using field names keep compiling, but a literal WITHOUT `XS` now yields `XS: 0` (sharp checkbox corners): set `XS` when passing `WithRadius`. `cmd/lotusui theme` emits it (`theme.json` key `"xs"`, default 4) |
+
+### Changed
+
+**Token honesty: every control corner now draws from `th.Radius`** —
+several components hardcoded radii or derived them arithmetically, so
+`WithRadius(...)` could not reach them and they sat visibly "more
+square" next to token-driven chrome (menus, tabs, Select's panel, all
+`Radius.MD`). This is a VISUAL change at the default theme where noted.
+Consumers wanting any old value back set it via
+`NewTheme(WithRadius(RadiusScale{…}))` — that choice is now yours.
+
+| Symbol | Old → new | Visual at defaults |
+|---|---|---|
+| `Button` (non-`Rounded`, non-`Attached` corners) | hardcoded `8dp` → `th.Radius.MD` | 8 → 10dp |
+| `Button` keyboard focus ring | hardcoded `8dp` → follows the control's own clamped radius; on `Attached` buttons it strokes the clipped shape, so square corners stay square | ring now hugs pills (`Rounded: true`) and attached edges |
+| `Input` / `Textarea` / closed `Select` field chrome (`InputOutline`, `InputSubtle`, suffix segment, invalid borders) | `th.Radius.SM + 2` → `th.Radius.MD` | 8 → 10dp — the closed Select field now matches its open panel |
+| `Toggle` | `th.Radius.SM + 2` → `th.Radius.MD` | 8 → 10dp (matches Button, shadcn's rounded-md) |
+| `SVGIconButtonTint` hover/active fill | `th.Radius.SM + 2` → `th.Radius.MD` | 8 → 10dp |
+| `InputOTP` slot corners + focus ring | `th.Radius.SM + 2` → `th.Radius.MD` | 8 → 10dp on the group's outer corners |
+| `Badge` | hardcoded `6dp` → `th.Radius.SM`; the border now follows the clamped fill radius instead of a second constant | none (SM = 6) |
+| `Checkbox` box | hardcoded `4dp` → `th.Radius.XS` | none (XS = 4) |
+| `FloatingPanel` | hardcoded `14dp` → `th.Radius.LG` | 14 → 12dp |
+| `CodeBlock` copy button | hardcoded `6dp` → `th.Radius.SM` | none (SM = 6) |
+| `Example` tab chips | hardcoded `7dp` → `th.Radius.SM` | 7 → 6dp |
+
+Unchanged by design: pill/circle geometry (`Rounded` buttons,
+`Switch`, `Slider`, `Progress`, `Avatar`, scrollbars — half the short
+side), and concentric derivations (the enclosed `Tabs` well at
+`MD + 2` wrapping MD tabs).
 
 ## [0.3.5] - 2026-08-10
 

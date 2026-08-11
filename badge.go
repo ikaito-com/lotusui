@@ -130,13 +130,15 @@ func Badge(th *Theme, text string, o BadgeProps) layout.Widget {
 		sz := gtx.Constraints.Constrain(image.Pt(dims.Size.X+2*hPad, dims.Size.Y+2*vPad))
 		// A rounded RECT, not a pill — the badge reads as a compact
 		// label, not a capsule.
-		r := ClampCorner(gtx.Dp(6), sz)
+		r := ClampCorner(gtx.Dp(th.Radius.SM), sz)
 		defer clip.UniformRRect(image.Rectangle{Max: sz}, r).Push(gtx.Ops).Pop()
 		if bg != (color.NRGBA{}) {
 			paint.Fill(gtx.Ops, bg)
 		}
 		if borderCol != (color.NRGBA{}) {
-			widget.Border{Color: borderCol, Width: unit.Dp(1), CornerRadius: unit.Dp(6)}.Layout(gtx,
+			// The border follows the clamped fill radius, never a
+			// second constant.
+			widget.Border{Color: borderCol, Width: unit.Dp(1), CornerRadius: unit.Dp(float32(r) / gtx.Metric.PxPerDp)}.Layout(gtx,
 				func(gtx layout.Context) layout.Dimensions {
 					return layout.Dimensions{Size: sz}
 				})

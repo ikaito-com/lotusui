@@ -152,17 +152,17 @@ func (e *Example) tab(th *Theme, btn *widget.Clickable, label string, active, cl
 			padX, padY := gtx.Dp(10), gtx.Dp(7)
 			sz := image.Pt(d.Size.X+2*padX, d.Size.Y+2*padY)
 			if active {
-				rr := gtx.Dp(unit.Dp(7))
+				rr := gtx.Dp(th.Radius.SM)
 				cl := clip.UniformRRect(image.Rectangle{Max: sz}, rr).Push(gtx.Ops)
 				paint.Fill(gtx.Ops, th.Palette.BgPanel)
 				cl.Pop()
 				widget.Border{
-					Color: th.Palette.Border, Width: unit.Dp(1), CornerRadius: unit.Dp(7),
+					Color: th.Palette.Border, Width: unit.Dp(1), CornerRadius: th.Radius.SM,
 				}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 					return layout.Dimensions{Size: sz}
 				})
 			} else if clickable && btn.Hovered() {
-				rr := gtx.Dp(unit.Dp(7))
+				rr := gtx.Dp(th.Radius.SM)
 				cl := clip.UniformRRect(image.Rectangle{Max: sz}, rr).Push(gtx.Ops)
 				paint.Fill(gtx.Ops, th.Palette.BgPanel)
 				cl.Pop()

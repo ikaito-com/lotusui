@@ -61,7 +61,7 @@ func (c *Checkbox) Layout(th *Theme, gtx layout.Context, label string) layout.Di
 			layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 				sz := gtx.Dp(c.boxDp())
 				box := image.Rectangle{Max: image.Pt(sz, sz)}
-				r := gtx.Dp(unit.Dp(4))
+				r := gtx.Dp(th.Radius.XS)
 				defer clip.UniformRRect(box, r).Push(gtx.Ops).Pop()
 				if !c.Disabled {
 					pointer.CursorPointer.Add(gtx.Ops)
@@ -86,7 +86,7 @@ func (c *Checkbox) Layout(th *Theme, gtx layout.Context, label string) layout.Di
 					border = th.Palette.BorderMuted
 				}
 				paint.Fill(gtx.Ops, fill)
-				widget.Border{Color: border, Width: unit.Dp(1), CornerRadius: unit.Dp(4)}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+				widget.Border{Color: border, Width: unit.Dp(1), CornerRadius: th.Radius.XS}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 					return layout.Dimensions{Size: box.Max}
 				})
 				if c.Indeterminate {

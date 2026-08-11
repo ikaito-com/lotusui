@@ -211,8 +211,8 @@ func generateTheme(pkg, name string, cfg themeConfig, set map[string]color.NRGBA
 
 	fmt.Fprintf(&b, "// %sTheme builds the app's Theme with every configured option.\nfunc %sTheme() *lotusui.Theme {\n\treturn lotusui.NewTheme(\n\t\tlotusui.WithPalette(%s),\n", name, name, name)
 	if r := cfg.Radius; len(r) > 0 {
-		fmt.Fprintf(&b, "\t\tlotusui.WithRadius(lotusui.RadiusScale{SM: %d, MD: %d, LG: %d}),\n",
-			pick(r, "sm", 6), pick(r, "md", 10), pick(r, "lg", 16))
+		fmt.Fprintf(&b, "\t\tlotusui.WithRadius(lotusui.RadiusScale{XS: %d, SM: %d, MD: %d, LG: %d}),\n",
+			pick(r, "xs", 4), pick(r, "sm", 6), pick(r, "md", 10), pick(r, "lg", 16))
 	}
 	if s := cfg.Space; len(s) > 0 {
 		fmt.Fprintf(&b, "\t\tlotusui.WithSpace(lotusui.SpaceScale{XS: %d, SM: %d, MD: %d, LG: %d, XL: %d}),\n",

@@ -69,7 +69,7 @@ func inputFrame(th *Theme, gtx layout.Context, variant InputVariant, sz Size, in
 	danger := th.Palette.DangerScheme().Solid
 	switch variant {
 	case InputSubtle:
-		r := ClampCorner(gtx.Dp(th.Radius.SM+2), dims.Size)
+		r := ClampCorner(gtx.Dp(th.Radius.MD), dims.Size)
 		rr := attachedRRect(dims.Size, r, attached)
 		defer rr.Push(gtx.Ops).Pop()
 		paint.Fill(gtx.Ops, th.Palette.BgSubtle)
@@ -77,7 +77,7 @@ func inputFrame(th *Theme, gtx layout.Context, variant InputVariant, sz Size, in
 			if isAttached {
 				paint.FillShape(gtx.Ops, danger, clip.Stroke{Path: rr.Path(gtx.Ops), Width: float32(gtx.Dp(1)) * 2}.Op())
 			} else {
-				widget.Border{Color: danger, Width: unit.Dp(1), CornerRadius: th.Radius.SM + 2}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+				widget.Border{Color: danger, Width: unit.Dp(1), CornerRadius: th.Radius.MD}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 					return layout.Dimensions{Size: dims.Size}
 				})
 			}
@@ -92,7 +92,7 @@ func inputFrame(th *Theme, gtx layout.Context, variant InputVariant, sz Size, in
 		fillRect(gtx, image.Pt(dims.Size.X, lh), lineCol)
 		st.Pop()
 	default: // InputOutline
-		r := ClampCorner(gtx.Dp(th.Radius.SM+2), dims.Size)
+		r := ClampCorner(gtx.Dp(th.Radius.MD), dims.Size)
 		rr := attachedRRect(dims.Size, r, attached)
 		if !isAttached {
 			seatShadow(gtx, dims.Size, r)
@@ -106,7 +106,7 @@ func inputFrame(th *Theme, gtx layout.Context, variant InputVariant, sz Size, in
 		if isAttached {
 			paint.FillShape(gtx.Ops, border, clip.Stroke{Path: rr.Path(gtx.Ops), Width: float32(gtx.Dp(1)) * 2}.Op())
 		} else {
-			widget.Border{Color: border, Width: unit.Dp(1), CornerRadius: th.Radius.SM + 2}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+			widget.Border{Color: border, Width: unit.Dp(1), CornerRadius: th.Radius.MD}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 				return layout.Dimensions{Size: dims.Size}
 			})
 		}
@@ -307,7 +307,7 @@ func (f *Input) LayoutSuffix(th *Theme, gtx layout.Context, label, hint, suffix 
 			})
 			call := m.Stop()
 			dims.Size.X = gtx.Constraints.Max.X
-			r := gtx.Dp(th.Radius.SM + 2)
+			r := gtx.Dp(th.Radius.MD)
 			defer clip.UniformRRect(image.Rectangle{Max: dims.Size}, r).Push(gtx.Ops).Pop()
 			paint.Fill(gtx.Ops, th.Palette.BgPanel)
 			seg := image.Rect(dims.Size.X-lDims.Size.X, 0, dims.Size.X, dims.Size.Y)
@@ -316,7 +316,7 @@ func (f *Input) LayoutSuffix(th *Theme, gtx layout.Context, label, hint, suffix 
 			if f.Error != "" {
 				borderCol = th.Palette.DangerScheme().Solid
 			}
-			widget.Border{Color: borderCol, Width: unit.Dp(1), CornerRadius: th.Radius.SM + 2}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+			widget.Border{Color: borderCol, Width: unit.Dp(1), CornerRadius: th.Radius.MD}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 				return layout.Dimensions{Size: dims.Size}
 			})
 			call.Add(gtx.Ops)

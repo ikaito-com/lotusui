@@ -89,6 +89,7 @@ type Palette struct {
 
 // RadiusScale is a theme's corner-radius scale.
 type RadiusScale struct {
+	XS unit.Dp
 	SM unit.Dp
 	MD unit.Dp
 	LG unit.Dp
@@ -106,7 +107,7 @@ type SpaceScale struct {
 // Radius holds the default corner-radius scale. Treat it as read-only:
 // per-app customization goes through NewTheme(WithRadius(...)), which
 // components read as th.Radius.
-var Radius = RadiusScale{SM: 6, MD: 10, LG: 12}
+var Radius = RadiusScale{XS: 4, SM: 6, MD: 10, LG: 12}
 
 // Space holds the default 8pt spacing scale. Treat it as read-only:
 // per-app customization goes through NewTheme(WithSpace(...)), which

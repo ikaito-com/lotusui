@@ -256,7 +256,7 @@
         "popover",
         "stack"
       ],
-      "hash": "0c7da5f4d697d051"
+      "hash": "d47bbc1fd2806255"
     },
     {
       "name": "context-menu",
@@ -271,12 +271,13 @@
         "dismisser",
         "inMeasurePass",
         "layoutSites",
-        "measureDepth"
+        "measureDepth",
+        "menuPanelWidth"
       ],
       "dependsOn": [
         "dropdown-menu"
       ],
-      "hash": "15df1ce81f8a0b0c"
+      "hash": "f858584fb3531809"
     },
     {
       "name": "example",
@@ -404,7 +405,7 @@
       "dependsOn": [
         "popover"
       ],
-      "hash": "c32dccddd27e114e"
+      "hash": "043f8b4760d31023"
     },
     {
       "name": "annotated-text",
@@ -569,7 +570,7 @@
         "layoutSites",
         "measureDepth"
       ],
-      "hash": "3040d6ed41bddd77"
+      "hash": "a464c9c303fb2b81"
     },
     {
       "name": "grid",

@@ -17,7 +17,12 @@ recorded here in full.
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+
+| Fix | Notes |
+|---|---|
+| **Every `Tooltip` on a page shared ONE event tag** — hovering any trigger popped the label on the FIRST tooltip laid out, never the hovered one | `tipTrig`, the per-site event tag, was a zero-sized type (`struct{}`), so every `new(tipTrig)` returned `runtime.zerobase`: one address for every site of every `Tooltip` in the program. Gio routes by tag, so the first tooltip drained the Enter event and painted while the hovered one never saw it. The tag now carries a byte. `HoverCard`'s `hoverTrig` had the identical latent bug and is fixed with it (`ctxSite`/menu tags already carried one). **Any new event-tag type must be non-zero-sized** — guarded by `TestFloatingTagsAreDistinct` and an end-to-end hover test |
+| **Floating menu panels painted 16384px wide** — `ContextMenu`, `DropdownMenuTrigger` and `DropdownMenuSub` with no `Width` set | the panels pass Gio's 2^14 "infinite" max to mean *hug your content*, but menu rows filled it unconditionally (`menuRow` forced its width to `Constraints.Max.X`), so the panel spanned far past the window with its border and rounded corners off-screen. Rows now fill only a REAL width; against an unbounded max they report their intrinsic width, and each panel measures once (`MeasurePass`) then lays out at the hugged width, clamped to `[min-w, Width or the available window]`. Behavior at an explicit `Width` is unchanged except that it now hugs UP TO that width, as documented. A trailing shortcut/chevron keeps a `Space.LG` gap from the label at the measured width |
 
 ## [0.3.6] - 2026-08-11
 

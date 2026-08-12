@@ -47,8 +47,11 @@ const (
 	hoverCardWidth      = unit.Dp(320) // shadcn's w-80
 )
 
-// hoverTrig is a heap-stable event tag for one Layout call site.
-type hoverTrig struct{}
+// hoverTrig is a heap-stable event tag for one Layout call site. The
+// byte is LOAD-BEARING: a zero-sized type makes every new(hoverTrig)
+// return runtime.zerobase, so every HoverCard in the program would
+// share ONE tag (see tipTrig, where that shipped as a bug).
+type hoverTrig struct{ _ byte }
 
 type HoverCard struct {
 	// Side positions the card; bottom is the default.

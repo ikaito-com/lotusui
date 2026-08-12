@@ -20,6 +20,40 @@ import (
 // same portal rule as Modal). A floating, anchored trigger — the
 // popover half of the family — is on the roadmap.
 
+// unboundedX is the "no known edge" threshold: a Max.X at or above it
+// is Gio's infinite sentinel (a scroller, or a floating panel asking
+// content to hug), never a real width to fill.
+const unboundedX = 1 << 13
+
+// fillWidth makes a row span its panel — but only against a REAL
+// width. Filling an unbounded max would report a 16384px row, which is
+// how the floating menus once painted a panel wider than the window.
+func fillWidth(gtx layout.Context) layout.Context {
+	if gtx.Constraints.Max.X < unboundedX {
+		gtx.Constraints.Min.X = gtx.Constraints.Max.X
+	}
+	return gtx
+}
+
+// menuPanelWidth resolves a floating menu panel's width: measure the
+// items at their intrinsic width (rows do not fill an unbounded max),
+// then clamp into [minW, maxW] — shadcn's min-w, hug, cap.
+func menuPanelWidth(th *Theme, gtx layout.Context, minW, maxW int, items ...layout.Widget) int {
+	mgtx := gtx
+	mgtx.Constraints = layout.Constraints{Max: image.Pt(1<<14, 1<<14)}
+	w := MeasurePass(mgtx, DropdownMenu(th, items...)).Size.X
+	if w < minW {
+		w = minW
+	}
+	if w > maxW {
+		w = maxW
+	}
+	if w < 1 {
+		w = 1
+	}
+	return w
+}
+
 // DropdownMenu lays out items as the standard menu panel: BgPanel surface,
 // border, soft radius. Vertical edge inset is Space.XS; the gap between
 // items is half of that so adjacent hover pills don't read as
@@ -92,7 +126,7 @@ func DropdownMenuRadioItemIcon(th *Theme, btn *widget.Clickable, icon, label str
 // DropdownMenuLabel is a non-interactive group heading inside a menu.
 func DropdownMenuLabel(th *Theme, text string) layout.Widget {
 	return func(gtx layout.Context) layout.Dimensions {
-		gtx.Constraints.Min.X = gtx.Constraints.Max.X
+		gtx = fillWidth(gtx)
 		return layout.Inset{Top: unit.Dp(6), Bottom: unit.Dp(2), Left: unit.Dp(12), Right: unit.Dp(12)}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 			l := LabelCaption(th, text)
 			l.Color = th.Palette.FgSubtle
@@ -104,7 +138,13 @@ func DropdownMenuLabel(th *Theme, text string) layout.Widget {
 // DropdownMenuSeparator is the hairline between menu groups.
 func DropdownMenuSeparator(th *Theme) layout.Widget {
 	return func(gtx layout.Context) layout.Dimensions {
-		gtx.Constraints.Min.X = gtx.Constraints.Max.X
+		// A separator has no intrinsic width — against an unbounded max
+		// it must measure as zero, or a hairline would decide how wide
+		// the whole panel is.
+		if gtx.Constraints.Max.X >= unboundedX {
+			gtx.Constraints.Max.X = 0
+		}
+		gtx = fillWidth(gtx)
 		return layout.Inset{Top: unit.Dp(4), Bottom: unit.Dp(4)}.Layout(gtx, Hairline(th))
 	}
 }
@@ -170,7 +210,8 @@ func (s *DropdownMenuSub) Item(th *Theme, label string, items ...layout.Widget) 
 				if s.Width != 0 {
 					minW, maxW = 0, gtx.Dp(s.Width)
 				}
-				gtx.Constraints = layout.Constraints{Min: image.Pt(minW, 0), Max: image.Pt(maxW, 1<<14)}
+				w := menuPanelWidth(th, gtx, minW, maxW, items...)
+				gtx.Constraints = layout.Constraints{Min: image.Pt(w, 0), Max: image.Pt(w, 1<<14)}
 				m := op.Record(gtx.Ops)
 				d := DropdownMenu(th, items...)(gtx)
 				call := m.Stop()
@@ -201,7 +242,10 @@ type menuRowCfg struct {
 func menuRow(th *Theme, btn *widget.Clickable, label string, cfg menuRowCfg) layout.Widget {
 	return func(gtx layout.Context) layout.Dimensions {
 		return btn.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-			gtx.Constraints.Min.X = gtx.Constraints.Max.X
+			// hug: no real width to fill (the panel is measuring), so the
+			// label stays Rigid and the row reports its natural width.
+			hug := gtx.Constraints.Max.X >= unboundedX
+			gtx = fillWidth(gtx)
 			ink := th.Palette.Fg
 			if cfg.danger {
 				ink = th.Palette.Danger
@@ -230,12 +274,24 @@ func menuRow(th *Theme, btn *widget.Clickable, label string, cfg menuRowCfg) lay
 				if cfg.icon != "" {
 					row = append(row, layout.Rigid(SVGIcon(cfg.icon, 16, ink)), layout.Rigid(HSpacer(th.Space.SM)))
 				}
-				row = append(row, layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+				labelW := func(gtx layout.Context) layout.Dimensions {
 					l := LabelBody(th, label)
 					l.Color = ink
 					l.MaxLines = 1
 					return l.Layout(gtx)
-				}))
+				}
+				if hug {
+					// Natural width: the label sizes to its text, and the
+					// trailing hint keeps the gap it will hold once the
+					// panel is laid out at this measured width.
+					row = append(row, layout.Rigid(labelW))
+					if cfg.shortcut != "" || cfg.chev {
+						row = append(row, layout.Rigid(HSpacer(th.Space.LG)))
+					}
+				} else {
+					// The label takes the slack, so the hint sits flush right.
+					row = append(row, layout.Flexed(1, labelW))
+				}
 				if cfg.shortcut != "" {
 					row = append(row, layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 						l := LabelCaption(th, cfg.shortcut)
@@ -249,7 +305,9 @@ func menuRow(th *Theme, btn *widget.Clickable, label string, cfg menuRowCfg) lay
 				return layout.Flex{Alignment: layout.Middle}.Layout(gtx, row...)
 			})
 			call := m.Stop()
-			dims.Size.X = gtx.Constraints.Max.X
+			if !hug {
+				dims.Size.X = gtx.Constraints.Max.X
+			}
 			defer clip.UniformRRect(image.Rectangle{Max: dims.Size}, gtx.Dp(th.Radius.SM)).Push(gtx.Ops).Pop()
 			pointer.CursorPointer.Add(gtx.Ops)
 			if btn.Hovered() {
@@ -372,7 +430,8 @@ func (t *DropdownMenuTrigger) Layout(th *Theme, gtx layout.Context, label string
 			if t.Width != 0 {
 				minW, maxW = 0, gtx.Dp(t.Width)
 			}
-			gtx.Constraints = layout.Constraints{Min: image.Pt(minW, 0), Max: image.Pt(maxW, 1<<14)}
+			w := menuPanelWidth(th, gtx, minW, maxW, items...)
+			gtx.Constraints = layout.Constraints{Min: image.Pt(w, 0), Max: image.Pt(w, 1<<14)}
 			m := op.Record(gtx.Ops)
 			d := DropdownMenu(th, items...)(gtx)
 			call := m.Stop()

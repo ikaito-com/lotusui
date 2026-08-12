@@ -118,7 +118,13 @@ func (c *ContextMenu) Layout(th *Theme, gtx layout.Context, content layout.Widge
 			if c.Width != 0 {
 				minW, maxW = 0, gtx.Dp(c.Width)
 			}
-			gtx.Constraints = layout.Constraints{Min: image.Pt(minW, 0), Max: image.Pt(maxW, 1<<14)}
+			// Hug the rows: menuPanelWidth measures them at their
+			// intrinsic width, so the panel never fills the 2^14 max.
+			if avail.X > 0 && avail.X < maxW {
+				maxW = avail.X
+			}
+			w := menuPanelWidth(th, gtx, minW, maxW, items...)
+			gtx.Constraints = layout.Constraints{Min: image.Pt(w, 0), Max: image.Pt(w, 1<<14)}
 			m := op.Record(gtx.Ops)
 			d := DropdownMenu(th, items...)(gtx)
 			call := m.Stop()

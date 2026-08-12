@@ -31,7 +31,13 @@ const (
 	TooltipRight
 )
 
-type tipTrig struct{}
+// tipTrig is one Layout call site's event tag. The byte is LOAD-BEARING:
+// a zero-sized type makes every new(tipTrig) return runtime.zerobase —
+// ONE address shared by every site of every Tooltip in the program — so
+// all tooltips registered the same tag, the first one laid out drained
+// the Enter event, and hovering any trigger popped the label at the
+// first tooltip on the page. Same rule as ctxSite / hoverTrig.
+type tipTrig struct{ _ byte }
 
 type Tooltip struct {
 	// Side positions the label; bottom is the default.

@@ -40,7 +40,7 @@ const (
 func main() {
 	go func() {
 		w := new(app.Window)
-		w.Option(app.Title("lotusui"), app.Size(1280, 860))
+		w.Option(append([]app.Option{app.Title("lotusui"), app.Size(1280, 860)}, chromeOptions()...)...)
 		if err := loop(w); err != nil {
 			log.Fatal(err)
 		}
@@ -74,7 +74,9 @@ func loop(w *app.Window) error {
 	ui.invalidate = w.Invalidate
 	var ops op.Ops
 	for {
-		switch e := w.Event().(type) {
+		ev := w.Event()
+		applyChrome(ev)
+		switch e := ev.(type) {
 		case app.DestroyEvent:
 			return e.Err
 		case app.FrameEvent:
@@ -344,7 +346,7 @@ func (ui *docsUI) topbar(th *lotusui.Theme, gtx C) D {
 				func(gtx C) D {
 					return layout.Inset{
 						Top: unit.Dp(12), Bottom: unit.Dp(12),
-						Left: unit.Dp(20), Right: unit.Dp(20),
+						Left: unit.Dp(20) + topbarLeftInset(), Right: unit.Dp(20),
 					}.Layout(gtx, func(gtx C) D {
 						return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
 							layout.Rigid(func(gtx C) D {

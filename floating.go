@@ -39,6 +39,12 @@ func (s *layoutSites) next(now time.Time) int {
 	return i
 }
 
+// unbounded is the "no known edge" threshold. Gio hands a scroller —
+// or a floating panel asking its content to hug — an effectively
+// infinite constraint (2^14 and up). Any extent at or above this is
+// that sentinel, never a real width or height to fill or flip against.
+const unbounded = 1 << 13
+
 // measureDepth is non-zero while a throwaway layout pass is running.
 // Gio lays a window out on one goroutine, so a plain counter is
 // enough; it nests because a measured widget may measure its own

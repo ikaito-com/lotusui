@@ -210,6 +210,31 @@ func BenchmarkTabsFrame(b *testing.B) {
 	}
 }
 
+// BenchmarkDropdownMenuOpenFrame measures an OPEN menu's frame — the
+// only place a menu costs anything. It runs one MeasurePass per frame
+// to hug its rows (a fixed Width skips nothing: the measure resolves
+// the hug either way), so this pins the price of that second pass.
+func BenchmarkDropdownMenuOpenFrame(b *testing.B) {
+	th := NewTheme()
+	var trg DropdownMenuTrigger
+	trg.Open = true
+	var b1, b2, b3 widget.Clickable
+	r := new(input.Router)
+	var ops op.Ops
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		ops.Reset()
+		gtx := benchCtx(&ops, r)
+		trg.Layout(th, gtx, "Open",
+			DropdownMenuLabel(th, "My Account"),
+			DropdownMenuShortcutItem(th, &b1, "Profile", "⇧⌘P", false),
+			DropdownMenuShortcutItem(th, &b2, "Billing", "⌘B", false),
+			DropdownMenuSeparator(th),
+			DropdownMenuItem(th, &b3, "Log out", false),
+		)
+	}
+}
+
 func BenchmarkNewTheme(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {

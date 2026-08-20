@@ -1452,8 +1452,12 @@ var ctxMenus struct {
 	sub   [3]lotusui.ContextMenuSub
 
 	// A handful of shared row clickables, menuDemo-style: rows across
-	// different menus never show at once.
+	// different menus never show at once. Stateless rows only — a row
+	// whose click MUTATES something needs its own clickable (del once
+	// shared chkDev, so deleting in Groups toggled the Developer Tools
+	// checkbox two examples down).
 	a, b, c, d, e, f, g, h widget.Clickable
+	del                    widget.Clickable
 
 	chkBookmarks, chkURLs, chkDev widget.Clickable
 	showBookmarks, showURLs       bool
@@ -1625,7 +1629,7 @@ func contextMenuDemo(th *lotusui.Theme, gtx C) D {
 			lotusui.ContextMenuShortcutItem(th, &s.g, "Copy", "⌘C", false),
 			lotusui.ContextMenuShortcutItem(th, &s.h, "Paste", "⌘V", false),
 			lotusui.ContextMenuSeparator(th),
-			lotusui.ContextMenuShortcutItem(th, &s.chkDev, "Delete", "⌫", true),
+			lotusui.ContextMenuShortcutItem(th, &s.del, "Delete", "⌫", true),
 		)),
 		section(th, "Icons", ctxArea(th, &s.menus[5],
 			lotusui.ContextMenuItemIcon(th, &s.a, lotusui.IconCopy, "Copy", false),

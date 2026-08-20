@@ -2,6 +2,7 @@ package main
 
 import (
 	"image"
+	"strings"
 	"testing"
 
 	"gioui.org/font/gofont"
@@ -48,6 +49,13 @@ func TestLayoutAllPages(t *testing.T) {
 				Metric:      unit.Metric{PxPerDp: 1, PxPerSp: 1},
 			}
 			ui.Layout(th, gtx)
+			// A Demo index that does not exist in its demo renders EVERY
+			// section stacked in one box — invisible in a screenshot,
+			// and it shifts every later section onto the wrong example.
+			if len(live.BadDemoStates) > 0 {
+				t.Errorf("docs sections point at demo indexes that do not exist:\n  %s",
+					strings.Join(live.BadDemoStates, "\n  "))
+			}
 		})
 	}
 }

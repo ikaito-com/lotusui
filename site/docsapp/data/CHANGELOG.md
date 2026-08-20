@@ -17,7 +17,25 @@ recorded here in full.
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+| Symbol | Notes |
+|---|---|
+| `IconArrowUp` | Fluent `arrow-up` (24 regular) — the icon shadcn's rounded-button example uses; fetched into `assets/icons/` like every other icon |
+
+### Changed
+
+| Symbol | Old → new | Visual at defaults |
+|---|---|---|
+| `Badge` | `th.Radius.SM` → a PILL: `ClampCorner(height/2, size)` | 6dp corners → capsule. shadcn's badge is `rounded-full` (`rounded-4xl` in the nova style) — the most rounded chrome in the system, above the controls at MD. This reverses the "Badge stays at SM" call made one release earlier; `th.Radius.SM` no longer drives Badge at all. A consumer wanting the old rounded-rect wraps its own chrome — there is no prop for it, the same way shadcn has none |
+
+### Fixed
+
+| Fix | Notes |
+|---|---|
+| **The Button docs page showed the wrong example under seven headings** | the page declared `Demo: "button/8"`…`"button/14"` but the demo had no `Rounded` section, so every index from 8 on pointed one example too early (Rounded showed Loading, Loading showed Sizes…) and `button/14` fell out of range, which rendered ALL fourteen examples stacked in one box. Docs-only: no library behavior changed. The missing `Rounded` demo now exists (shadcn's composition: an icon-only outline pill), which realigns every later index. **Guarded**: an out-of-range `Demo` index is recorded by `site/live`'s `card()` and fails `TestLayoutAllPages`, instead of silently rendering the whole demo |
+| **Every `Tooltip` on a page shared ONE event tag** — hovering any trigger popped the label on the FIRST tooltip laid out, never the hovered one | `tipTrig`, the per-site event tag, was a zero-sized type (`struct{}`), so every `new(tipTrig)` returned `runtime.zerobase`: one address for every site of every `Tooltip` in the program. Gio routes by tag, so the first tooltip drained the Enter event and painted while the hovered one never saw it. The tag now carries a byte. `HoverCard`'s `hoverTrig` had the identical latent bug and is fixed with it (`ctxSite`/menu tags already carried one). **Any new event-tag type must be non-zero-sized** — guarded by `TestFloatingTagsAreDistinct` and an end-to-end hover test |
+| **Floating menu panels painted 16384px wide** — `ContextMenu`, `DropdownMenuTrigger` and `DropdownMenuSub` with no `Width` set | the panels pass Gio's 2^14 "infinite" max to mean *hug your content*, but menu rows filled it unconditionally (`menuRow` forced its width to `Constraints.Max.X`), so the panel spanned far past the window with its border and rounded corners off-screen. Rows now fill only a REAL width; against an unbounded max they report their intrinsic width, and each panel measures once (`MeasurePass`) then lays out at the hugged width, clamped to `[min-w, Width]`. An explicit `Width` now means "hug up to this", which is what its doc always said (it used to mean "be exactly this"), so a short menu with a `Width` set is narrower than before. A trailing shortcut/chevron keeps a `Space.LG` gap from the label at the measured width. `ContextMenu` additionally caps the panel at the available width when that bound is KNOWN — the same rule its placement flips against; `DropdownMenuTrigger`/`DropdownMenuSub` deliberately do not, because their local max is the trigger's container (a narrow sidebar), not a window edge |
 
 ## [0.3.6] - 2026-08-11
 

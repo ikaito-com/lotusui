@@ -9,6 +9,7 @@ const (
 	IconAdd            = "add"
 	IconArchive        = "archive"
 	IconArrowLeft      = "arrow-left"
+	IconArrowUp        = "arrow-up"
 	IconBell           = "bell"
 	IconBuilding       = "building"
 	IconChanges        = "changes"

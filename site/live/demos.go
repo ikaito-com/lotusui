@@ -1,5 +1,8 @@
-// Package live holds the addressable component demos shared by the
-// gallery harness and the lotusui docs app.
+// Package live holds the addressable demos shared by the gallery
+// harness and the lotusui docs app: one per component, the theme
+// demos (palette, scales, radius, typography), and the few the docs
+// SITE itself needs (desktop-download) — a docs page can only embed a
+// demo registered here, since Section carries a slug, not a widget.
 package live
 
 import (
@@ -38,6 +41,7 @@ type Demo struct {
 var Demos = []Demo{
 	{slug: "palette", render: paletteDemo},
 	{slug: "scales", render: scalesDemo},
+	{slug: "radius", render: radiusDemo},
 	{slug: "typography", render: typographyDemo},
 	{slug: "stack", render: stackDemo},
 	{slug: "wrap", render: wrapDemo},
@@ -396,6 +400,23 @@ func ResetEmbed() {
 	PendingOverlay = nil
 	embedPrevH = map[string]int{}
 	embedApplied = map[string]string{}
+	BadDemoStates = nil
+}
+
+// BadDemoStates collects docs sections whose Demo index does not exist
+// in the demo it names — see card(). The docsapp smoke test asserts it
+// is empty after laying out every page.
+var BadDemoStates []string
+
+// noteBadDemoState records one bad state once: a preview is laid out
+// twice per frame (measure, then paint), and Example measures it again.
+func noteBadDemoState(s string) {
+	for _, prev := range BadDemoStates {
+		if prev == s {
+			return
+		}
+	}
+	BadDemoStates = append(BadDemoStates, s)
 }
 
 // section pairs a quiet SectionLabel with one block of states, both
@@ -465,8 +486,17 @@ func embedPreview(th *lotusui.Theme, gtx C, key string, content layout.Widget) D
 // no chrome of its own. A numeric DemoState narrows to that single
 // section, so each docs feature section embeds exactly its example.
 func card(th *lotusui.Theme, gtx C, sections ...layout.Widget) D {
-	if n, err := strconv.Atoi(DemoState); err == nil && n >= 0 && n < len(sections) {
-		sections = sections[n : n+1]
+	if n, err := strconv.Atoi(DemoState); err == nil {
+		if n >= 0 && n < len(sections) {
+			sections = sections[n : n+1]
+		} else {
+			// Out of range: every section renders stacked in one box —
+			// which LOOKS like a busy demo, not a bug. Record it so the
+			// docsapp smoke test fails instead of shipping a page whose
+			// examples silently point at the wrong thing (the Button
+			// page did exactly that from "Rounded" onward).
+			noteBadDemoState(fmt.Sprintf("%s/%s: index out of range (%d sections)", CurrentSlug, DemoState, len(sections)))
+		}
 	}
 	gap := lotusui.Space.LG
 	if Embed {
@@ -549,6 +579,57 @@ func scalesDemo(th *lotusui.Theme, gtx C) D {
 	)
 }
 
+// ---- radius ----
+
+// radiusDemo shows the corner-radius scale and what each step dresses.
+// Every value reads from th.Radius, so the look picker moves the whole
+// row — the point of the scale.
+func radiusDemo(th *lotusui.Theme, gtx C) D {
+	steps := []struct {
+		name string
+		r    unit.Dp
+		uses string
+	}{
+		{"XS", th.Radius.XS, "checkbox"},
+		{"SM", th.Radius.SM, "kbd, skeleton, tooltip, menu rows, chrome buttons"},
+		{"MD", th.Radius.MD, "button, input, select, textarea, toggle, tabs, alert, menus, popovers"},
+		{"LG", th.Radius.LG, "card, dialog, floating panel, example box"},
+	}
+	rows := make([]layout.Widget, 0, len(steps)+1)
+	swatch := func(r int, label, uses string) layout.Widget {
+		return func(gtx C) D {
+			return lotusui.HStack(lotusui.Space.MD,
+				func(gtx C) D {
+					sz := image.Pt(gtx.Dp(84), gtx.Dp(40))
+					defer clip.UniformRRect(image.Rectangle{Max: sz}, lotusui.ClampCorner(r, sz)).Push(gtx.Ops).Pop()
+					paint.Fill(gtx.Ops, th.Palette.BgMuted)
+					return D{Size: sz}
+				},
+				func(gtx C) D {
+					l := lotusui.LabelBody(th, label)
+					l.Font.Weight = 600
+					return l.Layout(gtx)
+				},
+				func(gtx C) D {
+					l := lotusui.LabelCaption(th, uses)
+					l.Color = th.Palette.FgMuted
+					return l.Layout(gtx)
+				},
+			)(gtx)
+		}
+	}
+	for _, s := range steps {
+		rows = append(rows, swatch(gtx.Dp(s.r), fmt.Sprintf("%s · %ddp", s.name, int(s.r)), s.uses))
+	}
+	// The pill is geometry, not a token: half the shorter side.
+	rows = append(rows, swatch(gtx.Dp(20), "pill · height/2",
+		"badge, switch, slider, progress, scrollbar, Rounded button"))
+	return card(th, gtx,
+		section(th, "The scale — every corner in the library draws from it",
+			lotusui.VStack(lotusui.Space.MD, rows...)),
+	)
+}
+
 // ---- typography ----
 
 func typographyDemo(th *lotusui.Theme, gtx C) D {
@@ -596,7 +677,9 @@ func wrapDemo(th *lotusui.Theme, gtx C) D {
 // ---- layout chrome ----
 
 var layoutChrome struct {
-	add1, add2, more widget.Clickable
+	add1, add2, more   widget.Clickable
+	navA, navB, navC   widget.Clickable
+	panelAdd, panelSet widget.Clickable
 }
 
 func layoutChromeDemo(th *lotusui.Theme, gtx C) D {
@@ -608,6 +691,24 @@ func layoutChromeDemo(th *lotusui.Theme, gtx C) D {
 			lotusui.SVGIconButton(th, &layoutChrome.add2, lotusui.IconAdd, 20, false),
 			lotusui.SVGIconButton(th, &layoutChrome.more, lotusui.IconSettings, 20, false),
 		)),
+		section(th, "FloatingPanel — the sidebar surface", func(gtx C) D {
+			// The panel takes Constraints.Max: give it a sidebar's worth
+			// and let the shadow have room, as an app shell would.
+			sz := image.Pt(gtx.Dp(240), gtx.Dp(210))
+			gtx.Constraints.Min, gtx.Constraints.Max = sz, sz
+			return lotusui.FloatingPanel(th, gtx, func(gtx C) D {
+				return layout.UniformInset(lotusui.Space.MD).Layout(gtx, func(gtx C) D {
+					return lotusui.VStack(lotusui.Space.SM,
+						lotusui.TitleWithIcons(th, "Library",
+							lotusui.SVGIconButton(th, &layoutChrome.panelAdd, lotusui.IconAdd, 18, false),
+						),
+						lotusui.HoverRow(th, &layoutChrome.navA, true, lotusui.LabelBody(th, "All items").Layout),
+						lotusui.HoverRow(th, &layoutChrome.navB, false, lotusui.LabelBody(th, "Recents").Layout),
+						lotusui.HoverRow(th, &layoutChrome.navC, false, lotusui.LabelBody(th, "Archived").Layout),
+					)(gtx)
+				})
+			})
+		}),
 	)
 }
 
@@ -654,6 +755,9 @@ func buttonDemo(th *lotusui.Theme, gtx C) D {
 		section(th, "With icon", lotusui.HStack(lotusui.Space.SM,
 			lotusui.Button(th, &btnMore.iconL, "Add item", lotusui.ButtonProps{IconStart: lotusui.IconAdd}),
 			lotusui.Button(th, &btnMore.iconR, "Continue", lotusui.ButtonProps{Variant: lotusui.ButtonOutline, IconEnd: lotusui.IconExpand}),
+		)),
+		section(th, "Rounded", lotusui.HStack(lotusui.Space.SM,
+			lotusui.Button(th, &btn.roundedOut, "", lotusui.ButtonProps{Variant: lotusui.ButtonOutline, Rounded: true, IconStart: lotusui.IconArrowUp}),
 		)),
 		section(th, "Loading", lotusui.HStack(lotusui.Space.SM,
 			lotusui.Button(th, &btn.loading, "Loading", lotusui.ButtonProps{Loading: true}),

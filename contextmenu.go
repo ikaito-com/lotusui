@@ -120,7 +120,16 @@ func (c *ContextMenu) Layout(th *Theme, gtx layout.Context, content layout.Widge
 			}
 			// Hug the rows: menuPanelWidth measures them at their
 			// intrinsic width, so the panel never fills the 2^14 max.
-			if avail.X > 0 && avail.X < maxW {
+			// A KNOWN bound also caps it — the same rule
+			// contextMenuPlace flips against, and the press that opened
+			// this menu happened inside that bound. An unbounded axis
+			// (inside a scroller) caps nothing.
+			//
+			// DropdownMenuTrigger and DropdownMenuSub deliberately skip
+			// this: their local Max.X is the trigger's container (a
+			// narrow sidebar, a toolbar cell), not a window edge, so
+			// clamping there would squeeze a legitimately wider panel.
+			if avail.X > 0 && avail.X < unbounded && avail.X < maxW {
 				maxW = avail.X
 			}
 			w := menuPanelWidth(th, gtx, minW, maxW, items...)
@@ -150,7 +159,6 @@ func (c *ContextMenu) Layout(th *Theme, gtx layout.Context, content layout.Widge
 // no edge, so the panel simply opens down-right — a window edge is
 // unknowable from local coordinates there.
 func contextMenuPlace(press, panel, avail image.Point) image.Point {
-	const unbounded = 1 << 13
 	place := func(at, size, bound int) int {
 		if bound >= unbounded || at+size <= bound {
 			return at

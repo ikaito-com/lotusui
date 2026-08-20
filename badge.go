@@ -128,9 +128,11 @@ func Badge(th *Theme, text string, o BadgeProps) layout.Widget {
 		hPad := gtx.Dp(hp)
 		vPad := gtx.Dp(vp)
 		sz := gtx.Constraints.Constrain(image.Pt(dims.Size.X+2*hPad, dims.Size.Y+2*vPad))
-		// A rounded RECT, not a pill — the badge reads as a compact
-		// label, not a capsule.
-		r := ClampCorner(gtx.Dp(th.Radius.SM), sz)
+		// A PILL: shadcn's badge is rounded-full (rounded-4xl in the
+		// nova style — a capsule at badge height), the most rounded
+		// chrome in the system. Half the height, clamped, so a badge
+		// stretched to an odd size never grows corner spurs.
+		r := ClampCorner(sz.Y/2, sz)
 		defer clip.UniformRRect(image.Rectangle{Max: sz}, r).Push(gtx.Ops).Pop()
 		if bg != (color.NRGBA{}) {
 			paint.Fill(gtx.Ops, bg)

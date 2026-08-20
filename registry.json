@@ -50,7 +50,7 @@
       "dependsOn": [
         "button"
       ],
-      "hash": "6512cc3ab6d2f0d5"
+      "hash": "3fea0aff1739138d"
     },
     {
       "name": "card",
@@ -249,14 +249,15 @@
         "dismisser",
         "inMeasurePass",
         "layoutSites",
-        "measureDepth"
+        "measureDepth",
+        "unbounded"
       ],
       "dependsOn": [
         "button",
         "popover",
         "stack"
       ],
-      "hash": "d47bbc1fd2806255"
+      "hash": "56d291f84b436629"
     },
     {
       "name": "context-menu",
@@ -272,12 +273,13 @@
         "inMeasurePass",
         "layoutSites",
         "measureDepth",
-        "menuPanelWidth"
+        "menuPanelWidth",
+        "unbounded"
       ],
       "dependsOn": [
         "dropdown-menu"
       ],
-      "hash": "f858584fb3531809"
+      "hash": "98cd21cb0b0df66d"
     },
     {
       "name": "example",

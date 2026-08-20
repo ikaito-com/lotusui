@@ -22,6 +22,7 @@ const IconAccept
 const IconAdd
 const IconArchive
 const IconArrowLeft
+const IconArrowUp
 const IconBell
 const IconBuilding
 const IconChanges

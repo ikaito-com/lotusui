@@ -486,6 +486,28 @@ mint := lotusui.ScaleFrom(color.NRGBA{R: 0x31, G: 0x97, B: 0x95, A: 0xFF})`,
 				DemoH: 560,
 			},
 			{
+				Heading: "Corner radius",
+				Prose: `<p><code>th.Radius</code> is the corner scale — four steps, and EVERY corner in the
+library draws from one of them: no component carries a radius of its own. That is what makes
+<code>WithRadius</code> a real dial: move a step and the whole system follows, consistently.</p>
+<p>Which step dresses what is a design decision the library has already made for you —
+<code>XS</code> the checkbox, <code>SM</code> the small chrome, <code>MD</code> every control
+(button, input, select, toggle, tabs, menus), <code>LG</code> the surfaces (card, dialog,
+panel). A capsule is NOT a step: pills (badge, switch, slider, progress, a
+<code>Rounded</code> button) are half the shorter side, so they stay capsules at any size.</p>
+<p class="note">Radii pass through <code>ClampCorner</code>, which caps a radius at half the
+shorter side. Past that a rounded rect stops being a capsule and grows spurs — and a border
+strokes the broken path across the whole window, not just the widget.</p>`,
+				Snippet: `th := lotusui.NewTheme(
+	lotusui.WithRadius(lotusui.RadiusScale{XS: 4, SM: 6, MD: 10, LG: 12}), // the defaults
+)
+
+r := th.Radius.MD                    // the control radius
+pill := lotusui.ClampCorner(h/2, sz) // a capsule, never a big constant`,
+				Demo:  "radius",
+				DemoH: 380,
+			},
+			{
 				Heading: "Multiple themes",
 				Prose: `<p>A theme is plain data — a Palette is ~200 bytes — so an app can compile in as
 many looks as it wants and let its users switch: build the themes once at startup, swap a
@@ -648,6 +670,22 @@ icons). Empty icons → title alone.</p>`,
 				DemoH: 100,
 			},
 			{
+				Heading: "FloatingPanel",
+				Prose: `<p>A lotusui extension: the floating full-height surface an app shell uses for its
+sidebar — panel white on the tinted canvas, <code>Radius.LG</code> corners, a soft card shadow,
+and a hairline border. It takes the whole <code>Constraints.Max</code> it is given, so the SHELL
+decides its width; the panel decides how it reads. Pair it with
+<a href="../listview/">HoverRow</a> for the nav rows, as below.</p>
+<p class="note">On macOS with the <a href="../seamless-window/">seamless window</a>, the traffic
+lights sit over this panel's top-left corner — leave about 28dp of headroom above the first
+row so they never overlap your content.</p>`,
+				Snippet: `lotusui.FloatingPanel(th, gtx, func(gtx C) D {
+	return layout.UniformInset(th.Space.MD).Layout(gtx, sidebar)
+})`,
+				Demo:  "layout/2",
+				DemoH: 300,
+			},
+			{
 				Heading: "Long lists",
 				Prose: `<p>For a screen's mixed content, <code>Scrollable</code>; the moment a collection
 can grow with data, the virtualized <a href="../listview/">ListView</a> component.</p>`,
@@ -657,6 +695,7 @@ can grow with data, the virtualized <a href="../listview/">ListView</a> componen
 			{"TitleWithIcons(th, title, icons…)", "widget", "LabelTitle + trailing icons (Space.XS between icons only)."},
 			{"TopBar(th, title, leading)", "widget", "Screen chrome — centered title, optional leading."},
 			{"LayoutPage(th, gtx, content)", "widget", "Readable column; cap th.PageMax (default 920) or PageMaxAt."},
+			{"FloatingPanel(th, gtx, content)", "dimensions", "Floating sidebar surface — fills Constraints.Max, Radius.LG, card shadow."},
 		},
 	}
 }
@@ -897,7 +936,12 @@ or removed icon is a compile error — at runtime a missing icon renders nothing
 reserved square, so screens degrade to their text.</p>`,
 				Snippet: `lotusui.SVGIcon(lotusui.IconAdd, 32, color.NRGBA{})              // full-color
 lotusui.SVGIcon(lotusui.IconEdit, 24, th.Palette.FgSubtle)       // mono, tinted
-lotusui.SVGIconButton(th, &btn, lotusui.IconSettings, 24, active) // clickable`,
+lotusui.SVGIconButton(th, &btn, lotusui.IconSettings, 24, active) // clickable
+
+// SVGIconButtonTint is the same button for a MONO icon that must carry
+// its own ink — the quiet pencil in an Input's End slot, say. It wears
+// the control radius (th.Radius.MD) on hover and while active.
+lotusui.SVGIconButtonTint(th, &clearBtn, lotusui.IconRemove, 14, false, th.Palette.FgSubtle)`,
 				Demo:  "icons",
 				DemoH: 380,
 			},
@@ -1055,9 +1099,11 @@ lotusui.Button(th, &next, "Continue", lotusui.ButtonProps{
 			{
 				Heading: "Rounded",
 				Prose:   `<p><code>Rounded</code> renders the pill form — full-round corners on any variant.</p>`,
-				Snippet: `lotusui.Button(th, &b, "Rounded", lotusui.ButtonProps{Rounded: true})`,
-				Demo:    "button/8",
-				DemoH:   110,
+				Snippet: `lotusui.Button(th, &b, "", lotusui.ButtonProps{
+	Variant: lotusui.ButtonOutline, Rounded: true, IconStart: lotusui.IconArrowUp,
+})`,
+				Demo:  "button/8",
+				DemoH: 110,
 			},
 			{
 				Heading: "Loading",
@@ -1115,9 +1161,10 @@ all three.</p>`,
 			},
 			{
 				Heading: "Group",
-				Prose: `<p>There is no group component on purpose: <code>HStack</code> IS the group —
-buttons are widgets, so grouping is ordinary composition. (An attached, shared-border group is
-on the roadmap.)</p>`,
+				Prose: `<p>A loose row of buttons is ordinary composition: <code>HStack</code> IS the group.
+When the buttons should read as ONE control — attached, sharing a border, square where they
+meet — reach for <a href="../button-group/">ButtonGroup</a>, which also hosts an Input or a
+Select as a member.</p>`,
 				Snippet: `lotusui.HStack(th.Space.SM,
 	lotusui.Button(th, &cancel, "Cancel", lotusui.ButtonProps{Variant: lotusui.ButtonOutline}),
 	lotusui.Button(th, &save, "Save", lotusui.ButtonProps{}),
@@ -2040,8 +2087,8 @@ anywhere else, Escape, or pick an item to close it (checkbox and radio menus set
 <code>KeepOpen</code>, because picking is not leaving). <code>DropdownMenu</code> remains the
 raw panel for inline use. The row family covers plain items, icon items, shortcut hints,
 toggleable checkbox items, exclusive radio items, group labels and separators; all row STATE
-lives with the caller. Submenus are on the roadmap; web-specific composition and RTL are
-"from the web".</p>`,
+lives with the caller. <code>DropdownMenuSub</code> nests a side panel that opens on hover (see
+Submenu below). Web-specific composition and RTL are "from the web".</p>`,
 		Sections: []Section{
 			InstallSection("dropdown-menu"),
 			{

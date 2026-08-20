@@ -21,7 +21,7 @@ type downloadTarget struct {
 
 var downloadTargets = []downloadTarget{
 	{osKey: "macos", label: "Download for macOS", note: "macOS 12+ — universal .app (Apple Silicon and Intel)", asset: "lotusui-docsapp-macos-universal.zip"},
-	{osKey: "windows", label: "Download for Windows", note: "Windows 10+ — x64", asset: "lotusui-docsapp-windows-amd64.zip"},
+	{osKey: "windows", label: "Download for Windows", note: "Windows — x64", asset: "lotusui-docsapp-windows-amd64.zip"},
 	{osKey: "linux", label: "Download for Linux", note: "Linux — x64 (glibc 2.39+)", asset: "lotusui-docsapp-linux-amd64.tar.gz"},
 }
 

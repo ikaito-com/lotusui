@@ -20,16 +20,11 @@ import (
 // same portal rule as Modal). A floating, anchored trigger — the
 // popover half of the family — is on the roadmap.
 
-// unboundedX is the "no known edge" threshold: a Max.X at or above it
-// is Gio's infinite sentinel (a scroller, or a floating panel asking
-// content to hug), never a real width to fill.
-const unboundedX = 1 << 13
-
 // fillWidth makes a row span its panel — but only against a REAL
 // width. Filling an unbounded max would report a 16384px row, which is
 // how the floating menus once painted a panel wider than the window.
 func fillWidth(gtx layout.Context) layout.Context {
-	if gtx.Constraints.Max.X < unboundedX {
+	if gtx.Constraints.Max.X < unbounded {
 		gtx.Constraints.Min.X = gtx.Constraints.Max.X
 	}
 	return gtx
@@ -141,7 +136,7 @@ func DropdownMenuSeparator(th *Theme) layout.Widget {
 		// A separator has no intrinsic width — against an unbounded max
 		// it must measure as zero, or a hairline would decide how wide
 		// the whole panel is.
-		if gtx.Constraints.Max.X >= unboundedX {
+		if gtx.Constraints.Max.X >= unbounded {
 			gtx.Constraints.Max.X = 0
 		}
 		gtx = fillWidth(gtx)
@@ -244,7 +239,7 @@ func menuRow(th *Theme, btn *widget.Clickable, label string, cfg menuRowCfg) lay
 		return btn.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 			// hug: no real width to fill (the panel is measuring), so the
 			// label stays Rigid and the row reports its natural width.
-			hug := gtx.Constraints.Max.X >= unboundedX
+			hug := gtx.Constraints.Max.X >= unbounded
 			gtx = fillWidth(gtx)
 			ink := th.Palette.Fg
 			if cfg.danger {

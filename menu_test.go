@@ -37,7 +37,7 @@ func TestMenuPanelHugsUnboundedMax(t *testing.T) {
 
 	gtx.Constraints = layout.Constraints{Max: image.Pt(1<<14, 1<<14)}
 	hug := DropdownMenu(th, menuTestItems(th)...)(gtx)
-	if hug.Size.X >= unboundedX {
+	if hug.Size.X >= unbounded {
 		t.Fatalf("panel filled the unbounded max: width %d", hug.Size.X)
 	}
 	if hug.Size.X < 40 {
